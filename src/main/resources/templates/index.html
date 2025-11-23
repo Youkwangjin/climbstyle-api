@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/index/main.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header:: header}"></div>
+</header>
+
+<section class="hero section" id="hero">
+    <div class="container hero-wrap">
+        <div class="copy">
+            <h1>클라이밍 패션 커뮤니티</h1>
+            <p>스타일을 공유하고 랭킹으로 인정받는 공간. 좋아요와 해시태그로 나만의 무드를 기록해 보세요.</p>
+            <div class="actions">
+                <button class="btn btn-primary" type="button">시작하기</button>
+                <button class="btn" type="button">둘러보기</button>
+            </div>
+        </div>
+        <div class="hero-visual" role="img" aria-label="메인 비주얼 슬라이드">
+            <div class="slides">
+                <div class="slide is-active"
+                     style="background-image: url(/img/main1.png)"
+                     aria-hidden="false"></div>
+
+                <div class="slide"
+                     style="background-image: url(/img/main1.png)"
+                     aria-hidden="true"></div>
+
+                <div class="slide"
+                     style="background-image: url(/img/main1.png)"
+                     aria-hidden="true"></div>
+
+                <div class="slide"
+                     style="background-image: url(/img/main1.png)"
+                     aria-hidden="true"></div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="catalog" aria-labelledby="catalog-title">
+    <div class="container">
+        <div class="head">
+            <div>
+                <h2 id="catalog-title">신상품 & 베스트</h2>
+                <p class="sub">클라이밍 의류·초크백·슈즈 모아보기</p>
+            </div>
+            <button class="btn" type="button">전체보기</button>
+        </div>
+
+        <div class="catalog-filters" aria-label="상품 카테고리 선택">
+            <button class="btn btn-filter is-active" type="button" data-filter="all">전체</button>
+            <button class="btn btn-filter" type="button" data-filter="top">상의</button>
+            <button class="btn btn-filter" type="button" data-filter="bottom">하의</button>
+            <button class="btn btn-filter" type="button" data-filter="shoes">슈즈</button>
+            <button class="btn btn-filter" type="button" data-filter="gear">기어/초크백</button>
+        </div>
+
+        <div class="grid-products">
+            <template id="product-card-tpl">
+                <article class="p-card" aria-label="상품 카드">
+                    <a class="p-media" href="#" aria-label="상품 상세로 이동">
+                        <img loading="lazy" alt=""  src="/img/main1.png"/>
+                        <span class="p-badge" hidden>NEW</span>
+                        <span class="p-badge sale" hidden>-20%</span>
+                    </a>
+
+                    <div class="p-meta">
+                        <a class="p-title" href="#">남성 라이트 크롭 집업</a>
+                        <div class="p-prices">
+                            <span class="p-price"></span>
+                            <span class="p-compare" hidden></span>
+                        </div>
+                        <div class="p-sub">
+                            <span class="p-rating" aria-label="평점">★ 4.7</span>
+                            <span class="p-tags">#chalkbag #outdoor</span>
+                        </div>
+                        <div class="p-actions">
+                            <button class="btn btn-primary" type="button">장바구니</button>
+                            <button class="btn" type="button">바로구매</button>
+                        </div>
+                    </div>
+                </article>
+            </template>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="ranking" aria-labelledby="rank-title">
+    <div class="container">
+        <div class="head">
+            <div>
+                <h2 id="rank-title">인기 클라이머 스타일</h2>
+                <p>주간 랭킹 Top 3</p>
+            </div>
+        </div>
+
+        <div class="grid-rank">
+            <article class="rank-card">
+                <div class="rank-top">
+                    <div class="avatar" aria-hidden="true"></div>
+                    <div>
+                        <div class="badge">1st</div>
+                        <div class="sub">유저1</div>
+                    </div>
+                </div>
+                <div class="rank-desc" aria-hidden="true"></div>
+            </article>
+            <article class="rank-card">
+                <div class="rank-top">
+                    <div class="avatar" aria-hidden="true"></div>
+                    <div>
+                        <div class="badge">2nd</div>
+                        <div class="sub">유저2</div>
+                    </div>
+                </div>
+                <div class="rank-desc" aria-hidden="true"></div>
+            </article>
+            <article class="rank-card">
+                <div class="rank-top">
+                    <div class="avatar" aria-hidden="true"></div>
+                    <div>
+                        <div class="badge">3rd</div>
+                        <div class="sub">유저3</div>
+                    </div>
+                </div>
+                <div class="rank-desc" aria-hidden="true"></div>
+            </article>
+        </div>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+</body>
+</html>

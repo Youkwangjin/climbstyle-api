@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/auth/auth.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header:: header}"></div>
+</header>
+
+<main class="auth-section">
+    <div class="container auth-wrap">
+        <section class="auth-card" aria-labelledby="login-title">
+            <h1 id="login-title">로그인</h1>
+            <p class="auth-sub">클라이밍 패션 피드와 쇼핑을 한 번에, ClimbStyle에 로그인하세요.</p>
+
+            <form class="auth-form">
+                <div class="field">
+                    <label for="userId">아이디</label>
+                    <input id="userId"
+                           type="text"
+                           placeholder="아이디를 입력하세요"
+                           required />
+                </div>
+
+                <div class="field">
+                    <label for="userPassword">비밀번호</label>
+                    <input id="userPassword"
+                           type="password"
+                           placeholder="비밀번호를 입력하세요"
+                           required />
+                </div>
+
+                <div class="field field-row">
+                    <a class="link-muted" th:href="@{/auth/forgot/password}">비밀번호 찾기</a>
+                </div>
+
+                <div class="field">
+                    <button class="btn btn-primary auth-submit" type="button">로그인</button>
+                </div>
+
+                <p class="auth-footer">아직 계정이 없나요?<a th:href="@{/auth/register}">회원가입</a></p>
+            </form>
+        </section>
+    </div>
+</main>
+
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+</body>
+</html>
