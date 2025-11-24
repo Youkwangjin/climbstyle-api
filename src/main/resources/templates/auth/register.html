@@ -25,7 +25,7 @@
                         <input id="userId"
                                class="auth-input"
                                type="text"
-                               placeholder="아이디를 입력하세요"
+                               placeholder="아이디를 입력하세요 (영문·숫자 5~20자)"
                                required />
                         <button class="btn btn-check" type="button" onclick="idCheck()">중복확인</button>
                     </div>
@@ -88,10 +88,36 @@
     </div>
 </main>
 <div th:replace="~{fragments/common/footer :: footer}"></div>
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script th:src="@{/js/common/daum-postcode.js}"></script>
 <script>
-    function idCheck() {}
+    function idCheck() {
+        const userId = document.getElementById("userId").value.trim();
+
+        if (!userId) {
+            alert("아이디를 입력한 후 중복 확인을 진행해 주세요.");
+            return;
+        }
+
+        if (!confirm("아이디 중복 여부를 확인하시겠습니까?")) {
+            return;
+        }
+
+        fetch("/api/v1/users/id/availability", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({userId: userId})
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                alert(body.message);
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
+            })
+    }
     function emailCheck() {}
     function nickNameCheck() {}
     function register() {}

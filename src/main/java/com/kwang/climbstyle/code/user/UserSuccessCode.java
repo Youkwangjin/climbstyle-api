@@ -1,0 +1,26 @@
+package com.kwang.climbstyle.code.user;
+
+import com.kwang.climbstyle.common.response.ApiCode;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+public enum UserSuccessCode implements ApiCode {
+    USER_ID_AVAILABLE(HttpStatus.OK, "1000", "사용 가능한 아이디입니다."),
+    USER_EMAIL_AVAILABLE(HttpStatus.OK, "1000", "사용 가능한 이메일입니다."),
+    USER_NICKNAME_AVAILABLE(HttpStatus.OK, "1000", "사용 가능한 닉네임입니다."),
+    USER_REGISTER_SUCCESS(HttpStatus.OK, "1000", "회원가입이 정상적으로 완료되었습니다."),
+    ;
+
+    private final HttpStatus httpStatus;
+
+    private final String code;
+
+    private final String message;
+
+    UserSuccessCode(final HttpStatus httpStatus, final String code, final String message) {
+        this.httpStatus = httpStatus;
+        this.code = code;
+        this.message = message;
+    }
+}
