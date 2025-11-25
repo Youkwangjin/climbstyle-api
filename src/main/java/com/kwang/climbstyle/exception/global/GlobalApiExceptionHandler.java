@@ -1,6 +1,7 @@
-package com.kwang.climbstyle.exception;
+package com.kwang.climbstyle.exception.global;
 
 import com.kwang.climbstyle.common.response.ApiErrorResponse;
+import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

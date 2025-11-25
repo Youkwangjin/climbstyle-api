@@ -1,9 +1,11 @@
 package com.kwang.climbstyle.common.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public class ApiSuccessResponse<T> {
 
