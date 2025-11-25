@@ -118,8 +118,68 @@
                 alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
             })
     }
-    function emailCheck() {}
-    function nickNameCheck() {}
+
+    function emailCheck() {
+        const userEmail = document.getElementById("userEmail").value.trim();
+
+        if (!userEmail) {
+            alert("이메일을 입력한 후 중복 확인을 진행해 주세요.");
+            return;
+        }
+
+        if (!confirm("이메일 중복 여부를 확인하시겠습니까?")) {
+            return;
+        }
+
+        fetch("/api/v1/users/email/availability", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({userEmail: userEmail})
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                alert(body.message);
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
+            })
+    }
+
+    function nickNameCheck() {
+        const userNickName = document.getElementById("userNickName").value.trim();
+
+        if (!userNickName) {
+            alert("닉네임을 입력한 후 중복 확인을 진행해 주세요.");
+            return;
+        }
+
+        if (!confirm("닉네임 중복 여부를 확인하시겠습니까?")) {
+            return;
+        }
+
+        fetch("/api/v1/users/nickname/availability", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({userNickName: userNickName})
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                alert(body.message);
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
+            })
+
+    }
+
     function register() {}
 </script>
 </body>
