@@ -3,6 +3,7 @@ package com.kwang.climbstyle.domain.user.controller;
 import com.kwang.climbstyle.code.user.UserSuccessCode;
 import com.kwang.climbstyle.common.response.ApiResponseBuilder;
 import com.kwang.climbstyle.common.response.ApiSuccessResponse;
+import com.kwang.climbstyle.domain.user.dto.request.UserCreateRequest;
 import com.kwang.climbstyle.domain.user.dto.request.UserEmailRequest;
 import com.kwang.climbstyle.domain.user.dto.request.UserIdRequest;
 import com.kwang.climbstyle.domain.user.dto.request.UserNickNameRequest;
@@ -40,5 +41,12 @@ public class UserApiController {
         userService.checkUserNickNameDuplicate(request);
 
         return ApiResponseBuilder.success(UserSuccessCode.USER_NICKNAME_AVAILABLE);
+    }
+
+    @PostMapping(value = "/api/v1/users", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> createUser(@Valid @RequestBody UserCreateRequest request) {
+        userService.createUser(request);
+
+        return ApiResponseBuilder.success(UserSuccessCode.USER_REGISTER_SUCCESS);
     }
 }

@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.domain.user.repository;
 
+import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -10,4 +11,6 @@ public interface UserRepository {
     Boolean existUserEmail(String userEmail);
 
     Boolean existUserNickName(String userNickName);
+
+    void insert(UserEntity userEntity);
 }

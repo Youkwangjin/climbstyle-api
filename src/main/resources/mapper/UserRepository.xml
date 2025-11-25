@@ -70,4 +70,21 @@
             user_no = #{userNo}
     </select>
 
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity" useGeneratedKeys="true" keyProperty="userNo">
+        INSERT INTO tb_user (
+            user_id,
+            user_password,
+            user_email,
+            user_nickname,
+            user_delete_yn,
+            user_created
+        ) VALUES (
+            #{userId},
+            #{userPassword},
+            #{userEmail},
+            #{userNickName},
+            #{userDeleteYn},
+            #{userCreated}
+        )
+    </insert>
 </mapper>

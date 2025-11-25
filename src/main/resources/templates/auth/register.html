@@ -19,6 +19,7 @@
             <p class="auth-sub">클라이밍 패션과 쇼핑을 한 번에, 지금 ClimbStyle 계정을 만들어 보세요.</p>
 
             <form class="auth-form">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <div class="field">
                     <label for="userId">아이디</label>
                     <div class="auth-row">
@@ -39,6 +40,7 @@
                            required />
                 </div>
 
+                <!--
                 <div class="field">
                     <label for="passwordConfirm">비밀번호 확인</label>
                     <input id="passwordConfirm"
@@ -46,6 +48,7 @@
                            placeholder="비밀번호를 다시 입력하세요"
                            required />
                 </div>
+                -->
 
                 <div class="field">
                     <label for="userEmail">이메일</label>
@@ -71,12 +74,14 @@
                     </div>
                 </div>
 
+                <!--
                 <div class="field field-row">
                     <label class="checkbox">
                         <input type="checkbox" required />
                         <span>이용약관 및 개인정보 처리방침에 동의합니다.</span>
                     </label>
                 </div>
+                -->
 
                 <div class="field">
                     <button class="btn btn-primary auth-submit" type="button" onclick="register()">회원가입</button>
@@ -89,6 +94,9 @@
 </main>
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script>
+    const csrfTokenElement = document.querySelector("input[name=_csrf]");
+    const csrfToken = csrfTokenElement ? csrfTokenElement.value : null;
+
     function idCheck() {
         const userId = document.getElementById("userId").value.trim();
 
@@ -104,7 +112,8 @@
         fetch("/api/v1/users/id/availability", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken
             },
             credentials: "include",
             body: JSON.stringify({userId: userId})
@@ -134,7 +143,8 @@
         fetch("/api/v1/users/email/availability", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken
             },
             credentials: "include",
             body: JSON.stringify({userEmail: userEmail})
@@ -164,7 +174,8 @@
         fetch("/api/v1/users/nickname/availability", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken
             },
             credentials: "include",
             body: JSON.stringify({userNickName: userNickName})
@@ -180,7 +191,69 @@
 
     }
 
-    function register() {}
+    function register() {
+        const userId = document.getElementById("userId").value.trim();
+
+        if (!userId) {
+            alert("아이디를 입력한 후 중복 확인을 진행해 주세요.");
+            return;
+        }
+
+        const userPassword = document.getElementById("userPassword").value.trim();
+
+        if (!userPassword) {
+            alert("비밀번호를 입력한 후 진행해 주세요.");
+            return;
+        }
+
+        const userEmail = document.getElementById("userEmail").value.trim();
+
+        if (!userEmail) {
+            alert("이메일을 입력한 후 중복 확인을 진행해 주세요.");
+            return;
+        }
+
+        const userNickName = document.getElementById("userNickName").value.trim();
+
+        if (!userNickName) {
+            alert("닉네임을 입력한 후 중복 확인을 진행해 주세요.");
+            return;
+        }
+
+        if (!confirm("회원가입을 진행하시겠습니까?")) {
+            return;
+        }
+
+        fetch("/api/v1/users", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken
+            },
+            credentials: "include",
+            body: JSON.stringify(
+                {
+                    userId: userId,
+                    userPassword: userPassword,
+                    userEmail: userEmail,
+                    userNickName: userNickName
+                }
+            )
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
+                alert(body.message);
+                window.location.href = "/auth/login";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
+            })
+    }
 </script>
 </body>
 </html>
