@@ -12,8 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserEmailRequest {
 
-    @NotBlank
-    @Size(min = 1, max = 50)
-    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
+    @NotBlank(message = "이메일은 필수 입력값입니다.")
+    @Size(min = 1, max = 50, message = "이메일은 1~50자 사이여야 합니다.")
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message = "올바른 이메일 형식이 아닙니다.")
     private String userEmail;
 }

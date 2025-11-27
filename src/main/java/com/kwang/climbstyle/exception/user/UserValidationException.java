@@ -30,16 +30,7 @@ public class UserValidationException {
             return ResponseEntity.status(defaultCode.getHttpStatus()).body(defaultResponse);
         }
 
-        FieldError fieldError = fieldErrors.get(0);
-
-        String fieldName = fieldError.getField();
-
-        UserErrorCode userErrorCode = switch (fieldName) {
-            case "userId" -> UserErrorCode.USER_ID_INVALID_FORMAT;
-            case "userEmail" -> UserErrorCode.USER_EMAIL_INVALID_FORMAT;
-            case "username" -> UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
-            default -> UserErrorCode.USER_DEFAULT_ERROR;
-        };
+        UserErrorCode userErrorCode = getUserErrorCode(fieldErrors);
 
         ApiErrorResponse response = ApiErrorResponse.builder()
                 .httpStatus(userErrorCode.getHttpStatus())
@@ -48,5 +39,19 @@ public class UserValidationException {
                 .build();
 
         return ResponseEntity.status(userErrorCode.getHttpStatus()).body(response);
+    }
+
+    private static UserErrorCode getUserErrorCode(List<FieldError> fieldErrors) {
+        FieldError fieldError = fieldErrors.get(0);
+
+        String fieldName = fieldError.getField();
+
+        return switch (fieldName) {
+            case "userId" -> UserErrorCode.USER_ID_INVALID_FORMAT;
+            case "userPassword" -> UserErrorCode.USER_PASSWORD_INVALID_FORMAT;
+            case "userEmail" -> UserErrorCode.USER_EMAIL_INVALID_FORMAT;
+            case "userNickName" -> UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
+            default -> UserErrorCode.USER_DEFAULT_ERROR;
+        };
     }
 }
