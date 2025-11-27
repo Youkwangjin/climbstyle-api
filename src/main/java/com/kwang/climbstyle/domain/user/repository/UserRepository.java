@@ -12,5 +12,7 @@ public interface UserRepository {
 
     Boolean existUserNickName(String userNickName);
 
+    UserEntity selectUserById(String userId);
+
     void insert(UserEntity userEntity);
 }

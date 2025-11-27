@@ -52,7 +52,7 @@
         )
     </select>
 
-    <select id="selectUserById" parameterType="Integer">
+    <select id="selectUserById" parameterType="String" resultMap="userResultMap">
         SELECT
             user_no,
             user_id,
@@ -67,10 +67,11 @@
         FROM
             tb_user
         WHERE
-            user_no = #{userNo}
+            user_id = #{userId}
     </select>
 
-    <insert id="insert" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity" useGeneratedKeys="true" keyProperty="userNo">
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity" useGeneratedKeys="true"
+            keyProperty="userNo">
         INSERT INTO tb_user (
             user_id,
             user_password,
