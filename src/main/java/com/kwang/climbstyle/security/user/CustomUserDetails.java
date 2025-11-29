@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.security.user;
 
+import com.kwang.climbstyle.code.role.RoleCode;
 import com.kwang.climbstyle.code.user.UserDeleteCode;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,7 +35,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority(RoleCode.ROLE_USER.getCode()));
     }
 
     @Override
