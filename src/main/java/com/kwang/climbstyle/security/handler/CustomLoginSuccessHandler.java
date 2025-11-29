@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,14 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         jwtService.createToken(userNo, jwtRefreshToken);
 
+        ResponseCookie accessTokenCookie = ResponseCookie.from("ACCESS_TOKEN", jwtAccessToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(60 * 30)
+                .build();
+
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
