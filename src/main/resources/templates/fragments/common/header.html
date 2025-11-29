@@ -1,21 +1,50 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div th:fragment="header">
     <div class="container nav">
+
         <div class="logo" aria-label="Site logo">
             <a th:href="@{/}" class="logo">
                 <span>ClimbStyle</span>
             </a>
         </div>
+
         <nav aria-label="Primary">
             <ul>
-                <li><a th:href="@{/feed}">피드</a></li>
-                <li><a th:href="@{/ranking}">랭킹</a></li>
-                <li><a th:href="@{/board}">커뮤니티</a></li>
-                <li><a th:href="@{/brands}">브랜드존</a></li>
+                <li th:each="menu : ${T(com.kwang.climbstyle.code.menu.MenuCode).values()}"
+                    sec:authorize="isAnonymous()"
+                    th:if="${menu.menuGroup.name() == 'NAV' and menu.menuUseYn == 'Y'}">
+                    <a th:text="${menu.menuName}"
+                       th:href="${menu.menuUrl}"></a>
+                </li>
             </ul>
         </nav>
-        <div class="cta">
-            <a class="btn" th:href="@{/auth/login}">로그인</a>
-            <a class="btn btn-primary" th:href="@{/auth/register}">가입하기</a>
+
+        <div class="cta" sec:authorize="isAnonymous()">
+            <a th:each="menu : ${T(com.kwang.climbstyle.code.menu.MenuCode).values()}"
+               th:if="${menu.menuGroup.name() == 'CTA' and menu.menuUseYn == 'Y'}"
+               th:text="${menu.menuName}"
+               th:href="${menu.menuUrl}"
+               class="btn"
+               th:classappend="${menu.name() == 'REGISTER'} ? ' btn-primary' : ''">
+            </a>
+        </div>
+
+        <div class="user-menu" sec:authorize="isAuthenticated()">
+            <button type="button" class="user-trigger">
+                <div class="user-profile">
+                    <span>U</span>
+                </div>
+                <span class="user-name">사용자</span>
+                <span class="user-caret">▾</span>
+            </button>
+
+            <div class="user-dropdown">
+                <a class="user-dropdown-item" th:each="menu : ${userMenus}" th:href="${menu.menuUrl}" th:text="${menu.menuName}"></a>
+
+                <div class="user-dropdown-divider"></div>
+
+                <button type="submit" class="user-dropdown-item logout-btn">로그아웃</button>
+            </div>
         </div>
     </div>
 </div>

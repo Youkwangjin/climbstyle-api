@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.menu.repository.MenuRepository">
+    <resultMap id="menuResultMap"               type="com.kwang.climbstyle.domain.menu.entity.MenuEntity">
+        <id property="menuNo"                   column="menu_no"/>
+        <result property="menuCode"             column="menu_code"/>
+        <result property="menuName"             column="menu_name"/>
+        <result property="menuUrl"              column="menu_url"/>
+        <result property="menuParentNo"         column="menu_parent_no"/>
+        <result property="menuLevel"            column="menu_level"/>
+        <result property="menuSortOrder"        column="menu_sort_order"/>
+        <result property="menuUseYn"            column="menu_use_yn"/>
+        <result property="menuIcon"             column="menu_icon"/>
+        <result property="menuCreated"          column="menu_created"/>
+        <result property="menuUpdated"          column="menu_updated"/>
+    </resultMap>
+
+    <select id="selectMenuByUserRole" parameterType="String" resultMap="menuResultMap">
+        SELECT
+            m.menu_name,
+            m.menu_url,
+            m.menu_icon
+        FROM
+            tb_menu m
+        INNER JOIN
+            tb_role_menu rm
+            ON m.menu_no = rm.menu_no
+        INNER JOIN
+            tb_role r
+            ON rm.role_no = r.role_no
+        WHERE
+            r.role_name = #{roleName}
+        AND
+            m.menu_use_yn = 'Y'
+        ORDER BY
+            m.menu_level,
+            m.menu_sort_order
+    </select>
+</mapper>
