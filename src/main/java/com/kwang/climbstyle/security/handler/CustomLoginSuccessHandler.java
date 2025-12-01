@@ -34,7 +34,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         String jwtAccessToken = jwtUtil.createJWT(userId, role, true);
         String jwtRefreshToken = jwtUtil.createJWT(userId, role, false);
 
-        jwtService.createToken(userNo, jwtRefreshToken);
+        jwtService.rotateToken(userNo, jwtRefreshToken);
 
         ResponseCookie accessTokenCookie = ResponseCookie.from("ACCESS_TOKEN", jwtAccessToken)
                 .httpOnly(true)
@@ -47,7 +47,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String json = String.format("{\"access_token\":\"%s\",\"refresh_token\":\"%s\"}", jwtAccessToken, jwtRefreshToken);
+        String json = "{\"message\":\"LOGIN_SUCCESS\"}";
         response.getWriter().write(json);
         response.getWriter().flush();
     }

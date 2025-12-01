@@ -42,4 +42,15 @@
             #{jwtRefreshTokenRevokedYn}
         )
     </insert>
+
+    <update id="revoke" parameterType="Integer">
+        UPDATE
+            tb_jwt_refresh
+        SET
+            jwt_refresh_token_revoked_yn = 'Y'
+        WHERE
+            user_no = #{userNo}
+        AND
+            jwt_refresh_token_revoked_yn = 'N';
+    </update>
 </mapper>

@@ -19,7 +19,9 @@ public class JwtService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void createToken(Integer userNo, String jwtRefreshToken) {
+    public void rotateToken(Integer userNo, String jwtRefreshToken) {
+        jwtRepository.revoke(userNo);
+
         JwtRefreshEntity jwtRefreshEntity = JwtRefreshEntity.builder()
                 .userNo(userNo)
                 .jwtRefreshToken(jwtRefreshToken)

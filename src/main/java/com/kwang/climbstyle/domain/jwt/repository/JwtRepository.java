@@ -9,4 +9,6 @@ public interface JwtRepository {
     Boolean existsByJwtRefreshToken(String jwtRefreshToken);
 
     void insert(JwtRefreshEntity jwtRefreshEntity);
+
+    void revoke(Integer userNo);
 }
