@@ -68,4 +68,9 @@ public class JwtService {
 
         return new JwtTokenResponse(newAccessToken, newRefreshToken);
     }
+
+    @Transactional
+    public void revokeToken(Integer userNo) {
+        jwtRepository.revoke(userNo);
+    }
 }
