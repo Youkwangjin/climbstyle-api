@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.jwt.repository.JwtRepository">
+    <resultMap id="jwtResultMap"                         type="com.kwang.climbstyle.domain.jwt.entity.JwtRefreshEntity">
+        <id property="jwtRefreshNo"                      column="jwt_refresh_no"/>
+        <result property="userNo"                        column="user_no"/>
+        <result property="jwtRefreshToken"               column="jwt_refresh_token"/>
+        <result property="jwtRefreshTokenCreated"        column="jwt_refresh_token_created"/>
+        <result property="jwtRefreshTokenExpires"        column="jwt_refresh_token_expires"/>
+        <result property="jwtRefreshTokenRevokedYn"      column="jwt_refresh_token_revoked_yn"/>
+    </resultMap>
+
+    <select id="existsByJwtRefreshToken" parameterType="string" resultType="Boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM
+                tb_jwt_refresh
+            WHERE
+                jwt_refresh_token = #{jwtRefreshToken}
+            AND
+                jwt_refresh_token_revoked_yn = 'N'
+            AND
+                jwt_refresh_token_expires > NOW()
+        )
+    </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.jwt.entity.JwtRefreshEntity" useGeneratedKeys="true"
+            keyProperty="jwtRefreshNo">
+        INSERT INTO tb_jwt_refresh (
+            user_no,
+            jwt_refresh_token,
+            jwt_refresh_token_created,
+            jwt_refresh_token_expires,
+            jwt_refresh_token_revoked_yn
+        ) VALUES (
+            #{userNo},
+            #{jwtRefreshToken},
+            #{jwtRefreshTokenCreated},
+            #{jwtRefreshTokenExpires},
+            #{jwtRefreshTokenRevokedYn}
+        )
+    </insert>
+
+    <update id="revoke" parameterType="Integer">
+        UPDATE
+            tb_jwt_refresh
+        SET
+            jwt_refresh_token_revoked_yn = 'Y'
+        WHERE
+            user_no = #{userNo}
+        AND
+            jwt_refresh_token_revoked_yn = 'N';
+    </update>
+</mapper>
