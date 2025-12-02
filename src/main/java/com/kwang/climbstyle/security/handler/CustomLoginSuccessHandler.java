@@ -24,6 +24,14 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtService jwtService;
 
+    private static final long ACCESS_TOKEN_EXPIRE_SECONDS = 60L * 30;
+
+    private static final long REFRESH_TOKEN_EXPIRE_SECONDS = 60L * 60 * 24 * 7;
+
+    private static final String ACCESS_TOKEN_COOKIE_NAME = "ACCESS_TOKEN";
+
+    private static final String REFRESH_TOKEN_COOKIE_NAME = "REFRESH_TOKEN";
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
@@ -31,23 +39,31 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         String userId = authentication.getName();
         String role = authentication.getAuthorities().iterator().next().getAuthority();
 
-        String jwtAccessToken = jwtUtil.createJWT(userId, role, true);
-        String jwtRefreshToken = jwtUtil.createJWT(userId, role, false);
+        String jwtAccessToken = jwtUtil.createJWT(userNo, userId, role, true);
+        String jwtRefreshToken = jwtUtil.createJWT(userNo, userId, role, false);
 
-        jwtService.createToken(userNo, jwtRefreshToken);
+        jwtService.rotateToken(userNo, jwtRefreshToken);
 
-        ResponseCookie accessTokenCookie = ResponseCookie.from("ACCESS_TOKEN", jwtAccessToken)
+        ResponseCookie accessTokenCookie = ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, jwtAccessToken)
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
-                .maxAge(60 * 30)
+                .maxAge(ACCESS_TOKEN_EXPIRE_SECONDS)
+                .build();
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, jwtRefreshToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(REFRESH_TOKEN_EXPIRE_SECONDS)
                 .build();
 
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String json = String.format("{\"access_token\":\"%s\",\"refresh_token\":\"%s\"}", jwtAccessToken, jwtRefreshToken);
+        String json = "{\"message\":\"LOGIN_SUCCESS\"}";
         response.getWriter().write(json);
         response.getWriter().flush();
     }

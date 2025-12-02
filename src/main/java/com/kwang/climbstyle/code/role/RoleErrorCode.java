@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum RoleErrorCode implements ApiCode {
-
     ROLE_NOT_FOUND(HttpStatus.NOT_FOUND,          "8004", "존재하지 않는 권한입니다."),
     ;
 

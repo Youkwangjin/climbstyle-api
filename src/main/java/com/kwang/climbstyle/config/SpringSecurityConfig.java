@@ -3,6 +3,8 @@ package com.kwang.climbstyle.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kwang.climbstyle.security.filter.CustomUserJsonLoginFilter;
 import com.kwang.climbstyle.security.filter.JwtAuthenticationFilter;
+import com.kwang.climbstyle.security.handler.CustomLogoutHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,18 +31,27 @@ public class SpringSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private final CustomLogoutHandler customLogoutHandler;
+
     public SpringSecurityConfig(AuthenticationConfiguration authenticationConfiguration,
                                 ObjectMapper objectMapper,
                                 @Qualifier("CustomLoginSuccessHandler") AuthenticationSuccessHandler loginSuccessHandler,
-                                JwtAuthenticationFilter jwtAuthenticationFilter) {
+                                JwtAuthenticationFilter jwtAuthenticationFilter,
+                                CustomLogoutHandler customLogoutHandler) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.objectMapper = objectMapper;
         this.loginSuccessHandler = loginSuccessHandler;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customLogoutHandler = customLogoutHandler;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/logout")
+                );
+
         http
                 .formLogin(AbstractHttpConfigurer::disable);
 
@@ -54,6 +65,7 @@ public class SpringSecurityConfig {
                                                   "/js/**").permitAll()
 
                                 .requestMatchers("/",
+                                                  "/logout",
                                                   "/auth/login",
                                                   "/auth/register").permitAll()
 
@@ -76,14 +88,27 @@ public class SpringSecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
-                .addFilterBefore(new CustomUserJsonLoginFilter(authenticationManager(authenticationConfiguration), objectMapper, loginSuccessHandler),
-                        UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new CustomUserJsonLoginFilter(authenticationManager(authenticationConfiguration),
+                                objectMapper, loginSuccessHandler),
+                        UsernamePasswordAuthenticationFilter.class)
+
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .addLogoutHandler(customLogoutHandler)
+                        .logoutSuccessHandler((request, response,
+                                               authentication) ->
+                                response.setStatus(HttpServletResponse.SC_OK))
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                );
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+
         return authenticationConfiguration.getAuthenticationManager();
     }
 }
