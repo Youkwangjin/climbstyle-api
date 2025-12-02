@@ -49,6 +49,16 @@ public class JWTUtil {
                 .get("role", String.class);
     }
 
+    public Integer getUserNo(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return claims.get("userNo", Integer.class);
+    }
+
     public Boolean isValidToken(String token, boolean isAccess) {
         try {
             Claims claims = Jwts.parser()
@@ -69,7 +79,7 @@ public class JWTUtil {
         }
     }
 
-    public String createJWT(String userId, String role, boolean isAccess) {
+    public String createJWT(Integer userNo, String userId, String role, boolean isAccess) {
         long now = System.currentTimeMillis();
         long expiry;
         String type;
@@ -84,6 +94,7 @@ public class JWTUtil {
 
         return Jwts.builder()
                 .subject(userId)
+                .claim("userNo", userNo)
                 .claim("role", role)
                 .claim("type", type)
                 .issuedAt(new Date(now))

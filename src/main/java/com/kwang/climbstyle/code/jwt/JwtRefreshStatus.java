@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public enum JwtRefreshStatus {
-
     ACTIVE("N", "사용 가능"),
     REVOKED("Y", "사용 불가");
 
