@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.order.repository.OrderRepository">
+    <resultMap id="orderResultMap"          type="com.kwang.climbstyle.domain.order.entity.OrderEntity">
+        <id property="orderNo"              column="order_no"/>
+        <result property="userNo"           column="user_no"/>
+        <result property="orderName"        column="order_name"/>
+        <result property="orderTel"         column="order_tel"/>
+        <result property="orderTitle"       column="order_title"/>
+        <result property="orderTotalPrice"  column="order_total_price"/>
+        <result property="orderStatus"      column="order_status"/>
+        <result property="orderCreated"     column="order_created"/>
+        <result property="orderUpdated"     column="order_updated"/>
+    </resultMap>
+
+    <select id="selectRecentOrdersByUserNo" parameterType="Integer" resultMap="orderResultMap">
+        SELECT
+            order_no,
+            order_title,
+            order_total_price,
+            order_status,
+            order_created
+        FROM
+            tb_order
+        WHERE
+            user_no = #{userNo}
+        ORDER BY
+            order_created DESC
+        LIMIT 5
+    </select>
+</mapper>

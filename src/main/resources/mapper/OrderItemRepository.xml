@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.order.repository.OrderItemRepository">
+    <resultMap id="orderResultMap"              type="com.kwang.climbstyle.domain.order.entity.OrderItemEntity">
+        <id property="orderItemNo"              column="order_item_no"/>
+        <result property="orderNo"              column="order_no"/>
+        <result property="productNo"            column="product_no"/>
+        <result property="productOptionNo"      column="product_option_no"/>
+        <result property="orderItemPrice"       column="order_item_price"/>
+        <result property="orderItemQty"         column="order_item_qty"/>
+    </resultMap>
+</mapper>

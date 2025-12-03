@@ -1,33 +1,27 @@
-package com.kwang.climbstyle.domain.user.entity;
+package com.kwang.climbstyle.domain.user.dto.response;
 
-import lombok.AllArgsConstructor;
+import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserEntity {
+public class UserProfileResponse {
 
     private Integer userNo;
 
-    private String userId;
-
-    private String userPassword;
-
     private String userNm;
-
-    private String userEmail;
 
     private String userNickName;
 
+    private String userEmail;
+
     private String userDeleteYn;
 
-    private String userImageUrl;
+    private String userImgUrl;
 
     private String userIntro;
 
@@ -36,4 +30,6 @@ public class UserEntity {
     private LocalDateTime userUpdated;
 
     private LocalDateTime userDeleted;
+
+    private List<OrderRecentResponse> userOrders;
 }

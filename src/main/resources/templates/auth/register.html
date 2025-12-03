@@ -51,6 +51,17 @@
                 -->
 
                 <div class="field">
+                    <label for="userNm">이름</label>
+                    <div class="auth-row">
+                        <input id="userNm"
+                               class="auth-input"
+                               type="text"
+                               placeholder="이름을 입력하세요"
+                               required />
+                    </div>
+                </div>
+
+                <div class="field">
                     <label for="userEmail">이메일</label>
                     <div class="auth-row">
                         <input id="userEmail"
@@ -206,6 +217,13 @@
             return;
         }
 
+        const userNm = document.getElementById("userNm").value.trim();
+
+        if (!userNm) {
+            alert("이름을 입력한 후 진행해 주세요.");
+            return;
+        }
+
         const userEmail = document.getElementById("userEmail").value.trim();
 
         if (!userEmail) {
@@ -235,6 +253,7 @@
                 {
                     userId: userId,
                     userPassword: userPassword,
+                    userNm: userNm,
                     userEmail: userEmail,
                     userNickName: userNickName
                 }
