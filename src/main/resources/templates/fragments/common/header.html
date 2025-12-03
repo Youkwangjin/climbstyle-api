@@ -11,7 +11,6 @@
         <nav aria-label="Primary">
             <ul>
                 <li th:each="menu : ${T(com.kwang.climbstyle.code.menu.MenuCode).values()}"
-                    sec:authorize="isAnonymous()"
                     th:if="${menu.menuGroup.name() == 'NAV' and menu.menuUseYn == 'Y'}">
                     <a th:text="${menu.menuName}"
                        th:href="${menu.menuUrl}"></a>

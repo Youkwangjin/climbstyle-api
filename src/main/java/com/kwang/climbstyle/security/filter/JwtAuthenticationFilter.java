@@ -5,6 +5,7 @@ import com.kwang.climbstyle.common.util.JWTUtil;
 import com.kwang.climbstyle.domain.jwt.dto.response.JwtTokenResponse;
 import com.kwang.climbstyle.domain.jwt.service.JwtService;
 import com.kwang.climbstyle.exception.ClimbStyleException;
+import com.kwang.climbstyle.security.user.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -31,6 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
     private final JwtService jwtService;
+
+    private final CustomUserDetailsService customUserDetailsService;
 
     private static final String ACCESS_TOKEN_COOKIE_NAME = "ACCESS_TOKEN";
 
@@ -92,7 +96,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

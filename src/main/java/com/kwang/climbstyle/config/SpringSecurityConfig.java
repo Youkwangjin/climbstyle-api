@@ -69,12 +69,13 @@ public class SpringSecurityConfig {
                                                   "/auth/login",
                                                   "/auth/register").permitAll()
 
+                                .requestMatchers("/my/profile/**").hasAuthority("ROLE_USER")
+
                                 .requestMatchers("/api/v1/users/id/availability",
                                                  "/api/v1/users/email/availability",
                                                  "/api/v1/users/nickname/availability",
                                                  "/api/v1/login").permitAll()
-
-
+                        
                                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
 
                 .anyRequest().permitAll()
