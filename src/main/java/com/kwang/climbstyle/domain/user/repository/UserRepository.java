@@ -2,17 +2,20 @@ package com.kwang.climbstyle.domain.user.repository;
 
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserRepository {
 
-    Boolean existUserId(String userId);
+    Boolean existUserId(@Param("userId") String userId);
 
-    Boolean existUserEmail(String userEmail);
+    Boolean existUserEmail(@Param("userEmail") String userEmail);
 
-    Boolean existUserNickName(String userNickName);
+    Boolean existUserNickName(@Param("userNickName") String userNickName);
 
-    UserEntity selectUserById(String userId);
+    UserEntity selectUserByNo(@Param("userNo") Integer userNo);
+
+    UserEntity selectUserById(@Param("userId") String userId);
 
     void insert(UserEntity userEntity);
 }

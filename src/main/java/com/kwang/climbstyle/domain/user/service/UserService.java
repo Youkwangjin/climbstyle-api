@@ -1,11 +1,16 @@
 package com.kwang.climbstyle.domain.user.service;
 
+import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.code.user.UserDeleteCode;
 import com.kwang.climbstyle.code.user.UserErrorCode;
+import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
+import com.kwang.climbstyle.domain.order.entity.OrderEntity;
+import com.kwang.climbstyle.domain.order.repository.OrderRepository;
 import com.kwang.climbstyle.domain.user.dto.request.UserCreateRequest;
 import com.kwang.climbstyle.domain.user.dto.request.UserEmailRequest;
 import com.kwang.climbstyle.domain.user.dto.request.UserIdRequest;
 import com.kwang.climbstyle.domain.user.dto.request.UserNickNameRequest;
+import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
@@ -15,12 +20,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final OrderRepository orderRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -58,6 +67,7 @@ public class UserService {
     public void createUser(UserCreateRequest request) {
         final String userId = request.getUserId();
         final String userPassword = passwordEncoder.encode(request.getUserPassword());
+        final String userNm = request.getUserNm();
         final String userEmail = request.getUserEmail();
         final String userNickName = request.getUserNickName();
         final String userDeleteYn = UserDeleteCode.ACTIVE.getCode();
@@ -81,6 +91,7 @@ public class UserService {
         UserEntity user = UserEntity.builder()
                 .userId(userId)
                 .userPassword(userPassword)
+                .userNm(userNm)
                 .userEmail(userEmail)
                 .userNickName(userNickName)
                 .userDeleteYn(userDeleteYn)
@@ -88,5 +99,52 @@ public class UserService {
                 .build();
 
         userRepository.insert(user);
+    }
+
+    public UserProfileResponse selectUserByNo(Integer userNo) {
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+        final Integer existUserNo = data.getUserNo();
+
+        if (!Objects.equals(existUserNo, userNo)) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        final String userNm = data.getUserNm();
+        final String userEmail = data.getUserEmail();
+        final String userNickName = data.getUserNickName();
+        final String userDeleteYn = data.getUserDeleteYn();
+        final String userImageUrl = data.getUserImageUrl();
+        final String userIntro = data.getUserIntro();
+        final LocalDateTime userCreated = data.getUserCreated();
+        final LocalDateTime userUpdated = data.getUserUpdated();
+        final LocalDateTime userDeleted = data.getUserDeleted();
+
+        List<OrderEntity> dataOrder = orderRepository.selectRecentOrdersByUserNo(userNo);
+
+        List<OrderRecentResponse> orderResponses = dataOrder.stream()
+                .map(order -> OrderRecentResponse.builder()
+                        .orderNo(order.getOrderNo())
+                        .orderTitle(order.getOrderTitle())
+                        .orderStatus(order.getOrderStatus())
+                        .orderCreated(order.getOrderCreated())
+                        .build()
+                ).toList();
+
+        return UserProfileResponse.builder()
+                .userNo(existUserNo)
+                .userNm(userNm)
+                .userEmail(userEmail)
+                .userNickName(userNickName)
+                .userDeleteYn(userDeleteYn)
+                .userImgUrl(userImageUrl)
+                .userIntro(userIntro)
+                .userCreated(userCreated)
+                .userUpdated(userUpdated)
+                .userDeleted(userDeleted)
+                .userOrders(orderResponses)
+                .build();
     }
 }

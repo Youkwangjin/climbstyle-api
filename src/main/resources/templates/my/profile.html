@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>마이페이지 | ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/my/profile.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header:: header}"></div>
+</header>
+<main class="section">
+    <div class="container my-layout">
+        <aside class="my-sidebar">
+            <div class="my-user-summary">
+                <div class="my-user-avatar">
+                    <img th:if="${profile.userImgUrl != null}" th:src="${profile.userImgUrl}" alt="프로필 이미지">
+                    <span>U</span>
+                </div>
+                <div class="my-user-meta">
+                    <div class="my-user-name" th:text="${profile.userNickName}"></div>
+                    <div class="my-user-email" th:text="${profile.userEmail}"></div>
+                </div>
+            </div>
+            <nav class="my-menu" aria-label="마이페이지 메뉴">
+                <a th:href="@{/my/profile}" class="my-menu-item is-active">프로필</a>
+                <a th:href="@{/my/orders}" class="my-menu-item">주문 내역</a>
+                <a th:href="@{/my/likes}" class="my-menu-item">관심 상품</a>
+                <a th:href="@{/my/reviews}" class="my-menu-item">내 리뷰</a>
+                <a th:href="@{/my/profile/update}" class="my-menu-item">계정 설정</a>
+            </nav>
+        </aside>
+
+        <section class="my-content">
+            <div class="head my-content-head">
+                <div>
+                    <h2>마이페이지</h2>
+                    <p>나의 프로필과 활동 정보를 한눈에 확인할 수 있어요.</p>
+                </div>
+
+                <div class="my-actions">
+                    <a th:href="@{/my/profile/update}" class="btn btn-primary">프로필 수정</a>
+                </div>
+            </div>
+
+            <div class="my-grid">
+                <section class="my-card">
+                    <div class="my-card-header">
+                        <h3>기본 정보</h3>
+                    </div>
+                    <dl class="my-info-list">
+                        <div class="my-info-row">
+                            <dt>이름</dt>
+                            <dd th:text="${profile.userNm}"></dd>
+                        </div>
+                        <div class="my-info-row">
+                            <dt>닉네임</dt>
+                            <dd th:text="${profile.userNickName}"></dd>
+                        </div>
+                        <div class="my-info-row">
+                            <dt>이메일</dt>
+                            <dd th:text="${profile.userEmail}"></dd>
+                        </div>
+                        <div class="my-info-row">
+                            <dt>활성 여부</dt>
+                            <dd th:text="${profile.userDeleteYn == 'Y' ? '비활성화' : '활성화'}"></dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <section class="my-card">
+                    <div class="my-card-header">
+                        <h3>계정 정보</h3>
+                    </div>
+                    <dl class="my-info-list">
+                        <div class="my-info-row" sec:authorize="hasAnyRole('ROLE_USER')">
+                            <dt>회원 등급</dt>
+                            <dd><span class="my-tag">일반 회원</span></dd>
+                        </div>
+                        <div class="my-info-row">
+                            <dt>가입일</dt>
+                            <dd th:text="${#temporals.format(profile.userCreated, 'yyyy-MM-dd')}"></dd>
+                        </div>
+                        <div class="my-info-row">
+                            <dt>최근 수정일</dt>
+                            <dd th:text="${profile.userUpdated == null ? '수정 이력 없음' :
+                                         #temporals.format(profile.userUpdated, 'yyyy-MM-dd')}"></dd>
+                        </div>
+                        <div class="my-info-row">
+                            <dt>최근 비활성화</dt>
+                            <dd th:text="${profile.userDeleted == null ? '비활성화 이력 없음' :
+                                         #temporals.format(profile.userDeleted, 'yyyy-MM-dd')}"></dd>
+                        </div>
+                    </dl>
+                </section>
+            </div>
+
+            <section class="my-card">
+                <div class="my-card-header">
+                    <h3>최근 주문 내역</h3>
+                    <a th:href="@{/my/orders}" class="my-link-sm">전체 보기</a>
+                </div>
+                <p class="my-empty" th:if="${#lists.isEmpty(profile.userOrders)}">아직 주문 내역이 없어요.</p>
+                <ul class="my-list" th:if="${!#lists.isEmpty(profile.userOrders)}">
+                    <li class="my-list-item" th:each="order : ${profile.userOrders}">
+                        <div>
+                            <div class="my-list-title"
+                                 th:text="${order.orderTitle}">
+                            </div>
+                            <div class="my-list-meta">
+                                <span th:text="${order.orderNo}"></span>
+                                <span>·</span>
+                                <span th:text="${#temporals.format(order.orderCreated, 'yyyy.MM.dd')}"></span>
+                            </div>
+                        </div>
+                        <div class="my-list-right">
+                            <span>배송 준비중</span>
+                            <a class="my-link-sm" th:href="@{|/my/orders/${order.orderNo}|}">상세보기</a>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </section>
+    </div>
+</main>
+<footer>
+    <div th:replace="~{fragments/common/footer :: footer}"></div>
+</footer>
+</body>
+</html>
