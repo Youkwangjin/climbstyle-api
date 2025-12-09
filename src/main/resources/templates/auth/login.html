@@ -19,7 +19,6 @@
             <p class="auth-sub">클라이밍 패션 피드와 쇼핑을 한 번에, ClimbStyle에 로그인하세요.</p>
 
             <form class="auth-form">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <div class="field">
                     <label for="userId">아이디</label>
                     <input id="userId"
@@ -52,9 +51,6 @@
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script>
     function login() {
-        const csrfTokenElement = document.querySelector("input[name=_csrf]");
-        const csrfToken = csrfTokenElement ? csrfTokenElement.value : null;
-
         const userId = document.getElementById("userId").value.trim();
         const userPassword = document.getElementById("userPassword").value.trim();
 
@@ -66,8 +62,7 @@
         fetch("/api/v1/login", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": csrfToken
+                "Content-Type": "application/json"
             },
             credentials: "include",
             body: JSON.stringify(
