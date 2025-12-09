@@ -18,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -49,7 +50,14 @@ public class SpringSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/logout")
+                        .ignoringRequestMatchers(
+                                "/logout",
+                                "/api/v1/users/id/availability",
+                                "/api/v1/users/email/availability",
+                                "/api/v1/users/nickname/availability",
+                                "/api/v1/users",
+                                "/api/v1/login")
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 );
 
         http
@@ -77,6 +85,8 @@ public class SpringSecurityConfig {
                                                  "/api/v1/login").permitAll()
                         
                                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+
+                                .requestMatchers(HttpMethod.PATCH, "/api/v1/users/password").hasAuthority("ROLE_USER")
 
                 .anyRequest().permitAll()
                 );
