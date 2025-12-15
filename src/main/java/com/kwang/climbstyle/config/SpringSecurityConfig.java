@@ -1,11 +1,10 @@
 package com.kwang.climbstyle.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kwang.climbstyle.security.filter.CustomUserJsonLoginFilter;
-import com.kwang.climbstyle.security.filter.JwtAuthenticationFilter;
+import com.kwang.climbstyle.security.filter.CustomUserJsonAuthenticationFilter;
+import com.kwang.climbstyle.security.handler.CustomLoginSuccessHandler;
 import com.kwang.climbstyle.security.handler.CustomLogoutHandler;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,9 +13,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
@@ -28,26 +27,26 @@ public class SpringSecurityConfig {
 
     private final ObjectMapper objectMapper;
 
-    private final AuthenticationSuccessHandler loginSuccessHandler;
-
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
     private final CustomLogoutHandler customLogoutHandler;
 
     public SpringSecurityConfig(AuthenticationConfiguration authenticationConfiguration,
                                 ObjectMapper objectMapper,
-                                @Qualifier("CustomLoginSuccessHandler") AuthenticationSuccessHandler loginSuccessHandler,
-                                JwtAuthenticationFilter jwtAuthenticationFilter,
+                                CustomLoginSuccessHandler customLoginSuccessHandler,
                                 CustomLogoutHandler customLogoutHandler) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.objectMapper = objectMapper;
-        this.loginSuccessHandler = loginSuccessHandler;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customLoginSuccessHandler = customLoginSuccessHandler;
         this.customLogoutHandler = customLogoutHandler;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        CustomUserJsonAuthenticationFilter customUserJsonAuthenticationFilter =
+                new CustomUserJsonAuthenticationFilter(authenticationManager(authenticationConfiguration),
+                        objectMapper, customLoginSuccessHandler);
+
         http
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(
@@ -65,6 +64,19 @@ public class SpringSecurityConfig {
 
         http
                 .httpBasic(AbstractHttpConfigurer::disable);
+
+        http
+                .securityContext(context -> context
+                        .requireExplicitSave(false)
+                );
+
+        http
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::changeSessionId)
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                );
 
         http
                 .authorizeHttpRequests(auth -> auth
@@ -92,17 +104,6 @@ public class SpringSecurityConfig {
                 );
 
         http
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        http
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        http
-                .addFilterBefore(new CustomUserJsonLoginFilter(authenticationManager(authenticationConfiguration),
-                                objectMapper, loginSuccessHandler),
-                        UsernamePasswordAuthenticationFilter.class)
-
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .addLogoutHandler(customLogoutHandler)
@@ -112,6 +113,8 @@ public class SpringSecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                 );
+
+        http.addFilterAt(customUserJsonAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

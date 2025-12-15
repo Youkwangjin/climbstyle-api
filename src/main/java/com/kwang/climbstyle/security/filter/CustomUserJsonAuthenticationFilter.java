@@ -13,8 +13,12 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StreamUtils;
@@ -22,25 +26,23 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class CustomUserJsonLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class CustomUserJsonAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final String HTTP_METHOD_POST = "POST";
-
     private static final String LOGIN_URL = "/api/v1/login";
-
     private static final String CONTENT_TYPE = "application/json";
-
     private static final RequestMatcher DEFAULT_AUTH_MATCHER = PathPatternRequestMatcher.withDefaults()
             .matcher(HttpMethod.POST, LOGIN_URL);
-
     private final ObjectMapper objectMapper;
-
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final SecurityContextRepository securityContextRepository;
 
-    public CustomUserJsonLoginFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, AuthenticationSuccessHandler authenticationSuccessHandler) {
+    public CustomUserJsonAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, AuthenticationSuccessHandler authenticationSuccessHandler) {
         super(DEFAULT_AUTH_MATCHER, authenticationManager);
         this.objectMapper = objectMapper;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.securityContextRepository = new HttpSessionSecurityContextRepository();
+        setSecurityContextRepository(this.securityContextRepository);
     }
 
     @Override
@@ -76,6 +78,12 @@ public class CustomUserJsonLoginFilter extends AbstractAuthenticationProcessingF
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authResult);
+        SecurityContextHolder.setContext(securityContext);
+
+        this.securityContextRepository.saveContext(securityContext, request, response);
 
         authenticationSuccessHandler.onAuthenticationSuccess(request, response, authResult);
     }
