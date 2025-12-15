@@ -1,6 +1,5 @@
 package com.kwang.climbstyle.domain.user.service;
 
-import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.code.user.UserDeleteCode;
 import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -106,11 +104,6 @@ public class UserService {
         if (data == null) {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
-        final Integer existUserNo = data.getUserNo();
-
-        if (!Objects.equals(existUserNo, userNo)) {
-            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
-        }
 
         final String userNm = data.getUserNm();
         final String userEmail = data.getUserEmail();
@@ -134,7 +127,7 @@ public class UserService {
                 ).toList();
 
         return UserProfileResponse.builder()
-                .userNo(existUserNo)
+                .userNo(userNo)
                 .userNm(userNm)
                 .userEmail(userEmail)
                 .userNickName(userNickName)
