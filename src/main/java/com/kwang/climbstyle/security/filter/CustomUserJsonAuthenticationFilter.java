@@ -2,7 +2,6 @@ package com.kwang.climbstyle.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kwang.climbstyle.domain.auth.dto.request.LoginRequest;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,12 +12,9 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StreamUtils;
@@ -34,19 +30,21 @@ public class CustomUserJsonAuthenticationFilter extends AbstractAuthenticationPr
     private static final RequestMatcher DEFAULT_AUTH_MATCHER = PathPatternRequestMatcher.withDefaults()
             .matcher(HttpMethod.POST, LOGIN_URL);
     private final ObjectMapper objectMapper;
-    private final AuthenticationSuccessHandler authenticationSuccessHandler;
-    private final SecurityContextRepository securityContextRepository;
 
-    public CustomUserJsonAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, AuthenticationSuccessHandler authenticationSuccessHandler) {
+    public CustomUserJsonAuthenticationFilter(
+            AuthenticationManager authenticationManager,
+            ObjectMapper objectMapper,
+            AuthenticationSuccessHandler authenticationSuccessHandler
+    ) {
         super(DEFAULT_AUTH_MATCHER, authenticationManager);
         this.objectMapper = objectMapper;
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
-        this.securityContextRepository = new HttpSessionSecurityContextRepository();
-        setSecurityContextRepository(this.securityContextRepository);
+        setAuthenticationSuccessHandler(authenticationSuccessHandler);
+        setSecurityContextRepository(new HttpSessionSecurityContextRepository());
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException, IOException, ServletException {
         if (request.getContentType() == null || !CONTENT_TYPE.equals(request.getContentType())) {
             throw new AuthenticationServiceException("Unsupported content type: " + request.getContentType());
         }
@@ -65,7 +63,8 @@ public class CustomUserJsonAuthenticationFilter extends AbstractAuthenticationPr
             throw new AuthenticationServiceException("Missing required fields");
         }
 
-        UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username, password);
+        UsernamePasswordAuthenticationToken authRequest =
+                UsernamePasswordAuthenticationToken.unauthenticated(username, password);
         setDetails(request, authRequest);
 
         return this.getAuthenticationManager().authenticate(authRequest);
@@ -73,18 +72,5 @@ public class CustomUserJsonAuthenticationFilter extends AbstractAuthenticationPr
 
     protected void setDetails(HttpServletRequest request, UsernamePasswordAuthenticationToken authRequest) {
         authRequest.setDetails(this.authenticationDetailsSource.buildDetails(request));
-    }
-
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-                                            Authentication authResult) throws IOException, ServletException {
-
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authResult);
-        SecurityContextHolder.setContext(securityContext);
-
-        this.securityContextRepository.saveContext(securityContext, request, response);
-
-        authenticationSuccessHandler.onAuthenticationSuccess(request, response, authResult);
     }
 }

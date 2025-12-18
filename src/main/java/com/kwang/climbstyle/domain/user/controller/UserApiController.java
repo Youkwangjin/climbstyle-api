@@ -1,17 +1,18 @@
 package com.kwang.climbstyle.domain.user.controller;
 
+import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.code.user.UserSuccessCode;
 import com.kwang.climbstyle.common.response.ApiResponseBuilder;
 import com.kwang.climbstyle.common.response.ApiSuccessResponse;
-import com.kwang.climbstyle.domain.user.dto.request.UserCreateRequest;
-import com.kwang.climbstyle.domain.user.dto.request.UserEmailRequest;
-import com.kwang.climbstyle.domain.user.dto.request.UserIdRequest;
-import com.kwang.climbstyle.domain.user.dto.request.UserNickNameRequest;
+import com.kwang.climbstyle.common.util.SecurityUtil;
+import com.kwang.climbstyle.domain.user.dto.request.*;
 import com.kwang.climbstyle.domain.user.service.UserService;
+import com.kwang.climbstyle.exception.ClimbStyleException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,5 +49,16 @@ public class UserApiController {
         userService.createUser(request);
 
         return ApiResponseBuilder.success(UserSuccessCode.USER_REGISTER_SUCCESS);
+    }
+
+    @PatchMapping(value = "/api/v1/users/password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> changePassword(@Valid @RequestBody UserPasswordUpdateRequest request) {
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        if (userNo == null) {
+            throw new ClimbStyleException(HttpErrorCode.UNAUTHORIZED_ERROR);
+        }
+        userService.changePassword(request, userNo);
+
+        return ApiResponseBuilder.success(UserSuccessCode.USER_PASSWORD_UPDATE_SUCCESS);
     }
 }
