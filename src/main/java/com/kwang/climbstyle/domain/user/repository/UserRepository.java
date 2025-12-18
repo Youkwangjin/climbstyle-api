@@ -18,4 +18,6 @@ public interface UserRepository {
     UserEntity selectUserById(@Param("userId") String userId);
 
     void insert(UserEntity userEntity);
+
+    void updatePassword(UserEntity userEntity);
 }

@@ -114,4 +114,14 @@
             #{userCreated}
         )
     </insert>
+
+    <update id="updatePassword" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
+        UPDATE
+            tb_user
+        SET
+            user_password = #{userPassword},
+            user_updated = #{userUpdated}
+        WHERE
+            user_no = #{userNo}
+    </update>
 </mapper>
