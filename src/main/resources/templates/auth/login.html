@@ -24,7 +24,7 @@
                     <input id="userId"
                            type="text"
                            placeholder="아이디를 입력하세요"
-                           required />
+                           required value="kwangjin456"/>
                 </div>
 
                 <div class="field">
@@ -32,7 +32,7 @@
                     <input id="userPassword"
                            type="password"
                            placeholder="비밀번호를 입력하세요"
-                           required />
+                           required value="1234"/>
                 </div>
 
                 <div class="field field-row">
@@ -79,7 +79,7 @@
                     return;
                 }
 
-                window.location.href = "/";
+                window.location.href = body.data.redirectUrl;
             })
             .catch(() => {
                 alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")

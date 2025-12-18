@@ -25,4 +25,22 @@ public class ApiResponseBuilder {
 
         return ResponseEntity.status(code.getHttpStatus()).body(response);
     }
+
+    public static <T> ApiSuccessResponse<T> successBody(ApiCode code, T data) {
+        return ApiSuccessResponse.of(
+                code.getHttpStatus(),
+                code.getCode(),
+                code.getMessage(),
+                data
+        );
+    }
+
+    public static <T> ApiSuccessResponse<T> successBody(ApiCode code) {
+        return ApiSuccessResponse.of(
+                code.getHttpStatus(),
+                code.getCode(),
+                code.getMessage(),
+                null
+        );
+    }
 }
