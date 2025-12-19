@@ -43,7 +43,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         data.put("redirectUrl", request.getContextPath() + redirectUrl);
 
         ApiSuccessResponse<Map<String, Object>> responseBody =
-                ApiResponseBuilder.successBody(AuthSuccessCode.LOGIN_SUCCESS, data);
+                ApiResponseBuilder.body(AuthSuccessCode.LOGIN_SUCCESS, data);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
