@@ -9,7 +9,6 @@ function logout() {
                 return;
             }
 
-            alert("로그아웃되었습니다. 메인페이지로 이동합니다.");
             window.location.href = "/";
         })
         .catch(() => {

@@ -1,14 +1,11 @@
 package com.kwang.climbstyle.domain.user.service;
 
-import com.kwang.climbstyle.code.user.UserDeleteCode;
+import com.kwang.climbstyle.code.user.UserDeleteStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
 import com.kwang.climbstyle.domain.order.entity.OrderEntity;
 import com.kwang.climbstyle.domain.order.repository.OrderRepository;
-import com.kwang.climbstyle.domain.user.dto.request.UserCreateRequest;
-import com.kwang.climbstyle.domain.user.dto.request.UserEmailRequest;
-import com.kwang.climbstyle.domain.user.dto.request.UserIdRequest;
-import com.kwang.climbstyle.domain.user.dto.request.UserNickNameRequest;
+import com.kwang.climbstyle.domain.user.dto.request.*;
 import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
@@ -68,7 +65,7 @@ public class UserService {
         final String userNm = request.getUserNm();
         final String userEmail = request.getUserEmail();
         final String userNickName = request.getUserNickName();
-        final String userDeleteYn = UserDeleteCode.ACTIVE.getCode();
+        final String userDeleteYn = UserDeleteStatus.ACTIVE.getCode();
         final LocalDateTime userCreated = LocalDateTime.now();
 
         Boolean existId = userRepository.existUserId(userId);
@@ -139,5 +136,30 @@ public class UserService {
                 .userDeleted(userDeleted)
                 .userOrders(orderResponses)
                 .build();
+    }
+
+    @Transactional
+    public void changePassword(UserPasswordUpdateRequest request, Integer userNo) {
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String currentUserPassword = data.getUserPassword();
+        final String userPassword = request.getUserPassword();
+        if (!passwordEncoder.matches(userPassword, currentUserPassword)) {
+            throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
+        }
+
+        final String newUserPassword = passwordEncoder.encode(request.getNewUserPassword());
+        final LocalDateTime userUpdated = LocalDateTime.now();
+
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userPassword(newUserPassword)
+                .userUpdated(userUpdated)
+                .build();
+
+        userRepository.updatePassword(userEntity);
     }
 }

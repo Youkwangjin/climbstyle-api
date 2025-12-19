@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kwang.climbstyle.security.filter.CustomUserJsonAuthenticationFilter;
 import com.kwang.climbstyle.security.handler.CustomLoginSuccessHandler;
 import com.kwang.climbstyle.security.handler.CustomLogoutHandler;
+import com.kwang.climbstyle.security.handler.CustomUserLoginFailureHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,29 +24,28 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @EnableWebSecurity
 public class SpringSecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
-
     private final ObjectMapper objectMapper;
 
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
+    private final CustomUserLoginFailureHandler customUserLoginFailureHandler;
+
     private final CustomLogoutHandler customLogoutHandler;
 
-    public SpringSecurityConfig(AuthenticationConfiguration authenticationConfiguration,
-                                ObjectMapper objectMapper,
+    public SpringSecurityConfig(ObjectMapper objectMapper,
                                 CustomLoginSuccessHandler customLoginSuccessHandler,
+                                CustomUserLoginFailureHandler customUserLoginFailureHandler,
                                 CustomLogoutHandler customLogoutHandler) {
-        this.authenticationConfiguration = authenticationConfiguration;
         this.objectMapper = objectMapper;
         this.customLoginSuccessHandler = customLoginSuccessHandler;
+        this.customUserLoginFailureHandler = customUserLoginFailureHandler;
         this.customLogoutHandler = customLogoutHandler;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        CustomUserJsonAuthenticationFilter customUserJsonAuthenticationFilter =
-                new CustomUserJsonAuthenticationFilter(authenticationManager(authenticationConfiguration),
-                        objectMapper, customLoginSuccessHandler);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   CustomUserJsonAuthenticationFilter customUserJsonAuthenticationFilter)
+            throws Exception {
 
         http
                 .csrf(csrf -> csrf
@@ -95,7 +95,7 @@ public class SpringSecurityConfig {
                                                  "/api/v1/users/email/availability",
                                                  "/api/v1/users/nickname/availability",
                                                  "/api/v1/login").permitAll()
-                        
+
                                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
 
                                 .requestMatchers(HttpMethod.PATCH, "/api/v1/users/password").hasAuthority("ROLE_USER")
@@ -124,5 +124,16 @@ public class SpringSecurityConfig {
             throws Exception {
 
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public CustomUserJsonAuthenticationFilter customUserJsonAuthenticationFilter(
+            AuthenticationManager authenticationManager
+    ) {
+        CustomUserJsonAuthenticationFilter filter =
+                new CustomUserJsonAuthenticationFilter(authenticationManager, objectMapper, customLoginSuccessHandler);
+
+        filter.setAuthenticationFailureHandler(customUserLoginFailureHandler);
+        return filter;
     }
 }

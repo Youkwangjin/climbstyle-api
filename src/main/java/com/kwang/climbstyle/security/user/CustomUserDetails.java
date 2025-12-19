@@ -1,7 +1,7 @@
 package com.kwang.climbstyle.security.user;
 
 import com.kwang.climbstyle.code.role.RoleCode;
-import com.kwang.climbstyle.code.user.UserDeleteCode;
+import com.kwang.climbstyle.code.user.UserDeleteStatus;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -55,6 +55,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !Objects.equals(userEntity.getUserDeleteYn(), UserDeleteCode.INACTIVE.getCode());
+        return !Objects.equals(userEntity.getUserDeleteYn(), UserDeleteStatus.INACTIVE.getCode());
     }
 }
