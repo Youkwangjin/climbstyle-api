@@ -27,28 +27,28 @@ public class UserApiController {
     public ResponseEntity<ApiSuccessResponse<Object>> checkUserIdDuplicate(@Valid @RequestBody UserIdRequest request) {
         userService.checkUserIdDuplicate(request);
 
-        return ApiResponseBuilder.success(UserSuccessCode.USER_ID_AVAILABLE);
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_ID_AVAILABLE);
     }
 
     @PostMapping(value = "/api/v1/users/email/availability", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> checkUserEmailDuplicate(@Valid @RequestBody UserEmailRequest request) {
         userService.checkUserEmailDuplicate(request);
 
-        return ApiResponseBuilder.success(UserSuccessCode.USER_EMAIL_AVAILABLE);
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_EMAIL_AVAILABLE);
     }
 
     @PostMapping(value = "/api/v1/users/nickname/availability", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> checkUserNickNameDuplicate(@Valid @RequestBody UserNickNameRequest request) {
         userService.checkUserNickNameDuplicate(request);
 
-        return ApiResponseBuilder.success(UserSuccessCode.USER_NICKNAME_AVAILABLE);
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_NICKNAME_AVAILABLE);
     }
 
     @PostMapping(value = "/api/v1/users", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> createUser(@Valid @RequestBody UserCreateRequest request) {
         userService.createUser(request);
 
-        return ApiResponseBuilder.success(UserSuccessCode.USER_REGISTER_SUCCESS);
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_REGISTER_SUCCESS);
     }
 
     @PatchMapping(value = "/api/v1/users/password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -59,6 +59,6 @@ public class UserApiController {
         }
         userService.changePassword(request, userNo);
 
-        return ApiResponseBuilder.success(UserSuccessCode.USER_PASSWORD_UPDATE_SUCCESS);
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_PASSWORD_UPDATE_SUCCESS);
     }
 }
