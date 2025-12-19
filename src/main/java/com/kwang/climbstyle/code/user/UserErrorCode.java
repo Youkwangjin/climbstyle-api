@@ -2,9 +2,11 @@ package com.kwang.climbstyle.code.user;
 
 import com.kwang.climbstyle.common.response.ApiCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@RequiredArgsConstructor
 public enum UserErrorCode implements ApiCode {
     USER_ID_INVALID_FORMAT(HttpStatus.BAD_REQUEST,          "4000", "잘못된 아이디 형식입니다."),
     USER_PASSWORD_INVALID_FORMAT(HttpStatus.BAD_REQUEST,    "4000", "잘못된 비밀번호 형식입니다."),
@@ -27,10 +29,4 @@ public enum UserErrorCode implements ApiCode {
     private final String code;
 
     private final String message;
-
-    UserErrorCode(final HttpStatus httpStatus, final String code, final String message) {
-        this.httpStatus = httpStatus;
-        this.code = code;
-        this.message = message;
-    }
 }

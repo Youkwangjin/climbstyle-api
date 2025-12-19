@@ -1,6 +1,6 @@
 package com.kwang.climbstyle.domain.user.service;
 
-import com.kwang.climbstyle.code.user.UserDeleteCode;
+import com.kwang.climbstyle.code.user.UserDeleteStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
 import com.kwang.climbstyle.domain.order.entity.OrderEntity;
@@ -11,7 +11,6 @@ import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +65,7 @@ public class UserService {
         final String userNm = request.getUserNm();
         final String userEmail = request.getUserEmail();
         final String userNickName = request.getUserNickName();
-        final String userDeleteYn = UserDeleteCode.ACTIVE.getCode();
+        final String userDeleteYn = UserDeleteStatus.ACTIVE.getCode();
         final LocalDateTime userCreated = LocalDateTime.now();
 
         Boolean existId = userRepository.existUserId(userId);
