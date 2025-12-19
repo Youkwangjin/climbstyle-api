@@ -2,9 +2,11 @@ package com.kwang.climbstyle.code.user;
 
 import com.kwang.climbstyle.common.response.ApiCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@RequiredArgsConstructor
 public enum UserSuccessCode implements ApiCode {
     USER_ID_AVAILABLE(HttpStatus.OK, "1000", "사용 가능한 아이디입니다."),
     USER_EMAIL_AVAILABLE(HttpStatus.OK, "1000", "사용 가능한 이메일입니다."),
@@ -19,10 +21,4 @@ public enum UserSuccessCode implements ApiCode {
     private final String code;
 
     private final String message;
-
-    UserSuccessCode(final HttpStatus httpStatus, final String code, final String message) {
-        this.httpStatus = httpStatus;
-        this.code = code;
-        this.message = message;
-    }
 }
