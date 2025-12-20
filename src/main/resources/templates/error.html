@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/error/error.css}">
+    <title th:text="'에러 ' + ${httpStatus.value()}">Error</title>
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header :: header}"></div>
+</header>
+<div class="error-container">
+    <h1 th:text="${httpStatus.value()}"></h1>
+    <p th:text="${message}"></p>
+    <a class="back-button" href="javascript:history.back();">돌아가기</a>
+</div>
+<footer>
+    <div th:replace="~{fragments/common/footer :: footer}"></div>
+</footer>
+<script th:src="@{/js/common/logout.js}"></script>
+</body>
+</html>

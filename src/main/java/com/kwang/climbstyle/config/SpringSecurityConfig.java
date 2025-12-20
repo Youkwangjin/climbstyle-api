@@ -85,6 +85,7 @@ public class SpringSecurityConfig {
                                                   "/js/**").permitAll()
 
                                 .requestMatchers("/",
+                                                  "/error",
                                                   "/logout",
                                                   "/auth/login",
                                                   "/auth/register").permitAll()
