@@ -12,10 +12,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,8 +56,20 @@ public class UserApiController {
         if (userNo == null) {
             throw new ClimbStyleException(HttpErrorCode.UNAUTHORIZED_ERROR);
         }
-        userService.changePassword(request, userNo);
+        userService.changePassword(userNo, request);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_PASSWORD_UPDATE_SUCCESS);
+    }
+
+    @PatchMapping(value = "/api/v1/users/{userNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> updateUser(@PathVariable Integer userNo, @Valid UserUpdateRequest request) {
+        final Integer currentUserNo = SecurityUtil.getCurrentUserNo();
+        if (!Objects.equals(userNo, currentUserNo)) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        userService.updateUser(userNo, request);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_UPDATE_SUCCESS);
     }
 }

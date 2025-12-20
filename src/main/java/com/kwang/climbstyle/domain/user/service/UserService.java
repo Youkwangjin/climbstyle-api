@@ -11,6 +11,7 @@ import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,7 +140,7 @@ public class UserService {
     }
 
     @Transactional
-    public void changePassword(UserPasswordUpdateRequest request, Integer userNo) {
+    public void changePassword(Integer userNo, UserPasswordUpdateRequest request) {
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
@@ -161,5 +162,34 @@ public class UserService {
                 .build();
 
         userRepository.updatePassword(userEntity);
+    }
+
+    @Transactional
+    public void updateUser(Integer userNo, UserUpdateRequest request) {
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String userDeleteYn = data.getUserDeleteYn();
+        final String userDeleteStatus = UserDeleteStatus.INACTIVE.getCode();
+        if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
+            throw new ClimbStyleException(UserErrorCode.USER_INACTIVE_FORBIDDEN);
+        }
+
+        final String userNm = request.getUserNm();
+        final String userNickName = request.getUserNickName();
+        final String userIntro = request.getUserIntro();
+        final LocalDateTime userUpdated = LocalDateTime.now();
+
+        UserEntity user = UserEntity.builder()
+                .userNo(userNo)
+                .userNm(userNm)
+                .userNickName(userNickName)
+                .userIntro(userIntro)
+                .userUpdated(userUpdated)
+                .build();
+
+        userRepository.update(user);
     }
 }

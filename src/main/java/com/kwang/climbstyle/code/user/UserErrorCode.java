@@ -17,6 +17,7 @@ public enum UserErrorCode implements ApiCode {
 
     USER_PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED,         "4001", "현재 비밀번호가 일치하지 않습니다."),
 
+    USER_INACTIVE_FORBIDDEN(HttpStatus.FORBIDDEN,           "4003", "비활성화된 사용자는 회원정보를 수정할 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,                    "4004", "존재하지 않는 사용자입니다."),
 
     USER_ID_DUPLICATED(HttpStatus.CONFLICT,                 "4009", "이미 사용 중인 아이디입니다."),
