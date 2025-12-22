@@ -115,6 +115,18 @@
         )
     </insert>
 
+    <update id="update" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
+        UPDATE
+            tb_user
+        SET
+            user_name = #{userNm},
+            user_nickname = #{userNickName},
+            user_intro = #{userIntro},
+            user_updated = #{userUpdated}
+        WHERE
+            user_no = #{userNo}
+    </update>
+
     <update id="updatePassword" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
         UPDATE
             tb_user

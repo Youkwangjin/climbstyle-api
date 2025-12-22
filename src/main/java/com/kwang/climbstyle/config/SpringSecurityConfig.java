@@ -48,6 +48,7 @@ public class SpringSecurityConfig {
             throws Exception {
 
         http
+                //.csrf(AbstractHttpConfigurer::disable);
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(
                                 "/logout",
@@ -85,6 +86,7 @@ public class SpringSecurityConfig {
                                                   "/js/**").permitAll()
 
                                 .requestMatchers("/",
+                                                  "/error",
                                                   "/logout",
                                                   "/auth/login",
                                                   "/auth/register").permitAll()
@@ -96,9 +98,9 @@ public class SpringSecurityConfig {
                                                  "/api/v1/users/nickname/availability",
                                                  "/api/v1/login").permitAll()
 
-                                .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
 
-                                .requestMatchers(HttpMethod.PATCH, "/api/v1/users/password").hasAuthority("ROLE_USER")
+                                .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_USER")
 
                 .anyRequest().permitAll()
                 );
