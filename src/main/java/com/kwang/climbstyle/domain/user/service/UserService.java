@@ -1,7 +1,9 @@
 package com.kwang.climbstyle.domain.user.service;
 
+import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.user.UserDeleteStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
+import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
 import com.kwang.climbstyle.domain.order.entity.OrderEntity;
 import com.kwang.climbstyle.domain.order.repository.OrderRepository;
@@ -15,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +25,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private final FileService fileService;
 
     private final UserRepository userRepository;
 
@@ -179,13 +184,30 @@ public class UserService {
 
         final String userNm = request.getUserNm();
         final String userNickName = request.getUserNickName();
+        Boolean existNickName = userRepository.existUserNickName(userNickName);
+        if (existNickName) {
+            throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
+        }
+
         final String userIntro = request.getUserIntro();
+        final MultipartFile userProfileImg = request.getUserProfileImg();
         final LocalDateTime userUpdated = LocalDateTime.now();
+
+        String userImageUrl = data.getUserImageUrl();
+        if (userProfileImg != null && !userProfileImg.isEmpty()) {
+            String oldUserImageUrl = data.getUserImageUrl();
+            userImageUrl = fileService.fileUpload(userProfileImg, FileTypeCode.USER_PROFILE);
+
+            if (oldUserImageUrl != null) {
+                fileService.fileDelete(oldUserImageUrl);
+            }
+        }
 
         UserEntity user = UserEntity.builder()
                 .userNo(userNo)
                 .userNm(userNm)
                 .userNickName(userNickName)
+                .userImageUrl(userImageUrl)
                 .userIntro(userIntro)
                 .userUpdated(userUpdated)
                 .build();

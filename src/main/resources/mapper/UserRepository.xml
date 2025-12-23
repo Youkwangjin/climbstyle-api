@@ -121,6 +121,7 @@
         SET
             user_name = #{userNm},
             user_nickname = #{userNickName},
+            user_image_url = #{userImageUrl},
             user_intro = #{userIntro},
             user_updated = #{userUpdated}
         WHERE
