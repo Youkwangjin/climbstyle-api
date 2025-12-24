@@ -115,6 +115,16 @@
         )
     </insert>
 
+    <update id="deactivateUser" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
+        UPDATE
+            tb_user
+        SET
+            user_delete_yn = #{userDeleteYn},
+            user_deleted = #{userDeleted}
+        WHERE
+            user_no = #{userNo}
+    </update>
+
     <update id="update" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
         UPDATE
             tb_user

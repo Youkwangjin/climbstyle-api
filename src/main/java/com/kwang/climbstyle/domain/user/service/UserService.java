@@ -145,6 +145,44 @@ public class UserService {
     }
 
     @Transactional
+    public void deactivateUser(Integer userNo) {
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String userDeleteYn = data.getUserDeleteYn();
+        final LocalDateTime currentUserDeleted = data.getUserDeleted();
+        final LocalDateTime userDeleted = LocalDateTime.now();
+        final LocalDateTime now = LocalDateTime.now();
+        final String userDeleteStatus = UserDeleteStatus.INACTIVE.getCode();
+
+        if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
+            throw new ClimbStyleException(UserErrorCode.USER_ALREADY_INACTIVE);
+        }
+
+        if (currentUserDeleted != null) {
+            LocalDateTime availableAt = currentUserDeleted.plusDays(3);
+            if (now.isBefore(availableAt)) {
+                throw new ClimbStyleException(UserErrorCode.USER_DORMANCY_COOLDOWN);
+            }
+        }
+
+        Boolean existOrderData = orderRepository.existsOrdersByUserNo(userNo);
+        if (existOrderData) {
+            throw new ClimbStyleException(UserErrorCode.USER_ORDER_EXISTS);
+        }
+
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userDeleteYn(UserDeleteStatus.INACTIVE.getCode())
+                .userDeleted(userDeleted)
+                .build();
+
+        userRepository.deactivateUser(userEntity);
+    }
+
+    @Transactional
     public void changePassword(Integer userNo, UserPasswordUpdateRequest request) {
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {

@@ -9,5 +9,7 @@ import java.util.List;
 @Mapper
 public interface OrderRepository {
 
+    Boolean existsOrdersByUserNo(@Param("userNo") Integer userNo);
+
     List<OrderEntity> selectRecentOrdersByUserNo(@Param("userNo") Integer userNo);
 }

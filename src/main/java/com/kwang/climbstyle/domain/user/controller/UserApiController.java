@@ -50,6 +50,18 @@ public class UserApiController {
         return ApiResponseBuilder.ok(UserSuccessCode.USER_REGISTER_SUCCESS);
     }
 
+    @PatchMapping(value = "/api/v1/users/{userNo}/dormancy", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> deactivateUser(@PathVariable Integer userNo) {
+        final Integer currentUserNo = SecurityUtil.getCurrentUserNo();
+        if (!Objects.equals(userNo, currentUserNo)) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        userService.deactivateUser(userNo);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_DELETE_SUCCESS);
+    }
+
     @PatchMapping(value = "/api/v1/users/password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> changePassword(@Valid @RequestBody UserPasswordUpdateRequest request) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
