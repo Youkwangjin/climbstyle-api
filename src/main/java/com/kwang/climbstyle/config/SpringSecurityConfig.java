@@ -50,13 +50,6 @@ public class SpringSecurityConfig {
         http
                 //.csrf(AbstractHttpConfigurer::disable);
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(
-                                "/logout",
-                                "/api/v1/users/id/availability",
-                                "/api/v1/users/email/availability",
-                                "/api/v1/users/nickname/availability",
-                                "/api/v1/users",
-                                "/api/v1/login")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 );
 
