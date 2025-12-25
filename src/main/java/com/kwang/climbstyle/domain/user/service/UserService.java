@@ -209,27 +209,29 @@ public class UserService {
 
     @Transactional
     public void updateUser(Integer userNo, UserUpdateRequest request) {
+        final String userNm = request.getUserNm();
+        final String userNickName = request.getUserNickName();
+        final String userIntro = request.getUserIntro();
+        final MultipartFile userProfileImg = request.getUserProfileImg();
+
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
 
         final String userDeleteYn = data.getUserDeleteYn();
+        final String curentUserNickName = data.getUserNickName();
         final String userDeleteStatus = UserDeleteStatus.INACTIVE.getCode();
         if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
             throw new ClimbStyleException(UserErrorCode.USER_INACTIVE_FORBIDDEN);
         }
 
-        final String userNm = request.getUserNm();
-        final String userNickName = request.getUserNickName();
-        Boolean existNickName = userRepository.existUserNickName(userNickName);
-        if (existNickName) {
-            throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
+        if (!StringUtils.equals(userNickName, curentUserNickName)) {
+            Boolean existNickName = userRepository.existUserNickName(userNickName);
+            if (existNickName) {
+                throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
+            }
         }
-
-        final String userIntro = request.getUserIntro();
-        final MultipartFile userProfileImg = request.getUserProfileImg();
-        final LocalDateTime userUpdated = LocalDateTime.now();
 
         String userImageUrl = data.getUserImageUrl();
         if (userProfileImg != null && !userProfileImg.isEmpty()) {
@@ -240,6 +242,7 @@ public class UserService {
                 fileService.fileDelete(oldUserImageUrl);
             }
         }
+        final LocalDateTime userUpdated = LocalDateTime.now();
 
         UserEntity user = UserEntity.builder()
                 .userNo(userNo)
