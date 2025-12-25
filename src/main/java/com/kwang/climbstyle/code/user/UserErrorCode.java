@@ -10,8 +10,11 @@ import org.springframework.http.HttpStatus;
 public enum UserErrorCode implements ApiCode {
     USER_ID_INVALID_FORMAT(HttpStatus.BAD_REQUEST,          "4001", "잘못된 아이디 형식입니다."),
     USER_PASSWORD_INVALID_FORMAT(HttpStatus.BAD_REQUEST,    "4002", "잘못된 비밀번호 형식입니다."),
-    USER_EMAIL_INVALID_FORMAT(HttpStatus.BAD_REQUEST,       "4003", "잘못된 이메일 형식입니다."),
-    USER_NICKNAME_INVALID_FORMAT(HttpStatus.BAD_REQUEST,    "4004", "잘못된 닉네임 형식입니다."),
+    USER_NAME_INVALID_FORMAT(HttpStatus.BAD_REQUEST,        "4003", "잘못된 이름 형식입니다."),
+    USER_EMAIL_INVALID_FORMAT(HttpStatus.BAD_REQUEST,       "4004", "잘못된 이메일 형식입니다."),
+    USER_NICKNAME_INVALID_FORMAT(HttpStatus.BAD_REQUEST,    "4005", "잘못된 닉네임 형식입니다."),
+    USER_PROFILE_INVALID_FORMAT(HttpStatus.BAD_REQUEST,     "4006", "잘못된 프로필 형식입니다."),
+    USER_INTRO_INVALID_FORMAT(HttpStatus.BAD_REQUEST,       "4007", "잘못된 소개글 형식입니다."),
 
     USER_DEFAULT_ERROR(HttpStatus.BAD_REQUEST,              "4005", "입력값 형식이 잘못되었습니다."),
     USER_ALREADY_INACTIVE(HttpStatus.BAD_REQUEST,           "4006", "이미 비활성화 처리된 사용자 입니다."),

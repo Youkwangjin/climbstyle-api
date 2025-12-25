@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>ClimbStyle</title>
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/auth/auth.css}">
@@ -24,7 +26,7 @@
                     <input id="userId"
                            type="text"
                            placeholder="아이디를 입력하세요"
-                           required value="kwangjin456"/>
+                           required />
                 </div>
 
                 <div class="field">
@@ -32,7 +34,7 @@
                     <input id="userPassword"
                            type="password"
                            placeholder="비밀번호를 입력하세요"
-                           required value="1234"/>
+                           required />
                 </div>
 
                 <div class="field field-row">
@@ -49,28 +51,20 @@
     </div>
 </main>
 <div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
 <script>
     function login() {
-        const userId = document.getElementById("userId").value.trim();
-        const userPassword = document.getElementById("userPassword").value.trim();
-
-        if (!userId && !userPassword) {
-            alert("아이디와 비밀번호를 입력한 후 진행해 주세요.");
+        if (!Validator.login()) {
             return;
         }
 
-        fetch("/api/v1/login", {
+        API.callJson("/api/v1/login", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
-            body: JSON.stringify(
-                {
-                    userId: userId,
-                    userPassword: userPassword
-                }
-            )
+            body: JSON.stringify({
+                userId: document.getElementById("userId").value.trim(),
+                userPassword: document.getElementById("userPassword").value.trim()
+            })
         })
             .then(async response => {
                 const body = await response.json();

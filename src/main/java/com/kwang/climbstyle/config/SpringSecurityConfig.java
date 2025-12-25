@@ -50,6 +50,9 @@ public class SpringSecurityConfig {
         http
                 //.csrf(AbstractHttpConfigurer::disable);
                 .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(
+                                "/logout"
+                        )
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 );
 
