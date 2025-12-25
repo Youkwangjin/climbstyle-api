@@ -17,7 +17,6 @@
             <div class="my-user-summary">
                 <div class="my-user-avatar">
                     <img th:if="${profile.userImgUrl != null}" th:src="${profile.userImgUrl}" alt="프로필 이미지">
-                    <span>U</span>
                 </div>
                 <div class="my-user-meta">
                     <div class="my-user-name" th:text="${profile.userNickName}"></div>
@@ -128,5 +127,6 @@
 <footer>
     <div th:replace="~{fragments/common/footer :: footer}"></div>
 </footer>
+<script th:src="@{/js/common/logout.js}"></script>
 </body>
 </html>

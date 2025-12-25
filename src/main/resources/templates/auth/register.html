@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>회원가입 | ClimbStyle</title>
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/auth/auth.css}">
@@ -104,12 +106,11 @@
     </div>
 </main>
 <div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
 <script>
     function idCheck() {
-        const userId = document.getElementById("userId").value.trim();
-
-        if (!userId) {
-            alert("아이디를 입력한 후 중복 확인을 진행해 주세요.");
+        if (!Validator.checkField("userId", "아이디")) {
             return;
         }
 
@@ -117,29 +118,23 @@
             return;
         }
 
-        fetch("/api/v1/users/id/availability", {
+        API.callJson("/api/v1/users/id/availability", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
-            body: JSON.stringify({userId: userId})
+            body: JSON.stringify({
+                userId: document.getElementById("userId").value.trim()
+            })
         })
             .then(async response => {
                 const body = await response.json();
-
                 alert(body.message);
             })
             .catch(() => {
-                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
-            })
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
     }
 
     function emailCheck() {
-        const userEmail = document.getElementById("userEmail").value.trim();
-
-        if (!userEmail) {
-            alert("이메일을 입력한 후 중복 확인을 진행해 주세요.");
+        if (!Validator.checkField("userEmail", "이메일")) {
             return;
         }
 
@@ -147,29 +142,23 @@
             return;
         }
 
-        fetch("/api/v1/users/email/availability", {
+        API.callJson("/api/v1/users/email/availability", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
-            body: JSON.stringify({userEmail: userEmail})
+            body: JSON.stringify({
+                userEmail: document.getElementById("userEmail").value.trim()
+            })
         })
             .then(async response => {
                 const body = await response.json();
-
                 alert(body.message);
             })
             .catch(() => {
-                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
-            })
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
     }
 
     function nickNameCheck() {
-        const userNickName = document.getElementById("userNickName").value.trim();
-
-        if (!userNickName) {
-            alert("닉네임을 입력한 후 중복 확인을 진행해 주세요.");
+        if (!Validator.checkField("userNickName", "닉네임")) {
             return;
         }
 
@@ -177,58 +166,23 @@
             return;
         }
 
-        fetch("/api/v1/users/nickname/availability", {
+        API.callJson("/api/v1/users/nickname/availability", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
-            body: JSON.stringify({userNickName: userNickName})
+            body: JSON.stringify({
+                userNickName: document.getElementById("userNickName").value.trim()
+            })
         })
             .then(async response => {
                 const body = await response.json();
-
                 alert(body.message);
             })
             .catch(() => {
-                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
-            })
-
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
     }
 
     function register() {
-        const userId = document.getElementById("userId").value.trim();
-
-        if (!userId) {
-            alert("아이디를 입력한 후 중복 확인을 진행해 주세요.");
-            return;
-        }
-
-        const userPassword = document.getElementById("userPassword").value.trim();
-
-        if (!userPassword) {
-            alert("비밀번호를 입력한 후 진행해 주세요.");
-            return;
-        }
-
-        const userNm = document.getElementById("userNm").value.trim();
-
-        if (!userNm) {
-            alert("이름을 입력한 후 진행해 주세요.");
-            return;
-        }
-
-        const userEmail = document.getElementById("userEmail").value.trim();
-
-        if (!userEmail) {
-            alert("이메일을 입력한 후 중복 확인을 진행해 주세요.");
-            return;
-        }
-
-        const userNickName = document.getElementById("userNickName").value.trim();
-
-        if (!userNickName) {
-            alert("닉네임을 입력한 후 중복 확인을 진행해 주세요.");
+        if (!Validator.register()) {
             return;
         }
 
@@ -236,24 +190,19 @@
             return;
         }
 
-        fetch("/api/v1/users", {
+        API.callJson("/api/v1/users", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
-            body: JSON.stringify(
-                {
-                    userId: userId,
-                    userPassword: userPassword,
-                    userNm: userNm,
-                    userEmail: userEmail,
-                    userNickName: userNickName
-                }
-            )
+            body: JSON.stringify({
+                userId: document.getElementById("userId").value.trim(),
+                userPassword: document.getElementById("userPassword").value.trim(),
+                userNm: document.getElementById("userNm").value.trim(),
+                userEmail: document.getElementById("userEmail").value.trim(),
+                userNickName: document.getElementById("userNickName").value.trim()
+            })
         })
             .then(async response => {
                 const body = await response.json();
+
                 if (!response.ok) {
                     alert(body.message);
                     return;
@@ -263,8 +212,8 @@
                 window.location.href = "/auth/login";
             })
             .catch(() => {
-                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
-            })
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
     }
 </script>
 </body>

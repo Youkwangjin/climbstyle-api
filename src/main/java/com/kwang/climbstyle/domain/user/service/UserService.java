@@ -1,7 +1,9 @@
 package com.kwang.climbstyle.domain.user.service;
 
+import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.user.UserDeleteStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
+import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
 import com.kwang.climbstyle.domain.order.entity.OrderEntity;
 import com.kwang.climbstyle.domain.order.repository.OrderRepository;
@@ -11,9 +13,11 @@ import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +25,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private final FileService fileService;
 
     private final UserRepository userRepository;
 
@@ -139,7 +145,45 @@ public class UserService {
     }
 
     @Transactional
-    public void changePassword(UserPasswordUpdateRequest request, Integer userNo) {
+    public void deactivateUser(Integer userNo) {
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String userDeleteYn = data.getUserDeleteYn();
+        final LocalDateTime currentUserDeleted = data.getUserDeleted();
+        final LocalDateTime userDeleted = LocalDateTime.now();
+        final LocalDateTime now = LocalDateTime.now();
+        final String userDeleteStatus = UserDeleteStatus.INACTIVE.getCode();
+
+        if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
+            throw new ClimbStyleException(UserErrorCode.USER_ALREADY_INACTIVE);
+        }
+
+        if (currentUserDeleted != null) {
+            LocalDateTime availableAt = currentUserDeleted.plusDays(3);
+            if (now.isBefore(availableAt)) {
+                throw new ClimbStyleException(UserErrorCode.USER_DORMANCY_COOLDOWN);
+            }
+        }
+
+        Boolean existOrderData = orderRepository.existsOrdersByUserNo(userNo);
+        if (existOrderData) {
+            throw new ClimbStyleException(UserErrorCode.USER_ORDER_EXISTS);
+        }
+
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userDeleteYn(UserDeleteStatus.INACTIVE.getCode())
+                .userDeleted(userDeleted)
+                .build();
+
+        userRepository.deactivateUser(userEntity);
+    }
+
+    @Transactional
+    public void changePassword(Integer userNo, UserPasswordUpdateRequest request) {
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
@@ -161,5 +205,54 @@ public class UserService {
                 .build();
 
         userRepository.updatePassword(userEntity);
+    }
+
+    @Transactional
+    public void updateUser(Integer userNo, UserUpdateRequest request) {
+        final String userNm = request.getUserNm();
+        final String userNickName = request.getUserNickName();
+        final String userIntro = request.getUserIntro();
+        final MultipartFile userProfileImg = request.getUserProfileImg();
+
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String userDeleteYn = data.getUserDeleteYn();
+        final String curentUserNickName = data.getUserNickName();
+        final String userDeleteStatus = UserDeleteStatus.INACTIVE.getCode();
+        if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
+            throw new ClimbStyleException(UserErrorCode.USER_INACTIVE_FORBIDDEN);
+        }
+
+        if (!StringUtils.equals(userNickName, curentUserNickName)) {
+            Boolean existNickName = userRepository.existUserNickName(userNickName);
+            if (existNickName) {
+                throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
+            }
+        }
+
+        String userImageUrl = data.getUserImageUrl();
+        if (userProfileImg != null && !userProfileImg.isEmpty()) {
+            String oldUserImageUrl = data.getUserImageUrl();
+            userImageUrl = fileService.fileUpload(userProfileImg, FileTypeCode.USER_PROFILE);
+
+            if (oldUserImageUrl != null) {
+                fileService.fileDelete(oldUserImageUrl);
+            }
+        }
+        final LocalDateTime userUpdated = LocalDateTime.now();
+
+        UserEntity user = UserEntity.builder()
+                .userNo(userNo)
+                .userNm(userNm)
+                .userNickName(userNickName)
+                .userImageUrl(userImageUrl)
+                .userIntro(userIntro)
+                .userUpdated(userUpdated)
+                .build();
+
+        userRepository.update(user);
     }
 }

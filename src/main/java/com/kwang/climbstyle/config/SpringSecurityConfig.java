@@ -48,14 +48,11 @@ public class SpringSecurityConfig {
             throws Exception {
 
         http
+                //.csrf(AbstractHttpConfigurer::disable);
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(
-                                "/logout",
-                                "/api/v1/users/id/availability",
-                                "/api/v1/users/email/availability",
-                                "/api/v1/users/nickname/availability",
-                                "/api/v1/users",
-                                "/api/v1/login")
+                                "/logout"
+                        )
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 );
 
@@ -85,6 +82,7 @@ public class SpringSecurityConfig {
                                                   "/js/**").permitAll()
 
                                 .requestMatchers("/",
+                                                  "/error",
                                                   "/logout",
                                                   "/auth/login",
                                                   "/auth/register").permitAll()
@@ -96,9 +94,9 @@ public class SpringSecurityConfig {
                                                  "/api/v1/users/nickname/availability",
                                                  "/api/v1/login").permitAll()
 
-                                .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
 
-                                .requestMatchers(HttpMethod.PATCH, "/api/v1/users/password").hasAuthority("ROLE_USER")
+                                .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_USER")
 
                 .anyRequest().permitAll()
                 );

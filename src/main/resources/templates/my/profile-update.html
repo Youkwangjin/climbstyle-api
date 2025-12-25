@@ -19,7 +19,6 @@
             <div class="my-user-summary">
                 <div class="my-user-avatar">
                     <img th:if="${profile.userImgUrl != null}" th:src="${profile.userImgUrl}" alt="프로필 이미지">
-                    <span>U</span>
                 </div>
                 <div class="my-user-meta">
                     <div class="my-user-name" th:text="${profile.userNickName}"></div>
@@ -47,6 +46,9 @@
             </div>
 
             <form class="my-form">
+                <label>
+                    <input hidden="hidden" id="userNo" th:value="${profile.userNo}"/>
+                </label>
                 <div class="my-grid">
                     <section class="my-card">
                         <div class="my-card-header">
@@ -89,13 +91,13 @@
                                 <span class="my-field-label">프로필 이미지</span>
                                 <div class="my-avatar-upload">
                                     <div class="my-avatar-preview">
-                                        <img th:if="${profile.userImgUrl != null}" th:src="${profile.userImgUrl}" alt="프로필 이미지">
-                                        <span>U</span>
+                                        <img th:if="${profile.userImgUrl != null}" th:src="${profile.userImgUrl}"
+                                             alt="프로필 이미지" class="preview-image">
                                     </div>
                                     <div class="my-avatar-upload-meta">
-                                        <label for="profileImage" class="btn btn-outline">이미지 업로드</label>
-                                        <input id="profileImage" name="profileImage"
-                                               type="file" accept="image/*" class="my-file-input" />
+                                        <button type="button" class="btn btn-outline" onclick="upload()">이미지 업로드</button>
+                                        <input id="userProfileImg" name="userProfileImg"
+                                               type="file" accept="image/*" style="display: none;" onchange="readURL(this)" />
                                         <p class="my-field-help">5MB 이하의 JPG, PNG 이미지를 업로드할 수 있어요.</p>
                                     </div>
                                 </div>
@@ -116,7 +118,7 @@
 
                 <div class="my-form-footer">
                     <a th:href="@{/my/profile/update}" class="btn">취소</a>
-                    <button type="submit" class="btn btn-primary">변경 내용 저장</button>
+                    <button type="button" class="btn btn-primary" onclick="update()">변경 내용 저장</button>
                 </div>
             </form>
 
@@ -150,6 +152,24 @@
                     <button type="button" class="btn btn-primary" onclick="updatePassword()">비밀번호 변경</button>
                 </div>
             </form>
+            <section class="my-card my-card-dormant" aria-label="계정 휴면">
+                <div class="my-card-header">
+                    <h3>계정 휴면</h3>
+                </div>
+                <div class="my-form-body">
+                    <div class="my-dormant-box">
+                        <p class="my-dormant-title">잠시 쉬고 싶다면 계정을 휴면 상태로 전환할 수 있어요.</p>
+                        <ul class="my-dormant-list">
+                            <li>휴면 처리 후에는 로그인이 제한돼요.</li>
+                            <li class="is-warn">휴면 상태가 30일 이상 지속되면 계정이 자동으로 탈퇴 처리됩니다.</li>
+                        </ul>
+                        <p class="my-dormant-help">휴면 처리는 계정 삭제가 아니며, 언제든지 다시 사용할 수 있어요.</p>
+                    </div>
+                </div>
+                <div class="my-form-footer my-dormant-footer" th:if="${profile.userDeleteYn == 'N'}">
+                    <button type="button" class="btn btn-danger-outline">계정 휴면 처리</button>
+                </div>
+            </section>
         </section>
     </div>
 </main>
@@ -157,50 +177,112 @@
     <div th:replace="~{fragments/common/footer :: footer}"></div>
 </footer>
 <script th:src="@{/js/common/logout.js}"></script>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
 <script>
-    function updatePassword() {
-        const token = document.querySelector('meta[name="_csrf"]').content;
-        const header = document.querySelector('meta[name="_csrf_header"]').content;
-
-        const userPassword = document.getElementById("currentPassword").value.trim();
-        const newUserPassword = document.getElementById("userPassword").value.trim();
-        const passwordConfirm = document.getElementById("newUserPassword").value.trim();
-
-        if (!userPassword && !newUserPassword) {
-            alert("현재 비밀번호와 새 비밀번호를 입력해주세요.");
+    function update () {
+        if (!Validator.profile() || !confirm("변경 사항을 저장하시겠습니까?")) {
             return;
         }
 
-        if (newUserPassword !== passwordConfirm) {
-            alert("새 비밀번호가 일치하지 않습니다.");
-            return;
+        const formData = new FormData();
+        formData.append("userNm", document.getElementById("userNm").value.trim());
+        formData.append("userNickName", document.getElementById("userNickName").value.trim());
+        formData.append("userIntro", document.getElementById("userIntro").value.trim());
+
+        const userProfileImg = document.getElementById("userProfileImg").files[0];
+        if (userProfileImg) {
+            formData.append("userProfileImg", userProfileImg);
         }
 
-        if (!confirm("비밀번호를 변경하시겠습니까?")) {
-            return;
-        }
-
-        fetch("/api/v1/users/password", {
+        API.callFormData(`/api/v1/users/${document.getElementById("userNo").value}`, {
             method: "PATCH",
-            headers: {
-                [header]: token,
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
+            body: formData
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
+                alert(body.message || "프로필이 수정되었습니다.");
+                location.href = "/my/profile";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+
+    }
+
+    function updatePassword() {
+        if (!Validator.password() || !confirm("비밀번호를 변경하시겠습니까?")) {
+            return;
+        }
+
+        API.callJson("/api/v1/users/password", {
+            method: "PATCH",
             body: JSON.stringify({
-                userPassword: userPassword,
-                newUserPassword: newUserPassword
+                userPassword: document.getElementById("currentPassword").value.trim(),
+                newUserPassword: document.getElementById("userPassword").value.trim()
             })
         })
             .then(async response => {
                 const body = await response.json();
 
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
                 alert(body.message);
+                Validator.clear(["currentPassword", "userPassword", "newUserPassword"]);
                 logout();
             })
             .catch(() => {
-                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
-            })
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+
+    function upload() {
+        document.getElementById("userProfileImg").click();
+    }
+
+    function readURL(input) {
+        if (!input.files || input.files.length === 0) {
+            alert("사진을 업로드 해주세요.");
+            return;
+        }
+
+        const file = input.files[0];
+        const allowedExts = ["jpg", "jpeg", "png", "gif"];
+        const fileName = file.name;
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (!allowedExts.includes(fileExtension)) {
+            alert("jpg, png, gif 이미지만 업로드 가능합니다.");
+            document.getElementById("userProfileImg").value = "";
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const result = e.target.result;
+            if (typeof result === 'string') {
+                const previewImg = document.querySelector(".my-avatar-preview .preview-image");
+                if (previewImg) {
+                    previewImg.src = result;
+                } else {
+                    const newImg = document.createElement("img");
+                    newImg.className = "preview-image";
+                    newImg.src = result;
+                    newImg.alt = "프로필 이미지";
+                    document.querySelector(".my-avatar-preview").appendChild(newImg);
+                }
+            }
+        };
+        reader.readAsDataURL(file);
     }
 </script>
 </body>

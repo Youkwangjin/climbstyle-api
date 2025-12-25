@@ -12,10 +12,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,14 +50,38 @@ public class UserApiController {
         return ApiResponseBuilder.ok(UserSuccessCode.USER_REGISTER_SUCCESS);
     }
 
+    @PatchMapping(value = "/api/v1/users/{userNo}/dormancy", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> deactivateUser(@PathVariable Integer userNo) {
+        final Integer currentUserNo = SecurityUtil.getCurrentUserNo();
+        if (!Objects.equals(userNo, currentUserNo)) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        userService.deactivateUser(userNo);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_DELETE_SUCCESS);
+    }
+
     @PatchMapping(value = "/api/v1/users/password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> changePassword(@Valid @RequestBody UserPasswordUpdateRequest request) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
         if (userNo == null) {
             throw new ClimbStyleException(HttpErrorCode.UNAUTHORIZED_ERROR);
         }
-        userService.changePassword(request, userNo);
+        userService.changePassword(userNo, request);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_PASSWORD_UPDATE_SUCCESS);
+    }
+
+    @PatchMapping(value = "/api/v1/users/{userNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> updateUser(@PathVariable Integer userNo, @Valid UserUpdateRequest request) {
+        final Integer currentUserNo = SecurityUtil.getCurrentUserNo();
+        if (!Objects.equals(userNo, currentUserNo)) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        userService.updateUser(userNo, request);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_UPDATE_SUCCESS);
     }
 }

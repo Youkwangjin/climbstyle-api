@@ -42,16 +42,30 @@ public class UserValidationException {
     }
 
     private static UserErrorCode getUserErrorCode(List<FieldError> fieldErrors) {
-        FieldError fieldError = fieldErrors.get(0);
+        String[] fieldPriority = {"userId",
+                                  "userPassword",
+                                  "userNm",
+                                  "userEmail",
+                                  "userNickName",
+                                  "userProfileImg",
+                                  "userIntro",};
 
-        String fieldName = fieldError.getField();
+        for (String priorityField : fieldPriority) {
+            for (FieldError fieldError : fieldErrors) {
+                if (fieldError.getField().equals(priorityField)) {
+                    String fieldName = fieldError.getField();
+                    switch (fieldName) {
+                        case "userId": return UserErrorCode.USER_ID_INVALID_FORMAT;
+                        case "userPassword": return UserErrorCode.USER_PASSWORD_INVALID_FORMAT;
+                        case "userNm": return UserErrorCode.USER_NAME_INVALID_FORMAT;
+                        case "userEmail": return UserErrorCode.USER_EMAIL_INVALID_FORMAT;
+                        case "userNickName": return UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
+                        case "userIntro": return UserErrorCode.USER_INTRO_INVALID_FORMAT;
+                    }
+                }
+            }
+        }
 
-        return switch (fieldName) {
-            case "userId" -> UserErrorCode.USER_ID_INVALID_FORMAT;
-            case "userPassword" -> UserErrorCode.USER_PASSWORD_INVALID_FORMAT;
-            case "userEmail" -> UserErrorCode.USER_EMAIL_INVALID_FORMAT;
-            case "userNickName" -> UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
-            default -> UserErrorCode.USER_DEFAULT_ERROR;
-        };
+        return UserErrorCode.USER_DEFAULT_ERROR;
     }
 }
