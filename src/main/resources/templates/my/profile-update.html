@@ -91,12 +91,13 @@
                                 <span class="my-field-label">프로필 이미지</span>
                                 <div class="my-avatar-upload">
                                     <div class="my-avatar-preview">
-                                        <img th:if="${profile.userImgUrl != null}" th:src="${profile.userImgUrl}" alt="프로필 이미지">
+                                        <img th:if="${profile.userImgUrl != null}" th:src="${profile.userImgUrl}"
+                                             alt="프로필 이미지" class="preview-image">
                                     </div>
                                     <div class="my-avatar-upload-meta">
-                                        <label for="userProfileImg" class="btn btn-outline">이미지 업로드</label>
+                                        <button type="button" class="btn btn-outline" onclick="upload()">이미지 업로드</button>
                                         <input id="userProfileImg" name="userProfileImg"
-                                               type="file" accept="image/*" class="my-file-input" />
+                                               type="file" accept="image/*" style="display: none;" onchange="readURL(this)" />
                                         <p class="my-field-help">5MB 이하의 JPG, PNG 이미지를 업로드할 수 있어요.</p>
                                     </div>
                                 </div>
@@ -244,37 +245,45 @@
             });
     }
 
-    document.getElementById("userProfileImg")?.addEventListener("change", function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+    function upload() {
+        document.getElementById("userProfileImg").click();
+    }
 
-        if (file.size > 5 * 1024 * 1024) {
-            alert("프로필 이미지는 5MB 이하만 업로드 가능합니다.");
-            e.target.value = "";
+    function readURL(input) {
+        if (!input.files || input.files.length === 0) {
+            alert("사진을 업로드 해주세요.");
+            return;
+        }
+
+        const file = input.files[0];
+        const allowedExts = ["jpg", "jpeg", "png", "gif"];
+        const fileName = file.name;
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (!allowedExts.includes(fileExtension)) {
+            alert("jpg, png, gif 이미지만 업로드 가능합니다.");
+            document.getElementById("userProfileImg").value = "";
             return;
         }
 
         const reader = new FileReader();
-        reader.onload = function (event) {
-            const result = event.target?.result;
-
-            if (typeof result !== "string") return;
-
-            const previewBox = document.querySelector(".my-avatar-preview");
-            const preview = previewBox?.querySelector("img");
-
-            if (preview) {
-                preview.src = result;
-            } else {
-                const newImg = document.createElement("img");
-                newImg.src = result;
-                newImg.alt = "프로필 이미지";
-                previewBox?.appendChild(newImg);
+        reader.onload = function(e) {
+            const result = e.target.result;
+            if (typeof result === 'string') {
+                const previewImg = document.querySelector(".my-avatar-preview .preview-image");
+                if (previewImg) {
+                    previewImg.src = result;
+                } else {
+                    const newImg = document.createElement("img");
+                    newImg.className = "preview-image";
+                    newImg.src = result;
+                    newImg.alt = "프로필 이미지";
+                    document.querySelector(".my-avatar-preview").appendChild(newImg);
+                }
             }
         };
-
         reader.readAsDataURL(file);
-    });
+    }
 </script>
 </body>
 </html>
