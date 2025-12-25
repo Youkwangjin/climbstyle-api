@@ -453,3 +453,71 @@
         align-items: flex-start;
     }
 }
+
+.my-card-dormant {
+    margin-top: 16px;
+}
+
+.my-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: #f9fafb;
+    color: var(--muted);
+}
+
+.my-badge-neutral {
+    border-color: #e5e7eb;
+    background: #f9fafb;
+    color: #374151;
+}
+
+.my-dormant-box {
+    border: 1px solid #fee2e2;
+    background: #fff7f7;
+    border-radius: 12px;
+    padding: 14px 14px;
+}
+
+.my-dormant-title {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.my-dormant-list {
+    margin: 0;
+    padding-left: 18px;
+    color: #374151;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.my-dormant-help {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.my-dormant-footer {
+    justify-content: flex-end;
+    margin-top: 14px;
+}
+
+.btn-danger-outline {
+    background: #fff;
+    border-color: #fecaca;
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+.btn-danger-outline:hover {
+    background: #fff1f2;
+    border-color: #fca5a5;
+}
