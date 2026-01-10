@@ -84,7 +84,7 @@ public class SpringSecurityConfig {
                                 .requestMatchers("/",
                                                   "/error",
                                                   "/logout",
-                                                  "/auth/login",
+                                                  "/auth/login","/feed",
                                                   "/auth/register").permitAll()
 
                                 .requestMatchers("/my/profile/**").hasAuthority("ROLE_USER")
