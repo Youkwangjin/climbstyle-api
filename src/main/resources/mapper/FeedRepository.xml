@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.feed.repository.FeedRepository">
+    <resultMap id="feedResultMap"               type="com.kwang.climbstyle.domain.feed.entity.FeedEntity">
+        <id property="feedNo"                   column="feed_no"/>
+        <result property="userNo"               column="user_no"/>
+        <result property="feedTitle"            column="feed_title"/>
+        <result property="feedContent"          column="feed_content"/>
+        <result property="feedVisibleYn"        column="feed_visible_yn"/>
+        <result property="feedCreated"          column="feed_created"/>
+        <result property="feedUpdated"          column="feed_updated"/>
+    </resultMap>
+    <select id="selectListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="Integer">
+        SELECT
+            COUNT(feed_no)
+        FROM
+            tb_feed
+        WHERE
+            feed_visible_yn = 'Y'
+    </select>
+
+    <select id="selectFeedList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultMap="feedResultMap">
+        SELECT
+            feed_no,
+            feed_title,
+            feed_created
+        FROM
+            tb_feed
+        WHERE
+            feed_visible_yn = 'Y'
+        ORDER BY
+            feed_created DESC
+        LIMIT #{startRowNum} OFFSET #{pageSize}
+    </select>
+</mapper>
