@@ -13,6 +13,7 @@ import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -236,7 +238,10 @@ public class UserService {
         String userImageUrl = data.getUserImageUrl();
         if (userProfileImg != null && !userProfileImg.isEmpty()) {
             String oldUserImageUrl = data.getUserImageUrl();
-            userImageUrl = fileService.fileUpload(userProfileImg, FileTypeCode.USER_PROFILE);
+            String extension = FilenameUtils.getExtension(userProfileImg.getOriginalFilename());
+            String storedFilename = String.format("%d_%s.%s", userNo, UUID.randomUUID().toString().replaceAll("-", ""),extension);
+
+            userImageUrl = fileService.fileUpload(userProfileImg, FileTypeCode.USER_PROFILE, storedFilename);
 
             if (oldUserImageUrl != null) {
                 fileService.fileDelete(oldUserImageUrl);
