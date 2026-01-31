@@ -12,4 +12,6 @@ public interface FeedRepository {
     Integer selectListCountByRequest(PaginationRequest request);
 
     List<FeedEntity> selectFeedList(PaginationRequest request);
+
+    void insert(FeedEntity feedEntity);
 }

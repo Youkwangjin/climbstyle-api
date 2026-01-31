@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class FileService {
 
     private final FileUtil fileUtil;
 
-    public String fileUpload(MultipartFile file, FileTypeCode fileTypeCode) {
+    public String fileUpload(MultipartFile file, FileTypeCode fileTypeCode, String storedFilename) {
         if (file.isEmpty()) {
             throw new ClimbStyleException(FileErrorCode.FILE_EMPTY);
         }
@@ -54,14 +55,19 @@ public class FileService {
             throw new ClimbStyleException(FileErrorCode.FILE_INVALID_TYPE);
         }
 
-        String fileName = String.format("%s.%s",
-                UUID.randomUUID().toString().replaceAll("-", ""),
-                extension);
-        String uploadPath = baseUploadPath + fileTypeCode.getSubPath();
+        String datePath = this.generateDatePath();
+        String subPath = fileTypeCode.getSubPath() + datePath + "/";
+
+        final String uploadPath = baseUploadPath + subPath;
+
+        File directory = new File(uploadPath);
+        if (!directory.exists() && !directory.mkdirs()) {
+            throw new ClimbStyleException(FileErrorCode.FILE_UPLOAD_ERROR);
+        }
 
         try {
             if (StringUtils.equals(profile, LOCAL)) {
-                fileUtil.upload(uploadPath, fileName, file);
+                fileUtil.upload(uploadPath, storedFilename, file);
 
             } else {
                 throw new ClimbStyleException(FileErrorCode.PROFILE_NOT_FOUND);
@@ -71,7 +77,7 @@ public class FileService {
             throw new ClimbStyleException(FileErrorCode.FILE_UPLOAD_ERROR);
         }
 
-        return baseAccessUrl + fileTypeCode.getSubPath() + fileName;
+        return baseAccessUrl + subPath + storedFilename;
     }
 
     public void fileDelete(String fileUrl) {
@@ -83,15 +89,23 @@ public class FileService {
             try {
                 String relativePath = fileUrl.replace(baseAccessUrl, "");
                 int lastSlashIndex = relativePath.lastIndexOf("/");
-                String fileName = relativePath.substring(lastSlashIndex + 1);
+                String storedFilename = relativePath.substring(lastSlashIndex + 1);
                 String subPath = relativePath.substring(0, lastSlashIndex + 1);
                 String directory = baseUploadPath + subPath;
-                fileUtil.delete(directory, fileName);
+                fileUtil.delete(directory, storedFilename);
 
             } catch (ClimbStyleException ignored) {}
 
         } else {
             throw new ClimbStyleException(FileErrorCode.PROFILE_NOT_FOUND);
         }
+    }
+
+    private String generateDatePath() {
+        final LocalDateTime now = LocalDateTime.now();
+        return String.format("%d/%02d/%02d",
+                now.getYear(),
+                now.getMonthValue(),
+                now.getDayOfMonth());
     }
 }

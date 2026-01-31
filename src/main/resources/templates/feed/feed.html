@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClimbStyle | 피드</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/feed/feed.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header:: header}"></div>
+</header>
+<section class="section" id="feed">
+    <div class="container">
+        <div class="head">
+            <div>
+                <h2>클라이밍 패션 피드</h2>
+                <p class="sub">오늘의 착장, 암장 무드, 해시태그로 기록하고 공유해요.</p>
+            </div>
+            <div class="feed-head-actions">
+                <a class="btn btn-primary" th:href="@{/feed/new}">피드 올리기</a>
+            </div>
+        </div>
+        <div class="feed-grid" aria-label="피드 목록">
+            <div th:if="${#lists.isEmpty(feedList)}" class="empty-state">
+                <p>아직 등록된 피드가 없습니다.</p>
+            </div>
+            <article class="f-card" th:each="feed : ${feedList}">
+                <a class="f-media" th:href="@{/feed/{feedNo}(feedNo=${feed.feedNo})}"
+                   aria-label="피드 상세보기">
+                    <img loading="lazy" th:src="${feed.thumbnailUrl != null ? feed.thumbnailUrl : '/img/main1.png'}"
+                         alt="클라이밍 패션 사진" />
+                </a>
+                <div class="f-body">
+                    <div class="f-top">
+                        <div class="f-user">
+                            <span class="f-avatar" aria-hidden="true"></span>
+                            <div class="f-user-meta">
+                                <div class="f-name" th:text="${feed.userName ?: '익명'}"></div>
+                                <div class="f-time" th:text="${#temporals.format(feed.feedCreated, 'yyyy-MM-dd HH:mm')}"></div>
+                            </div>
+                        </div>
+
+                        <button class="f-more" type="button" aria-label="더보기">⋯</button>
+                    </div>
+                    <p class="f-caption" th:text="${feed.feedTitle}"></p>
+                    <div class="f-actions">
+                        <button class="f-btn" type="button" aria-label="좋아요">
+                        </button>
+                        <button class="f-btn" type="button" aria-label="댓글">
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <nav class="pagination" aria-label="피드 페이지 이동" th:if="${!#lists.isEmpty(feedList) && request.totalCount > 0}">
+            <div class="pagination-inner">
+                <a th:if="${request.startPageNo > 1}"
+                   th:href="@{/feed(pageNo=${request.firstPageNo})}"
+                   class="page-btn"
+                   aria-label="첫 페이지">«</a>
+
+                <a th:if="${request.pageNo > request.startPageNo}"
+                   th:href="@{/feed(pageNo=${request.prevPageNo})}"
+                   class="page-btn"
+                   aria-label="이전 페이지">‹</a>
+
+                <div class="page-list" aria-label="페이지 번호">
+                    <th:block th:each="pageNum : ${#numbers.sequence(request.startPageNo, request.endPageNo)}">
+                        <a th:href="@{/feed(pageNo=${pageNum})}"
+                           class="page-num"
+                           th:classappend="${pageNum == request.pageNo} ? 'is-active' : ''"
+                           th:attr="aria-current=${pageNum == request.pageNo} ? 'page' : null"
+                           th:text="${pageNum}">1</a>
+                    </th:block>
+                </div>
+
+                <a th:if="${request.pageNo < request.endPageNo}"
+                   th:href="@{/feed(pageNo=${request.nextPageNo})}"
+                   class="page-btn"
+                   aria-label="다음 페이지">›</a>
+
+                <a th:if="${request.endPageNo < request.finalPageNo}"
+                   th:href="@{/feed(pageNo=${request.finalPageNo})}"
+                   class="page-btn"
+                   aria-label="마지막 페이지">»</a>
+            </div>
+        </nav>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/logout.js}"></script>
+</body>
+</html>

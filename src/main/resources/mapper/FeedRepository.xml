@@ -12,6 +12,7 @@
         <result property="feedCreated"          column="feed_created"/>
         <result property="feedUpdated"          column="feed_updated"/>
     </resultMap>
+
     <select id="selectListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
             resultType="Integer">
         SELECT
@@ -36,4 +37,21 @@
             feed_created DESC
         LIMIT #{startRowNum} OFFSET #{pageSize}
     </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedEntity" useGeneratedKeys="true"
+            keyProperty="feedNo">
+        INSERT INTO tb_feed (
+            user_no,
+            feed_title,
+            feed_content,
+            feed_visible_yn,
+            feed_created
+        ) VALUES (
+            #{userNo},
+            #{feedTitle},
+            #{feedContent},
+            #{feedVisibleYn},
+            #{feedCreated}
+        )
+    </insert>
 </mapper>
