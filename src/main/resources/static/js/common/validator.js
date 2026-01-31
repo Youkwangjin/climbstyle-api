@@ -60,7 +60,6 @@ const Validator = {
             return true;
         },
 
-        // 닉네임 형식 검증 (한글, 영문, 숫자, 2~20자)
         nickname(value, fieldName) {
             const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,20}$/;
             if (!nicknameRegex.test(value)) {
@@ -188,6 +187,45 @@ const Validator = {
         if (!this.rules.required(newPassword, "새 비밀번호")) return false;
         if (!this.rules.password(newPassword, "새 비밀번호")) return false;
         return this.rules.match(newPassword, confirmPassword, "새 비밀번호");
+    },
+
+    feed() {
+        const feedTitle = document.getElementById("feedTitle").value.trim();
+        const feedVisibleYn = document.getElementById("feedVisibleYn").value.trim();
+
+        if (!this.rules.required(feedTitle, "제목")) return false;
+        if (!this.rules.minLength(feedTitle, "제목", 2)) return false;
+        if (!this.rules.maxLength(feedTitle, "제목", 50)) return false;
+        if (!feedVisibleYn) {
+            alert("공개 설정을 선택해주세요.");
+            feedVisibleYn.focus();
+            return false;
+        }
+
+        if (typeof FeedImageUploader === "undefined") {
+            alert("이미지 업로더를 찾을 수 없습니다.");
+            return false;
+        }
+
+        const images = FeedImageUploader.getFiles();
+        if (images.length === 0) {
+            alert("이미지를 최소 1장 이상 선택해주세요.");
+            return false;
+        }
+
+        for (let i = 0; i < images.length; i++) {
+            const file = images[i];
+
+            if (!this.rules.fileSize(file, "이미지", 5 * 1024 * 1024)) {
+                return false;
+            }
+
+            if (!this.rules.fileExtension(file, "이미지", ["jpg", "jpeg", "png"])) {
+                return false;
+            }
+        }
+
+        return true;
     },
 
     checkField(fieldId, fieldName) {

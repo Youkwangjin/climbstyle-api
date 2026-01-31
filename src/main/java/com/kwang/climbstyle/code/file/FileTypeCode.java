@@ -15,6 +15,13 @@ public enum FileTypeCode {
             "프로필 이미지"
     ),
 
+    FEED_IMAGE(
+            "feed/",
+            new String[]{"jpg", "jpeg", "png"},
+            5 * 1024 * 1024,
+            "피드 이미지"
+    ),
+
     EDITOR_IMAGE(
             "editor/",
             new String[]{"jpg", "jpeg", "png", "gif"},

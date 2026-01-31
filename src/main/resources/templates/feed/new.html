@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>ClimbStyle | 피드 업로드</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/feed/feed-new.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header:: header}"></div>
+</header>
+
+<section class="section" id="feed-insert">
+    <div class="container">
+        <div class="head">
+            <div>
+                <h2>피드 올리기</h2>
+                <p class="sub">최대 10장의 사진과 캡션을 작성하면 피드에 등록돼요.</p>
+            </div>
+            <div class="insert-actions">
+                <a class="btn" th:href="@{/feed}">목록으로</a>
+            </div>
+        </div>
+
+        <form class="insert-card" id="feedForm">
+            <div class="u-drop" id="feedDrop" tabindex="0" role="button" aria-label="사진 업로드 영역">
+                <input class="u-file"
+                       id="feedFile"
+                       name="file"
+                       type="file"
+                       accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                       multiple />
+
+                <div class="u-drop-inner" id="dropInner">
+                    <div class="u-txt">
+                        <div class="u-title">사진을 드래그해서 올리거나 클릭해서 선택</div>
+                        <div class="u-sub">JPG/PNG · 최대 5MB · 최대 10장</div>
+                    </div>
+                    <button class="btn btn-primary u-btn" type="button" id="pickBtn">
+                        사진 선택
+                    </button>
+                </div>
+
+                <div class="u-preview" id="feedPreview" hidden>
+                    <img alt="" src=""/>
+
+                    <button class="btn btn-primary u-add"
+                            type="button"
+                            id="addMoreBtn">
+                        사진 추가
+                    </button>
+
+                    <div class="u-thumb-list" id="thumbList"></div>
+
+                    <button class="u-remove"
+                            type="button"
+                            id="removeAllBtn"
+                            aria-label="전체 삭제">
+                        전체 삭제
+                    </button>
+                </div>
+            </div>
+
+            <div class="u-fields">
+                <label class="u-label">
+                    <span>제목</span>
+                    <input class="u-input"
+                           id="feedTitle"
+                           placeholder="예) 오늘의 볼더링 룩 / 겨울 암장 코디"
+                           maxlength="50"
+                           required />
+                    <small class="u-help">50자 이내로 작성해주세요.</small>
+                </label>
+
+                <label class="u-label">
+                    <span>내용</span>
+                    <textarea class="u-textarea"
+                              id="feedContent"
+                              rows="5"
+                              placeholder="오늘의 착장 포인트 / 암장 / 무드 등을 짧게 적어주세요."></textarea>
+                </label>
+
+                <div class="u-row">
+                    <label class="u-label u-inline">
+                        <span>공개 설정</span>
+                        <select class="u-select" id="feedVisibleYn">
+                            <option value="Y">전체 공개</option>
+                            <option value="N">비공개</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="u-submit-row">
+                    <button class="btn" type="reset" id="resetBtn">초기화</button>
+                    <button class="btn btn-primary" type="button" onclick="register()">등록하기</button>
+                </div>
+
+                <div class="u-note">
+                    <div class="u-note-title">업로드 팁</div>
+                    <ul class="u-note-list">
+                        <li>최대 10장까지 업로드 가능합니다.</li>
+                        <li>조명이 강한 암장에서는 노출이 날아갈 수 있으니 밝기 조절 추천해요.</li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/logout.js}"></script>
+<script th:src="@{/js/feed/feed-upload.js}"></script>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
+<script>
+    function register() {
+        if (!Validator.feed() || !confirm("피드 내용을 저장하시겠습니까?")) {
+            return;
+        }
+
+        const files = FeedImageUploader.getFiles();
+        const formData = new FormData();
+
+        for (let i = 0; i < files.length; i++) {
+            formData.append("feedImages", files[i]);
+        }
+
+        formData.append("feedTitle", document.getElementById("feedTitle").value.trim());
+        formData.append("feedContent", document.getElementById("feedContent").value.trim());
+        formData.append("feedVisibleYn", document.getElementById("feedVisibleYn").value.trim());
+
+        API.callFormData("/api/v1/feeds", {
+            method: "POST",
+            body: formData
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
+                alert(body.message);
+                location.href = "/feed";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.feed.repository.FeedFileRepository">
+    <resultMap id="feedFileResultMap"               type="com.kwang.climbstyle.domain.feed.entity.FeedFileEntity">
+        <id property="feedFileNo"                   column="feed_file_no"/>
+        <result property="feedNo"                   column="feed_no"/>
+        <result property="feedFileOriginalName"     column="feed_file_original_name"/>
+        <result property="feedFileStoredName"       column="feed_file_stored_name"/>
+        <result property="feedFilePath"             column="feed_file_path"/>
+        <result property="feedFileExtnsNm"          column="feed_file_extns_nm"/>
+        <result property="feedFileSize"             column="feed_file_size"/>
+        <result property="feedFileSortOrder"        column="feed_file_sort_order"/>
+        <result property="feedFileCreated"          column="feed_file_created"/>
+        <result property="feedFileUpdated"          column="feed_file_updated"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedFileEntity" useGeneratedKeys="true"
+            keyProperty="feedFileNo">
+        INSERT INTO tb_feed_file (
+            feed_no,
+            feed_file_original_name,
+            feed_file_stored_name,
+            feed_file_path,
+            feed_file_extns_nm,
+            feed_file_size,
+            feed_file_sort_order,
+            feed_file_created
+        ) VALUES (
+            #{feedNo},
+            #{feedFileOriginalName},
+            #{feedFileStoredName},
+            #{feedFilePath},
+            #{feedFileExtnsNm},
+            #{feedFileSize},
+            #{feedFileSortOrder},
+            #{feedFileCreated}
+        )
+    </insert>
+</mapper>
