@@ -1,6 +1,7 @@
 package com.kwang.climbstyle.domain.feed.service;
 
 import com.kwang.climbstyle.code.file.FileTypeCode;
+import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
@@ -10,6 +11,7 @@ import com.kwang.climbstyle.domain.feed.entity.FeedFileEntity;
 import com.kwang.climbstyle.domain.feed.repository.FeedFileRepository;
 import com.kwang.climbstyle.domain.feed.repository.FeedRepository;
 import com.kwang.climbstyle.domain.file.service.FileService;
+import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
@@ -32,18 +34,49 @@ public class FeedService {
     private final FileService fileService;
 
     public List<FeedListResponse> getFeedList(CommonListRequest request) {
-        request.setTotalCount(feedRepository.selectListCountByRequest(request));
+        request.setTotalCount(feedRepository.selectFeedListCountByRequest(request));
         List<FeedEntity> list = feedRepository.selectFeedList(request);
 
         return list.stream()
                 .map(feedList -> {
+                    final String userImageUrl = feedList.getUser().getUserImageUrl();
+                    final String userNickName = feedList.getUser().getUserNickName();
                     final Integer feedNo = feedList.getFeedNo();
                     final String feedTitle = feedList.getFeedTitle();
+                    final String feedFilePath = feedList.getFeedFiles().get(0).getFeedFilePath();
                     final LocalDateTime feedCreated = feedList.getFeedCreated();
 
                     return FeedListResponse.builder()
+                            .userImageUrl(userImageUrl)
+                            .userNickName(userNickName)
                             .feedNo(feedNo)
                             .feedTitle(feedTitle)
+                            .feedFilePath(feedFilePath)
+                            .feedCreated(feedCreated)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<FeedListResponse> getMyFeedList(CommonListRequest request, Integer userNo) {
+        request.setTotalCount(feedRepository.selectMyFeedListCountByRequest(request, userNo));
+        List<FeedEntity> list = feedRepository.selectMyFeedList(request, userNo);
+
+        return list.stream()
+                .map(feedList -> {
+                    final String userImageUrl = feedList.getUser().getUserImageUrl();
+                    final String userNickName = feedList.getUser().getUserNickName();
+                    final Integer feedNo = feedList.getFeedNo();
+                    final String feedTitle = feedList.getFeedTitle();
+                    final String feedFilePath = feedList.getFeedFiles().get(0).getFeedFilePath();
+                    final LocalDateTime feedCreated = feedList.getFeedCreated();
+
+                    return FeedListResponse.builder()
+                            .userImageUrl(userImageUrl)
+                            .userNickName(userNickName)
+                            .feedNo(feedNo)
+                            .feedTitle(feedTitle)
+                            .feedFilePath(feedFilePath)
                             .feedCreated(feedCreated)
                             .build();
                 })
