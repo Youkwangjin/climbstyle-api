@@ -9,11 +9,15 @@ import java.time.LocalDateTime;
 @Builder
 public class FeedListResponse {
 
+    private String userImageUrl;
+
+    private String userNickName;
+
     private Integer feedNo;
 
     private String feedTitle;
 
-    private String userNm;
+    private String feedFilePath;
 
     private Integer feedLikeCount;
 

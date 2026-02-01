@@ -16,7 +16,6 @@ public class UserValidationException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
         if (fieldErrors.isEmpty()) {
             UserErrorCode defaultCode = UserErrorCode.USER_DEFAULT_ERROR;

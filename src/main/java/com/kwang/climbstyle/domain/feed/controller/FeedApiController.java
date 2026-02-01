@@ -19,7 +19,6 @@ public class FeedApiController {
 
     @PostMapping(value = "/api/v1/feeds")
     public ResponseEntity<ApiSuccessResponse<Object>> createFeed(@Valid FeedCreateRequest request) {
-
         feedService.createFeed(request);
 
         return ApiResponseBuilder.ok(FeedSuccessCode.FEED_CREATE_SUCCESS);

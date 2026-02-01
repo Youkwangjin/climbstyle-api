@@ -27,4 +27,16 @@ public class CommonListRequest extends PaginationRequest {
     public void setTotalCount(int totalCount) {
         super.setTotalCount(totalCount);
     }
+
+    public int getPageNoAsInt() {
+        if (pageNo == null || pageNo.trim().isEmpty()) {
+            return 1;
+        }
+        try {
+            int num = Integer.parseInt(pageNo.trim());
+            return num > 0 ? num : 1;
+        } catch (NumberFormatException e) {
+            return 1;
+        }
+    }
 }

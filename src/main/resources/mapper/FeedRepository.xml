@@ -11,9 +11,15 @@
         <result property="feedVisibleYn"        column="feed_visible_yn"/>
         <result property="feedCreated"          column="feed_created"/>
         <result property="feedUpdated"          column="feed_updated"/>
+        <association property="user"            javaType="com.kwang.climbstyle.domain.user.entity.UserEntity"
+                     resultMap="com.kwang.climbstyle.domain.user.repository.UserRepository.userResultMap"/>
+        <collection property="feedFiles"        javaType="java.util.List"
+                    resultMap="com.kwang.climbstyle.domain.feed.repository.FeedFileRepository.feedFileResultMap"/>
+        <collection property="feedLikes"        javaType="java.util.List"
+                    resultMap="com.kwang.climbstyle.domain.feed.repository.FeedLikeRepository.feedLikeResultMap"/>
     </resultMap>
 
-    <select id="selectListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+    <select id="selectFeedListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
             resultType="Integer">
         SELECT
             COUNT(feed_no)
@@ -23,19 +29,72 @@
             feed_visible_yn = 'Y'
     </select>
 
-    <select id="selectFeedList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
-            resultMap="feedResultMap">
+    <select id="selectMyFeedListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="Integer">
         SELECT
-            feed_no,
-            feed_title,
-            feed_created
+            COUNT(feed_no)
         FROM
             tb_feed
         WHERE
             feed_visible_yn = 'Y'
+        AND
+            user_no = #{userNo}
+    </select>
+
+    <select id="selectFeedList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultMap="feedResultMap">
+        SELECT
+            u.user_image_url,
+            u.user_nickname,
+            f.feed_no,
+            f.feed_title,
+            ff.feed_file_path,
+            f.feed_created
+        FROM
+            tb_feed f
+        LEFT JOIN
+            tb_feed_file ff
+        ON
+            f.feed_no = ff.feed_no
+            AND ff.feed_file_sort_order = 1
+        INNER JOIN
+            tb_user u
+        ON
+            f.user_no = u.user_no
+        WHERE
+            f.feed_visible_yn = 'Y'
         ORDER BY
-            feed_created DESC
-        LIMIT #{startRowNum} OFFSET #{pageSize}
+            f.feed_created DESC
+        LIMIT #{pageSize} OFFSET #{startRowNum}
+    </select>
+
+    <select id="selectMyFeedList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultMap="feedResultMap">
+        SELECT
+            u.user_image_url,
+            u.user_nickname,
+            f.feed_no,
+            f.feed_title,
+            ff.feed_file_path,
+            f.feed_created
+        FROM
+            tb_feed f
+        LEFT JOIN
+            tb_feed_file ff
+        ON
+            f.feed_no = ff.feed_no
+            AND ff.feed_file_sort_order = 1
+        INNER JOIN
+            tb_user u
+        ON
+            f.user_no = u.user_no
+        WHERE
+            u.user_no = #{userNo}
+        AND
+            f.feed_visible_yn = 'Y'
+        ORDER BY
+            f.feed_created DESC
+            LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedEntity" useGeneratedKeys="true"
