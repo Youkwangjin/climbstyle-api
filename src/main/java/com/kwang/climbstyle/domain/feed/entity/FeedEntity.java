@@ -25,6 +25,8 @@ public class FeedEntity {
 
     private String feedVisibleYn;
 
+    private String feedLikeVisibleYn;
+
     private LocalDateTime feedCreated;
 
     private LocalDateTime feedUpdated;

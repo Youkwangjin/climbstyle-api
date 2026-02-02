@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.domain.feed.service;
 
+import com.kwang.climbstyle.code.feed.FeedLikeVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
@@ -89,6 +90,7 @@ public class FeedService {
         final String feedTitle = request.getFeedTitle();
         final String feedContent = request.getFeedContent();
         final String feedVisibleYn = request.getFeedVisibleYn();
+        final String feedLikeVisibleYn = FeedLikeVisibleStatus.VISIBLE.getCode();
         final List<MultipartFile> feedImages = request.getFeedImages();
         final LocalDateTime feedCreated = LocalDateTime.now();
 
@@ -97,6 +99,7 @@ public class FeedService {
                 .feedTitle(feedTitle)
                 .feedContent(feedContent)
                 .feedVisibleYn(feedVisibleYn)
+                .feedLikeVisibleYn(feedLikeVisibleYn)
                 .feedCreated(feedCreated)
                 .build();
 
