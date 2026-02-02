@@ -9,6 +9,7 @@
         <result property="feedTitle"            column="feed_title"/>
         <result property="feedContent"          column="feed_content"/>
         <result property="feedVisibleYn"        column="feed_visible_yn"/>
+        <result property="feedLikeVisibleYn"    column="feed_like_visible_yn"/>
         <result property="feedCreated"          column="feed_created"/>
         <result property="feedUpdated"          column="feed_updated"/>
         <association property="user"            javaType="com.kwang.climbstyle.domain.user.entity.UserEntity"
@@ -104,12 +105,14 @@
             feed_title,
             feed_content,
             feed_visible_yn,
+            feed_like_visible_yn,
             feed_created
         ) VALUES (
             #{userNo},
             #{feedTitle},
             #{feedContent},
             #{feedVisibleYn},
+            #{feedLikeVisibleYn},
             #{feedCreated}
         )
     </insert>
