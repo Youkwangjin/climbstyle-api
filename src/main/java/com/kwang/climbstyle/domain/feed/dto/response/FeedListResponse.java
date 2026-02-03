@@ -1,12 +1,12 @@
 package com.kwang.climbstyle.domain.feed.dto.response;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
+@Setter
+@NoArgsConstructor
 public class FeedListResponse {
 
     private String userImageUrl;

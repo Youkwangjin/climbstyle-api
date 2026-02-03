@@ -43,59 +43,89 @@
     </select>
 
     <select id="selectFeedList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
-            resultMap="feedResultMap">
+            resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse">
         SELECT
-            u.user_image_url,
-            u.user_nickname,
-            f.feed_no,
-            f.feed_title,
-            ff.feed_file_path,
-            f.feed_created
-        FROM
-            tb_feed f
-        LEFT JOIN
-            tb_feed_file ff
-        ON
-            f.feed_no = ff.feed_no
-            AND ff.feed_file_sort_order = 1
-        INNER JOIN
-            tb_user u
-        ON
-            f.user_no = u.user_no
-        WHERE
-            f.feed_visible_yn = 'Y'
-        ORDER BY
-            f.feed_created DESC
-        LIMIT #{pageSize} OFFSET #{startRowNum}
+            feed_list.feed_no,
+            feed_list.feed_title,
+            feed_list.feed_created,
+            feed_list.user_nickname,
+            feed_list.user_image_url,
+            feed_list.feed_file_path,
+            (
+                SELECT
+                    COUNT(fl.feed_no)
+                FROM
+                    tb_feed_like fl
+                WHERE
+                    fl.feed_no = feed_list.feed_no
+            ) AS feed_like_count
+        FROM (
+             SELECT
+                 f.feed_no,
+                 f.feed_title,
+                 f.feed_created,
+                 u.user_nickname,
+                 u.user_image_url,
+                 ff.feed_file_path
+             FROM
+                 tb_feed f
+             LEFT JOIN
+                 tb_feed_file ff
+                 ON f.feed_no = ff.feed_no
+                 AND ff.feed_file_sort_order = 1
+             INNER JOIN
+                 tb_user u
+                 ON f.user_no = u.user_no
+             WHERE
+                 f.feed_visible_yn = 'Y'
+             ORDER BY
+                 f.feed_created DESC
+             LIMIT #{pageSize} OFFSET #{startRowNum}
+        ) feed_list
     </select>
 
     <select id="selectMyFeedList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
-            resultMap="feedResultMap">
+            resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse">
         SELECT
-            u.user_image_url,
-            u.user_nickname,
-            f.feed_no,
-            f.feed_title,
-            ff.feed_file_path,
-            f.feed_created
-        FROM
-            tb_feed f
-        LEFT JOIN
-            tb_feed_file ff
-        ON
-            f.feed_no = ff.feed_no
-            AND ff.feed_file_sort_order = 1
-        INNER JOIN
-            tb_user u
-        ON
-            f.user_no = u.user_no
-        WHERE
-            u.user_no = #{userNo}
-        AND
-            f.feed_visible_yn = 'Y'
-        ORDER BY
-            f.feed_created DESC
-            LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
+            feed_list.feed_no,
+            feed_list.feed_title,
+            feed_list.feed_created,
+            feed_list.user_nickname,
+            feed_list.user_image_url,
+            feed_list.feed_file_path,
+            (
+                SELECT
+                    COUNT(fl.feed_no)
+                FROM
+                    tb_feed_like fl
+                WHERE
+                    fl.feed_no = feed_list.feed_no
+            ) AS feed_like_count
+        FROM (
+             SELECT
+                 u.user_image_url,
+                 u.user_nickname,
+                 f.feed_no,
+                 f.feed_title,
+                 ff.feed_file_path,
+                 f.feed_created
+             FROM
+                 tb_feed f
+             LEFT JOIN
+                 tb_feed_file ff
+                 ON f.feed_no = ff.feed_no
+                 AND ff.feed_file_sort_order = 1
+             INNER JOIN
+                 tb_user u
+                 ON f.user_no = u.user_no
+             WHERE
+                 u.user_no = #{userNo}
+             AND
+                 f.feed_visible_yn = 'Y'
+             ORDER BY
+                 f.feed_created DESC
+                 LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
+        ) feed_list
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedEntity" useGeneratedKeys="true"
