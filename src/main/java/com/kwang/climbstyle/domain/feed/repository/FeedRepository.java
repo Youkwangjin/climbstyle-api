@@ -1,6 +1,7 @@
 package com.kwang.climbstyle.domain.feed.repository;
 
 import com.kwang.climbstyle.common.protocal.PaginationRequest;
+import com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse;
 import com.kwang.climbstyle.domain.feed.entity.FeedEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,9 +15,9 @@ public interface FeedRepository {
 
     Integer selectMyFeedListCountByRequest(PaginationRequest request, @Param("userNo") Integer userNo);
 
-    List<FeedEntity> selectFeedList(PaginationRequest request);
+    List<FeedListResponse> selectFeedList(PaginationRequest request);
 
-    List<FeedEntity> selectMyFeedList(PaginationRequest request, @Param("userNo") Integer userNo);
+    List<FeedListResponse> selectMyFeedList(PaginationRequest request, @Param("userNo") Integer userNo);
 
     void insert(FeedEntity feedEntity);
 }

@@ -45,8 +45,23 @@
                     </div>
                     <p class="f-caption" th:text="${feed.feedTitle}"></p>
                     <div class="f-actions">
-                        <button class="f-btn" type="button" aria-label="좋아요"></button>
-                        <button class="f-btn" type="button" aria-label="댓글"></button>
+                        <button class="f-btn"
+                                th:classappend="${feed.feedLikeCount != null && feed.feedLikeCount > 0} ? 'is-liked' : ''"
+                                type="button"
+                                aria-label="좋아요">
+                            <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
+                                <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
+                            </th:block>
+                            <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
+                                <th:block th:replace="~{fragments/common/icons :: heart}" />
+                            </th:block>
+                            <span th:if="${feed.feedLikeCount != null}" th:text="${feed.feedLikeCount}"></span>
+                            <span th:if="${feed.feedLikeCount == null}"></span>
+                        </button>
+                        <button class="f-btn" type="button" aria-label="댓글">
+                            <th:block th:replace="~{fragments/common/icons :: comment}"/>
+                            <span th:text="${feed.feedCommentCount ?: 0}"></span>
+                        </button>
                     </div>
                 </div>
             </article>
