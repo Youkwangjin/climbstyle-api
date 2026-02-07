@@ -67,6 +67,9 @@ public class FeedService {
         Integer feedLikeCount = feedLikeRepository.selectFeedLikeCountByFeedNo(feedNo);
         feed.setFeedLikeCount(feedLikeCount);
 
+        Integer feedCommentCount = feedCommentRepository.selectFeedCommentsCountByFeedNo(feedNo);
+        feed.setFeedCommentCount(feedCommentCount);
+
         List<FeedCommentListResponse> comments = feedCommentRepository.selectFeedCommentsByFeedNo(feedNo);
         feed.setFeedCommentList(comments);
 
