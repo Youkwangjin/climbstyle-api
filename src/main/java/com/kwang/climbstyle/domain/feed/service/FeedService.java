@@ -58,14 +58,17 @@ public class FeedService {
             throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
         }
 
-        List<String> images = feedFileRepository.selectFeedFilesByFeedNo(feedNo);
-        if (images == null) {
+        List<String> feedFilePaths = feedFileRepository.selectFeedFilePathsByFeedNo(feedNo);
+        if (feedFilePaths == null) {
             throw new ClimbStyleException(FeedErrorCode.FEED_FILE_NOT_FOUND);
         }
-        feed.setFeedFilePaths(images);
+        feed.setFeedFilePaths(feedFilePaths);
 
         Integer feedLikeCount = feedLikeRepository.selectFeedLikeCountByFeedNo(feedNo);
         feed.setFeedLikeCount(feedLikeCount);
+
+        Integer feedCommentCount = feedCommentRepository.selectFeedCommentsCountByFeedNo(feedNo);
+        feed.setFeedCommentCount(feedCommentCount);
 
         List<FeedCommentListResponse> comments = feedCommentRepository.selectFeedCommentsByFeedNo(feedNo);
         feed.setFeedCommentList(comments);

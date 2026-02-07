@@ -10,4 +10,6 @@ import java.util.List;
 public interface FeedCommentRepository {
 
     List<FeedCommentListResponse> selectFeedCommentsByFeedNo(@Param("feedNo") Integer feedNo);
+
+    Integer selectFeedCommentsCountByFeedNo(@Param("feedNo") Integer feedNo);
 }

@@ -41,4 +41,15 @@
         ORDER BY
             fc.feed_comment_created DESC
     </select>
+
+    <select id="selectFeedCommentsCountByFeedNo" parameterType="Integer" resultType="Integer">
+        SELECT
+            COUNT(feed_comment_no)
+        FROM
+            tb_feed_comment
+        WHERE
+            feed_no = #{feedNo}
+        AND
+            feed_comment_delete_yn = 'N'
+    </select>
 </mapper>

@@ -28,5 +28,7 @@ public class FeedDetailResponse {
 
     private List<FeedCommentListResponse> feedCommentList;
 
+    private Integer feedCommentCount;
+
     private LocalDateTime feedCreated;
 }
