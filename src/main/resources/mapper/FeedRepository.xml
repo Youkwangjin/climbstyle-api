@@ -58,7 +58,17 @@
                     tb_feed_like fl
                 WHERE
                     fl.feed_no = feed_list.feed_no
-            ) AS feed_like_count
+            ) AS feed_like_count,
+            (
+                SELECT
+                    COUNT(fc.feed_no)
+                FROM
+                    tb_feed_comment fc
+                WHERE
+                    fc.feed_no = feed_list.feed_no
+                AND
+                    fc.feed_comment_delete_yn = 'N'
+            ) AS feed_comment_count
         FROM (
              SELECT
                  f.feed_no,
@@ -126,6 +136,30 @@
                  f.feed_created DESC
                  LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
         ) feed_list
+    </select>
+
+    <select id="selectFeedByNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse">
+        SELECT
+            f.feed_no,
+            f.feed_title,
+            f.feed_content,
+            f.feed_created,
+            u.user_no,
+            u.user_nickname,
+            u.user_image_url
+        FROM
+            tb_feed f
+        INNER JOIN
+            tb_user u
+        ON
+            f.user_no = u.user_no
+        WHERE
+            f.feed_no = #{feedNo}
+        AND
+            f.feed_visible_yn = 'Y'
+        AND
+            u.user_delete_yn = 'N'
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedEntity" useGeneratedKeys="true"
