@@ -16,7 +16,27 @@
         <result property="feedFileUpdated"          column="feed_file_updated"/>
     </resultMap>
 
-    <select id="selectFeedFilesByFeedNo" parameterType="Integer" resultType="String">
+    <select id="selectFeedFilesByFeedNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedFileDetailResponse">
+        SELECT
+            feed_file_no,
+            feed_no,
+            feed_file_original_name,
+            feed_file_stored_name,
+            feed_file_path,
+            feed_file_extns_nm,
+            feed_file_size,
+            feed_file_sort_order,
+            feed_file_created
+        FROM
+            tb_feed_file
+        WHERE
+            feed_no = #{feedNo}
+        ORDER BY
+            feed_file_sort_order ASC
+    </select>
+
+    <select id="selectFeedFilePathsByFeedNo" parameterType="Integer" resultType="String">
         SELECT
             feed_file_path
         FROM
@@ -24,7 +44,7 @@
         WHERE
             feed_no = #{feedNo}
         ORDER BY
-            feed_file_sort_order ASC;
+            feed_file_sort_order ASC
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedFileEntity" useGeneratedKeys="true"
