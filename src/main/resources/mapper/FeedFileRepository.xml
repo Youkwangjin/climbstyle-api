@@ -16,6 +16,17 @@
         <result property="feedFileUpdated"          column="feed_file_updated"/>
     </resultMap>
 
+    <select id="selectFeedFilesByFeedNo" parameterType="Integer" resultType="String">
+        SELECT
+            feed_file_path
+        FROM
+            tb_feed_file
+        WHERE
+            feed_no = #{feedNo}
+        ORDER BY
+            feed_file_sort_order ASC;
+    </select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedFileEntity" useGeneratedKeys="true"
             keyProperty="feedFileNo">
         INSERT INTO tb_feed_file (

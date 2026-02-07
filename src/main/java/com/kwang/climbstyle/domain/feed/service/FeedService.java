@@ -1,17 +1,23 @@
 package com.kwang.climbstyle.domain.feed.service;
 
+import com.kwang.climbstyle.code.feed.FeedErrorCode;
 import com.kwang.climbstyle.code.feed.FeedLikeVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
+import com.kwang.climbstyle.domain.feed.dto.response.FeedCommentListResponse;
+import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse;
 import com.kwang.climbstyle.domain.feed.entity.FeedEntity;
 import com.kwang.climbstyle.domain.feed.entity.FeedFileEntity;
+import com.kwang.climbstyle.domain.feed.repository.FeedCommentRepository;
 import com.kwang.climbstyle.domain.feed.repository.FeedFileRepository;
+import com.kwang.climbstyle.domain.feed.repository.FeedLikeRepository;
 import com.kwang.climbstyle.domain.feed.repository.FeedRepository;
 import com.kwang.climbstyle.domain.file.service.FileService;
 
+import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
@@ -30,6 +36,10 @@ public class FeedService {
 
     private final FeedFileRepository feedFileRepository;
 
+    private final FeedLikeRepository feedLikeRepository;
+
+    private final FeedCommentRepository feedCommentRepository;
+
     private final FileService fileService;
 
     public List<FeedListResponse> getFeedList(CommonListRequest request) {
@@ -40,6 +50,27 @@ public class FeedService {
     public List<FeedListResponse> getMyFeedList(CommonListRequest request, Integer userNo) {
         request.setTotalCount(feedRepository.selectMyFeedListCountByRequest(request, userNo));
         return feedRepository.selectMyFeedList(request, userNo);
+    }
+
+    public FeedDetailResponse detailFeed(Integer feedNo) {
+        FeedDetailResponse feed = feedRepository.selectFeedByNo(feedNo);
+        if (feed == null) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
+        }
+
+        List<String> images = feedFileRepository.selectFeedFilesByFeedNo(feedNo);
+        if (images == null) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_FILE_NOT_FOUND);
+        }
+        feed.setFeedFilePaths(images);
+
+        Integer feedLikeCount = feedLikeRepository.selectFeedLikeCountByFeedNo(feedNo);
+        feed.setFeedLikeCount(feedLikeCount);
+
+        List<FeedCommentListResponse> comments = feedCommentRepository.selectFeedCommentsByFeedNo(feedNo);
+        feed.setFeedCommentList(comments);
+
+        return feed;
     }
 
     @Transactional

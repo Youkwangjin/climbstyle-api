@@ -85,7 +85,8 @@ public class SpringSecurityConfig {
                                                   "/error",
                                                   "/logout",
                                                   "/auth/login","/feed",
-                                                  "/auth/register").permitAll()
+                                                  "/auth/register",
+                                                  "/api/v1/feeds/**").permitAll()
 
                                 .requestMatchers("/my/profile/**").hasAuthority("ROLE_USER")
 

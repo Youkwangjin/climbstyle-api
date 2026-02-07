@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.feed.repository.FeedLikeRepository">
+    <resultMap id="feedLikeResultMap"           type="com.kwang.climbstyle.domain.feed.entity.FeedLikeEntity">
+        <id property="feedLikeNo"               column="feed_like_no"/>
+        <result property="feedNo"               column="feed_no"/>
+        <result property="userNo"               column="user_no"/>
+        <result property="feedLikeVisibleYn"    column="feed_like_visible_yn"/>
+        <result property="feedLikeCreated"      column="feed_like_created"/>
+        <result property="feedLikeUpdated"      column="feed_like_updated"/>
+    </resultMap>
+    
+    <select id="selectFeedLikeCountByFeedNo" parameterType="Integer" resultType="Integer">
+        SELECT
+            COUNT(feed_like_no)
+        FROM
+            tb_feed_like
+        WHERE
+            feed_no = #{feedNo}
+    </select>
+</mapper>

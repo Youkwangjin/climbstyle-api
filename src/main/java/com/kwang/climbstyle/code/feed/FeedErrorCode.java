@@ -15,7 +15,8 @@ public enum FeedErrorCode implements ApiCode {
     FEED_IMAGE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST,       "5005", "피드 이미지는 최대 10개까지 첨부 가능합니다."),
     FEED_DEFAULT_ERROR(HttpStatus.BAD_REQUEST,              "5006", "피드 입력값 형식이 잘못되었습니다."),
 
-    FEED_NOT_FOUND(HttpStatus.NOT_FOUND,                    "5101", "존재하지 않는 피드입니다."),
+    FEED_NOT_FOUND(HttpStatus.NOT_FOUND,                    "5404", "존재하지 않는 피드입니다."),
+    FEED_FILE_NOT_FOUND(HttpStatus.NOT_FOUND,               "5404", "해당 피드에 등록된 파일이 없습니다."),
     ;
 
     private final HttpStatus httpStatus;
