@@ -1,0 +1,209 @@
+let currentImageIndex = 0;
+let totalImages = 0;
+
+/**
+ * @typedef {Object} FeedDetailData
+ * @property {string} userNickName
+ * @property {string} feedCreated
+ * @property {string} userImageUrl
+ * @property {string} feedTitle
+ * @property {string} feedContent
+ * @property {number} feedLikeCount
+ * @property {number} feedCommentCount
+ * @property {string[]} feedFilePaths
+ * @property {FeedComment[]} feedCommentList
+ */
+
+/**
+ * @typedef {Object} FeedComment
+ * @property {string} userNickname
+ * @property {string} userImageUrl
+ * @property {string} feedCommentContent
+ * @property {string} feedCommentCreated
+ */
+
+function openFeedDetail(feedNo) {
+    fetch(`/api/v1/feeds/${feedNo}`)
+        .then(response => response.json())
+        .then(data => {
+            const feed = data.data;
+            const modal = document.getElementById("feedDetailModal");
+
+            currentImageIndex = 0;
+
+            modal.classList.add("is-active");
+            document.body.style.overflow = "hidden";
+
+            document.getElementById("detailUsername").textContent = feed.userNickName;
+            document.getElementById("detailDate").textContent = formatDate(feed.feedCreated);
+            document.getElementById("detailUserImage").src = feed.userImageUrl;
+
+            document.getElementById("detailTitle").textContent = feed.feedTitle;
+            document.getElementById("detailContent").textContent = feed.feedContent;
+
+            document.getElementById("detailLikeCount").textContent = feed.feedLikeCount;
+            document.getElementById("detailCommentCount").textContent = feed.feedCommentCount;
+
+            renderImages(feed.feedFilePaths);
+            renderComments(feed.feedCommentList);
+            updateLikeStatus(feed.feedLikeCount);
+        })
+        .catch(() => {
+            alert("피드를 불러오는데 실패했습니다. 지속될 경우 관리자에게 문의하세요.");
+        });
+
+}
+
+function closeFeedDetail() {
+    const modal = document.getElementById("feedDetailModal");
+    modal.classList.remove("is-active");
+    document.body.style.overflow = "";
+
+    const sliderImages = document.getElementById("sliderImages");
+    if (sliderImages) {
+        sliderImages.style.transform = "translateX(0)";
+    }
+
+    document.querySelectorAll(".slider-dot").forEach((dot, index) => {
+        dot.classList.toggle("is-active", index === 0);
+    });
+
+    currentImageIndex = 0;
+}
+
+function renderImages(imagePaths) {
+    if (!imagePaths || imagePaths.length === 0) {
+        return;
+    }
+
+    totalImages = imagePaths.length;
+    currentImageIndex = 0;
+
+    const sliderImages = document.getElementById("sliderImages");
+    const sliderDots = document.getElementById("sliderDots");
+
+    sliderImages.innerHTML = imagePaths.map(path =>
+        `<img src="${path}" alt="피드 이미지" />`
+    ).join("");
+
+    sliderImages.style.transform = "translateX(0)";
+
+    if (totalImages > 1) {
+        sliderDots.innerHTML = imagePaths.map((_, index) =>
+            `<span class="slider-dot ${index === 0 ? "is-active" : ""}" onclick="goToImage(${index})"></span>`
+        ).join("");
+    } else {
+        sliderDots.innerHTML = "";
+    }
+
+    updateSliderButtons();
+}
+
+function prevImage() {
+    if (currentImageIndex > 0) {
+        currentImageIndex--;
+        updateSlider();
+    }
+}
+
+function nextImage() {
+    if (currentImageIndex < totalImages - 1) {
+        currentImageIndex++;
+        updateSlider();
+    }
+}
+
+function goToImage(index) {
+    currentImageIndex = index;
+    updateSlider();
+}
+
+function updateSlider() {
+    const sliderImages = document.getElementById("sliderImages");
+    sliderImages.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+
+    document.querySelectorAll(".slider-dot").forEach((dot, index) => {
+        dot.classList.toggle("is-active", index === currentImageIndex);
+    });
+
+    updateSliderButtons();
+}
+
+function updateSliderButtons() {
+    const prevBtn = document.querySelector(".slider-prev");
+    const nextBtn = document.querySelector(".slider-next");
+
+    prevBtn.disabled = currentImageIndex === 0;
+    nextBtn.disabled = currentImageIndex === totalImages - 1;
+
+    if (totalImages <= 1) {
+        prevBtn.style.display = "none";
+        nextBtn.style.display = "none";
+    } else {
+        prevBtn.style.display = "flex";
+        nextBtn.style.display = "flex";
+    }
+}
+
+function renderComments(comments) {
+    const container = document.getElementById("detailComments");
+
+    if (!comments || comments.length === 0) {
+        container.innerHTML = "<p style=\"text-align: center; color: var(--muted); padding: 40px 0;\">댓글이 없습니다.</p>";
+        return;
+    }
+
+    container.innerHTML = comments.map(comment => `
+        <div class="comment-item">
+            <div class="comment-avatar">
+                <img src="${comment.userImageUrl || "/img/default-avatar.png"}" alt="프로필" />
+            </div>
+            <div class="comment-body">
+                <div class="comment-header">
+                    <span class="comment-username">${comment.userNickname}</span>
+                    <span class="comment-date">${formatDate(comment.feedCommentCreated)}</span>
+                </div>
+                <div class="comment-content">${comment.feedCommentContent}</div>
+            </div>
+        </div>
+    `).join("");
+}
+
+function updateLikeStatus(likeCount) {
+    const likeCountSpan = document.getElementById("detailLikeCount");
+    const likeIcon = document.getElementById("detailLikeIcon");
+
+    likeCountSpan.textContent = likeCount ?? "-";
+    if (likeCount > 0) {
+        likeIcon.innerHTML = Icons.heartFilled;
+    } else {
+        likeIcon.innerHTML = Icons.heart;
+    }
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+
+    if (diff < 60) return "방금 전";
+    if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
+    if (diff < 604800) return `${Math.floor(diff / 86400)}일 전`;
+
+    return date.toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        closeFeedDetail();
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    const modal = document.getElementById("feedDetailModal");
+    if (!modal.classList.contains("is-active")) return;
+
+    if (e.key === "ArrowLeft") prevImage();
+    if (e.key === "ArrowRight") nextImage();
+});
