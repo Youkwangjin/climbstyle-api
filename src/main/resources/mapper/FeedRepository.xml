@@ -130,8 +130,6 @@
                  ON f.user_no = u.user_no
              WHERE
                  u.user_no = #{userNo}
-             AND
-                 f.feed_visible_yn = 'Y'
              ORDER BY
                  f.feed_created DESC
                  LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
