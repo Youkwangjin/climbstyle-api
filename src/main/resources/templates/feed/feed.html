@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClimbStyle | 피드</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/feed/feed.css}">
+    <link rel="stylesheet" th:href="@{/css/feed/feed-detail.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header:: header}"></div>
+</header>
+<section class="section" id="feed">
+    <div class="container">
+        <div class="head">
+            <div>
+                <h2>클라이밍 패션 피드</h2>
+                <p class="sub">오늘의 착장을 기록하고 공유해요.</p>
+            </div>
+            <div class="feed-head-actions">
+                <a class="btn btn-primary" th:href="@{/feed/new}">피드 올리기</a>
+            </div>
+        </div>
+        <div class="feed-grid" aria-label="피드 목록">
+            <div th:if="${#lists.isEmpty(feedList)}" class="empty-state">
+                <p>등록된 피드가 없습니다.</p>
+            </div>
+            <article class="f-card" th:each="feed : ${feedList}" th:attr="data-feed-no=${feed.feedNo}" style="cursor: pointer;">
+                <div class="f-media">
+                    <img loading="lazy" th:src="${feed.feedFilePath != null ? feed.feedFilePath : '/img/main1.png'}" alt="클라이밍 사진" />
+                </div>
+                <div class="f-body">
+                    <div class="f-top">
+                        <div class="f-user">
+                            <span class="f-avatar" aria-hidden="true">
+                                <img th:if="${feed.userImageUrl != null}"
+                                     th:src="${feed.userImageUrl}"
+                                     alt="사용자 프로필" />
+                            </span>
+                            <div class="f-user-meta">
+                                <div class="f-name" th:text="${feed.userNickName ?: '익명 사용자'}"></div>
+                                <div class="f-time" th:text="${#temporals.format(feed.feedCreated, 'yyyy-MM-dd HH:mm')}"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="f-caption" th:text="${feed.feedTitle}"></p>
+                    <div class="f-actions">
+                        <button class="f-btn"
+                                th:classappend="${feed.feedLikeCount != null && feed.feedLikeCount > 0} ? 'is-liked' : ''"
+                                type="button"
+                                aria-label="좋아요">
+                            <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
+                                <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
+                            </th:block>
+                            <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
+                                <th:block th:replace="~{fragments/common/icons :: heart}" />
+                            </th:block>
+                            <span th:if="${feed.feedLikeCount != null}" th:text="${feed.feedLikeCount}"></span>
+                            <span th:if="${feed.feedLikeCount == null}"></span>
+                        </button>
+                        <button class="f-btn" type="button" aria-label="댓글">
+                            <th:block th:replace="~{fragments/common/icons :: comment}"/>
+                            <span th:text="${feed.feedCommentCount ?: 0}"></span>
+                        </button>
+                    </div>
+                </div>
+            </article>
+            <div id="feedDetailModal" class="modal" aria-hidden="true">
+                <div class="modal-backdrop" onclick="closeFeedDetail()"></div>
+                <div class="modal-container">
+                    <button class="modal-close" onclick="closeFeedDetail()" aria-label="닫기">
+                        <th:block th:replace="~{fragments/common/icons :: close}" />
+                    </button>
+                    <div class="modal-content">
+                        <div class="modal-left">
+                            <div class="image-slider">
+                                <button class="slider-btn slider-prev" onclick="prevImage()" aria-label="이전 이미지">
+                                    <th:block th:replace="~{fragments/common/icons :: chevron-left}" />
+                                </button>
+
+                                <div class="slider-images" id="sliderImages">
+                                </div>
+
+                                <button class="slider-btn slider-next" onclick="nextImage()" aria-label="다음 이미지">
+                                    <th:block th:replace="~{fragments/common/icons :: chevron-right}" />
+                                </button>
+
+                                <div class="slider-dots" id="sliderDots"></div>
+                            </div>
+                        </div>
+                        <div class="modal-right">
+                            <div class="detail-header">
+                                <div class="detail-user">
+                        <span class="detail-avatar">
+                            <img id="detailUserImage" src="" alt="프로필" />
+                        </span>
+                                <div class="detail-user-info">
+                                    <div class="detail-username" id="detailUsername"></div>
+                                    <div class="detail-date" id="detailDate"></div>
+                                </div>
+                                </div>
+                                <div sec:authorize="isAuthenticated()">
+                                    <button class="detail-more" type="button" aria-label="더보기">
+                                        <th:block th:replace="~{fragments/common/icons :: more}" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="detail-body">
+                                <div class="detail-title" id="detailTitle"></div>
+                                <div class="detail-content" id="detailContent"></div>
+                            </div>
+                            <div class="detail-stats">
+                                <div class="detail-stat">
+                                    <span id="detailLikeIcon">
+                                        <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                    </span>
+                                    <span id="detailLikeCount">0</span>
+                                </div>
+                                <div class="detail-stat">
+                                    <th:block th:replace="~{fragments/common/icons :: comment}" />
+                                    <span id="detailCommentCount">0</span>
+                                </div>
+                            </div>
+                            <div class="detail-comments" id="detailComments">
+                            </div>
+                            <div class="detail-comment-form">
+                                <label>
+                                    <input type="text" placeholder="댓글을 입력하세요..." />
+                                </label>
+                                <button type="button">게시</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="pagination" aria-label="피드 페이지 이동" th:if="${!#lists.isEmpty(feedList) && request.totalCount > 0}">
+            <div class="pagination-inner">
+                <a th:if="${request.startPageNo > 1}"
+                   th:href="@{/feed(pageNo=${request.firstPageNo})}"
+                   class="page-btn"
+                   aria-label="첫 페이지">«</a>
+
+                <a th:if="${request.pageNoAsInt > request.startPageNo}"
+                   th:href="@{/feed(pageNo=${request.prevPageNo})}"
+                   class="page-btn"
+                   aria-label="이전 페이지">‹</a>
+
+                <div class="page-list" aria-label="페이지 번호">
+                    <th:block th:each="pageNum : ${#numbers.sequence(request.startPageNo, request.endPageNo)}">
+                        <a th:href="@{/feed(pageNo=${pageNum})}"
+                           class="page-num"
+                           th:classappend="${pageNum == request.pageNoAsInt} ? 'is-active' : ''"
+                           th:attr="aria-current=${pageNum == request.pageNoAsInt} ? 'page' : null"
+                           th:text="${pageNum}">1</a>
+                    </th:block>
+                </div>
+
+                <a th:if="${request.pageNoAsInt < request.endPageNo}"
+                   th:href="@{/feed(pageNo=${request.nextPageNo})}"
+                   class="page-btn"
+                   aria-label="다음 페이지">›</a>
+
+                <a th:if="${request.endPageNo < request.finalPageNo}"
+                   th:href="@{/feed(pageNo=${request.finalPageNo})}"
+                   class="page-btn"
+                   aria-label="마지막 페이지">»</a>
+            </div>
+        </nav>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/logout.js}"></script>
+<script th:src="@{/js/feed/feed-detail.js}"></script>
+<script th:src="@{/js/common/icons.js}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const feedCards = document.querySelectorAll(".f-card");
+
+        feedCards.forEach(card => {
+            card.addEventListener("click", (e) => {
+                if (e.target.closest(".f-btn") || e.target.closest("button")) {
+                    return;
+                }
+
+                const feedNo = card.getAttribute("data-feed-no");
+                if (feedNo) {
+                    openFeedDetail(parseInt(feedNo));
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

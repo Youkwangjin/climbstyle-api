@@ -43,7 +43,8 @@ body {
 
 .section {
     padding: 72px 0;
-    border-top: 1px solid var(--line)
+    border-top: 1px solid var(--line);
+    flex: 1 0 auto;
 }
 
 .section:first-of-type {

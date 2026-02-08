@@ -24,7 +24,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         if (LOCAL.equals(profile)) {
             registry.addResourceHandler(baseAccessUrl + "**")
-                    .addResourceLocations("file:" + baseUploadPath);
+                    .addResourceLocations("file:" + baseUploadPath)
+                    .setCachePeriod(3600)
+                    .resourceChain(true);
         }
     }
 }

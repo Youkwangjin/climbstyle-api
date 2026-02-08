@@ -84,8 +84,9 @@ public class SpringSecurityConfig {
                                 .requestMatchers("/",
                                                   "/error",
                                                   "/logout",
-                                                  "/auth/login",
-                                                  "/auth/register").permitAll()
+                                                  "/auth/login","/feed",
+                                                  "/auth/register",
+                                                  "/api/v1/feeds/**").permitAll()
 
                                 .requestMatchers("/my/profile/**").hasAuthority("ROLE_USER")
 
@@ -96,7 +97,8 @@ public class SpringSecurityConfig {
 
                                 .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
 
-                                .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_USER")
+                                .requestMatchers("/api/v1/users/**",
+                                                 "/api/v1/feeds").hasAuthority("ROLE_USER")
 
                 .anyRequest().permitAll()
                 );

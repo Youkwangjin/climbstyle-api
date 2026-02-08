@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kwang.climbstyle.domain.feed.repository.FeedCommentRepository">
+    <resultMap id="feedCommentResultMap"        type="com.kwang.climbstyle.domain.feed.entity.FeedCommentEntity">
+        <id property="feedCommentNo"            column="feed_comment_no"/>
+        <result property="feedNo"               column="feed_no"/>
+        <result property="userNo"               column="user_no"/>
+        <result property="feedCommentParentNo"  column="feed_comment_parent_no"/>
+        <result property="feedCommentContent"   column="feed_comment_content"/>
+        <result property="feedCommentDeleteYn"  column="feed_comment_delete_yn"/>
+        <result property="feedCommentCreated"   column="feed_comment_created"/>
+        <result property="feedCommentUpdated"   column="feed_comment_updated"/>
+        <association property="user"            javaType="com.kwang.climbstyle.domain.user.entity.UserEntity"
+                     resultMap="com.kwang.climbstyle.domain.user.repository.UserRepository.userResultMap"/>
+    </resultMap>
+
+    <select id="selectFeedCommentsByFeedNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedCommentListResponse">
+        SELECT
+            fc.feed_comment_no,
+            fc.feed_no,
+            fc.feed_comment_parent_no,
+            fc.feed_comment_content,
+            fc.feed_comment_delete_yn,
+            fc.feed_comment_created,
+            fc.feed_comment_updated,
+            u.user_no,
+            u.user_nickname,
+            u.user_image_url
+        FROM
+            tb_feed_comment fc
+        INNER JOIN
+            tb_user u
+        ON
+            fc.user_no = u.user_no
+        WHERE
+            fc.feed_no = #{feedNo}
+        AND
+            fc.feed_comment_delete_yn = 'Y'
+        ORDER BY
+            fc.feed_comment_created DESC
+    </select>
+
+    <select id="selectFeedCommentsCountByFeedNo" parameterType="Integer" resultType="Integer">
+        SELECT
+            COUNT(feed_comment_no)
+        FROM
+            tb_feed_comment
+        WHERE
+            feed_no = #{feedNo}
+        AND
+            feed_comment_delete_yn = 'N'
+    </select>
+</mapper>

@@ -23,14 +23,14 @@ public class FileUtil {
     @Value("${profiles.name.prod}")
     private String PROD;
 
-    public void upload(String directory, String fileName, MultipartFile multipartFile) throws IOException {
+    public void upload(String directory, String storedFilename, MultipartFile multipartFile) throws IOException {
         if (StringUtils.equals(profile, LOCAL)) {
             File uploadPath = new File(directory);
             if (!uploadPath.exists()) {
                 throw new ClimbStyleException(FileErrorCode.FILE_PATH_ERROR);
             }
 
-            File uploadFile = new File(directory + fileName);
+            File uploadFile = new File(directory + storedFilename);
             multipartFile.transferTo(uploadFile);
 
         } else {
@@ -38,9 +38,9 @@ public class FileUtil {
         }
     }
 
-    public void delete(String directory, String fileName) {
+    public void delete(String directory, String storedFilename) {
         if (StringUtils.equals(profile, LOCAL)) {
-            final String filepath = directory + fileName;
+            final String filepath = directory + storedFilename;
             File file = new File(filepath);
             if (file.exists()) {
                 if (!file.delete()) {
@@ -56,9 +56,9 @@ public class FileUtil {
         }
     }
 
-    public byte[] download(String directory, String fileName) throws IOException {
+    public byte[] download(String directory, String storedFilename) throws IOException {
         if (StringUtils.equals(profile, LOCAL)) {
-            File file = new File(directory + fileName);
+            File file = new File(directory + storedFilename);
             if (!file.exists()) {
                 throw new ClimbStyleException(FileErrorCode.FILE_NOT_FOUND);
             }
