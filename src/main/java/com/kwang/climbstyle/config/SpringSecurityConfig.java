@@ -98,7 +98,8 @@ public class SpringSecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
 
                                 .requestMatchers("/api/v1/users/**",
-                                                 "/api/v1/feeds").hasAuthority("ROLE_USER")
+                                                 "/api/v1/feeds",
+                                                 "/api/v1/feed/{feedNo}/like").hasAuthority("ROLE_USER")
 
                 .anyRequest().permitAll()
                 );

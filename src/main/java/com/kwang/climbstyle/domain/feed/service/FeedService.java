@@ -8,9 +8,11 @@ import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedCommentListResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
+import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse;
 import com.kwang.climbstyle.domain.feed.entity.FeedEntity;
 import com.kwang.climbstyle.domain.feed.entity.FeedFileEntity;
+import com.kwang.climbstyle.domain.feed.entity.FeedLikeEntity;
 import com.kwang.climbstyle.domain.feed.repository.FeedCommentRepository;
 import com.kwang.climbstyle.domain.feed.repository.FeedFileRepository;
 import com.kwang.climbstyle.domain.feed.repository.FeedLikeRepository;
@@ -124,5 +126,32 @@ public class FeedService {
                 feedFileRepository.insert(feedFileEntity);
             }
         }
+    }
+
+    @Transactional
+    public FeedLikeResponse likeFeed(Integer feedNo, Integer userNo) {
+        if (!feedRepository.existFeedByNo(feedNo)) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
+        }
+
+        Boolean isLike = feedLikeRepository.existFeedLikeByFeedNoAndUserNo(feedNo, userNo);
+        if (isLike) {
+            feedLikeRepository.delete(feedNo, userNo);
+        } else {
+            FeedLikeEntity feedLikeEntity = FeedLikeEntity.builder()
+                    .feedNo(feedNo)
+                    .userNo(userNo)
+                    .feedLikeCreated(LocalDateTime.now())
+                    .build();
+
+            feedLikeRepository.insert(feedLikeEntity);
+        }
+
+        final Integer feedLikeCount = feedLikeRepository.selectFeedLikeCountByFeedNo(feedNo);
+
+        return FeedLikeResponse.builder()
+                .isLiked(!isLike)
+                .feedLikeCount(feedLikeCount)
+                .build();
     }
 }

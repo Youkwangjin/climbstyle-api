@@ -19,8 +19,6 @@ public class FeedLikeEntity {
 
     private Integer userNo;
 
-    private String feedLikeVisibleYn;
-
     private LocalDateTime feedLikeCreated;
 
     private LocalDateTime feedLikeUpdated;

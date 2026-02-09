@@ -7,11 +7,10 @@
         <id property="feedLikeNo"               column="feed_like_no"/>
         <result property="feedNo"               column="feed_no"/>
         <result property="userNo"               column="user_no"/>
-        <result property="feedLikeVisibleYn"    column="feed_like_visible_yn"/>
         <result property="feedLikeCreated"      column="feed_like_created"/>
         <result property="feedLikeUpdated"      column="feed_like_updated"/>
     </resultMap>
-    
+
     <select id="selectFeedLikeCountByFeedNo" parameterType="Integer" resultType="Integer">
         SELECT
             COUNT(feed_like_no)
@@ -20,4 +19,39 @@
         WHERE
             feed_no = #{feedNo}
     </select>
+
+    <select id="existFeedLikeByFeedNoAndUserNo" parameterType="Integer" resultType="Boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM
+                tb_feed_like
+            WHERE
+                feed_no = #{feedNo}
+            AND
+                user_no = #{userNo}
+        )
+    </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedLikeEntity"
+            useGeneratedKeys="true" keyProperty="feedLikeNo">
+        INSERT INTO tb_feed_like (
+            feed_no,
+            user_no,
+            feed_like_created
+        ) VALUES (
+            #{feedNo},
+            #{userNo},
+            #{feedLikeCreated}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE
+        FROM
+            tb_feed_like
+        WHERE
+            feed_no = #{feedNo}
+        AND
+            user_no = #{userNo}
+    </delete>
 </mapper>
