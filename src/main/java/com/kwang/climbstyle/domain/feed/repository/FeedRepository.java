@@ -22,5 +22,7 @@ public interface FeedRepository {
 
     FeedDetailResponse selectFeedByNo(@Param("feedNo") Integer feedNo);
 
+    Boolean existFeedByNo(@Param("feedNo") Integer feedNo);
+
     void insert(FeedEntity feedEntity);
 }

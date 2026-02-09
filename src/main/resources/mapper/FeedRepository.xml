@@ -160,6 +160,18 @@
             u.user_delete_yn = 'N'
     </select>
 
+    <select id="existFeedByNo" parameterType="Integer" resultType="Boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM
+                tb_feed
+            WHERE
+                feed_no = #{feedNo}
+            AND
+                feed_visible_yn = 'Y'
+        )
+    </select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedEntity" useGeneratedKeys="true"
             keyProperty="feedNo">
         INSERT INTO tb_feed (
