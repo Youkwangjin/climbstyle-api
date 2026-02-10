@@ -9,6 +9,7 @@ let totalImages = 0;
  * @property {string} feedTitle
  * @property {string} feedContent
  * @property {number} feedLikeCount
+ * @property {string} isLiked
  * @property {number} feedCommentCount
  * @property {string[]} feedFilePaths
  * @property {FeedComment[]} feedCommentList
