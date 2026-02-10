@@ -167,8 +167,6 @@
                 tb_feed
             WHERE
                 feed_no = #{feedNo}
-            AND
-                feed_visible_yn = 'Y'
         )
     </select>
 
