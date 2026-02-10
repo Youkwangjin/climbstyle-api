@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>ClimbStyle | 피드</title>
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/feed/feed.css}">
@@ -49,16 +51,16 @@
                     <div class="f-actions">
                         <button class="f-btn"
                                 th:classappend="${feed.feedLikeCount != null && feed.feedLikeCount > 0} ? 'is-liked' : ''"
-                                type="button"
-                                aria-label="좋아요">
-                            <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
-                                <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
-                            </th:block>
-                            <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
-                                <th:block th:replace="~{fragments/common/icons :: heart}" />
-                            </th:block>
-                            <span th:if="${feed.feedLikeCount != null}" th:text="${feed.feedLikeCount}"></span>
-                            <span th:if="${feed.feedLikeCount == null}"></span>
+                                type="button" th:attr="data-feed-no=${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
+                            <span class="icon-container">
+                                <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
+                                    <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
+                                </th:block>
+                                <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
+                                    <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                </th:block>
+                            </span>
+                            <span class="like-count" th:text="${feed.feedLikeCount ?: 0}">0</span>
                         </button>
                         <button class="f-btn" type="button" aria-label="댓글">
                             <th:block th:replace="~{fragments/common/icons :: comment}"/>
@@ -175,6 +177,7 @@
 <script th:src="@{/js/common/logout.js}"></script>
 <script th:src="@{/js/feed/feed-detail.js}"></script>
 <script th:src="@{/js/common/icons.js}"></script>
+<script th:src="@{/js/common/api.js}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const feedCards = document.querySelectorAll(".f-card");
@@ -192,6 +195,47 @@
             });
         });
     });
+
+    function like(button) {
+        API.callJson(`/api/v1/feed/${button.getAttribute("data-feed-no")}/like`, {
+            method: "POST"
+        })
+            .then(async response => {
+                const result = await response.json();
+
+                if (response.ok) {
+                    updateLikeButton(button, result.data.isLiked, result.data.feedLikeCount);
+                } else {
+                    alert(result.message);
+                }
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+
+    function updateLikeButton(button, isLiked, feedLikeCount) {
+        const iconContainer = button.querySelector(".icon-container");
+        const countSpan = button.querySelector(".like-count");
+
+        if (isLiked) {
+            button.classList.add("is-liked");
+        } else {
+            button.classList.remove("is-liked");
+        }
+
+        if (iconContainer && Icons) {
+            if (isLiked) {
+                iconContainer.innerHTML = Icons.heartFilled;
+            } else {
+                iconContainer.innerHTML = Icons.heart;
+            }
+        }
+
+        if (countSpan) {
+            countSpan.textContent = feedLikeCount;
+        }
+    }
 </script>
 </body>
 </html>
