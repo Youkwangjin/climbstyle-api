@@ -14,6 +14,8 @@ public class FeedDetailResponse {
 
     private Integer feedNo;
 
+    private Integer userNo;
+
     private String feedTitle;
 
     private String feedContent;
@@ -31,4 +33,6 @@ public class FeedDetailResponse {
     private Integer feedCommentCount;
 
     private LocalDateTime feedCreated;
+
+    private Boolean isAuthor;
 }

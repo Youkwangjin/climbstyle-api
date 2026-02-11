@@ -12,6 +12,8 @@ import java.util.List;
 @Mapper
 public interface FeedRepository {
 
+    Boolean existFeedByNo(@Param("feedNo") Integer feedNo);
+
     Integer selectFeedListCountByRequest(PaginationRequest request);
 
     Integer selectMyFeedListCountByRequest(PaginationRequest request, @Param("userNo") Integer userNo);
@@ -21,8 +23,6 @@ public interface FeedRepository {
     List<FeedListResponse> selectMyFeedList(PaginationRequest request, @Param("userNo") Integer userNo);
 
     FeedDetailResponse selectFeedByNo(@Param("feedNo") Integer feedNo);
-
-    Boolean existFeedByNo(@Param("feedNo") Integer feedNo);
 
     void insert(FeedEntity feedEntity);
 }

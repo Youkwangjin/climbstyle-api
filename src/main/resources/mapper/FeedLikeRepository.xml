@@ -11,15 +11,6 @@
         <result property="feedLikeUpdated"      column="feed_like_updated"/>
     </resultMap>
 
-    <select id="selectFeedLikeCountByFeedNo" parameterType="Integer" resultType="Integer">
-        SELECT
-            COUNT(feed_like_no)
-        FROM
-            tb_feed_like
-        WHERE
-            feed_no = #{feedNo}
-    </select>
-
     <select id="existFeedLikeByFeedNoAndUserNo" parameterType="Integer" resultType="Boolean">
         SELECT EXISTS(
             SELECT 1
@@ -27,9 +18,18 @@
                 tb_feed_like
             WHERE
                 feed_no = #{feedNo}
-            AND
+              AND
                 user_no = #{userNo}
         )
+    </select>
+
+    <select id="selectFeedLikeCountByFeedNo" parameterType="Integer" resultType="Integer">
+        SELECT
+            COUNT(feed_like_no)
+        FROM
+            tb_feed_like
+        WHERE
+            feed_no = #{feedNo}
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedLikeEntity"
