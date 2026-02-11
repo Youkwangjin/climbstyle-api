@@ -165,8 +165,6 @@
         WHERE
             f.feed_no = #{feedNo}
         AND
-            f.feed_visible_yn = 'Y'
-        AND
             u.user_delete_yn = 'N'
     </select>
 
