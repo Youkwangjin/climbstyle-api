@@ -9,10 +9,11 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum FeedSuccessCode implements ApiCode {
 
-    FEED_CREATE_SUCCESS(HttpStatus.OK,      "1000", "피드가 등록되었습니다."),
-    FEED_DETAIL_SUCCESS(HttpStatus.OK,      "1000", "피드 상세 조회가 완료되었습니다."),
-    FEED_LIKE_CREATE_SUCCESS(HttpStatus.OK, "1000", "좋아요를 등록했습니다."),
-    FEED_LIKE_DELETE_SUCCESS(HttpStatus.OK, "1000", "좋아요를 취소했습니다."),
+    FEED_CREATE_SUCCESS(HttpStatus.OK,         "1000", "피드가 등록되었습니다."),
+    FEED_DETAIL_SUCCESS(HttpStatus.OK,         "1000", "피드 상세 조회가 완료되었습니다."),
+    FEED_LIKE_CREATE_SUCCESS(HttpStatus.OK,    "1000", "좋아요를 등록했습니다."),
+    FEED_LIKE_DELETE_SUCCESS(HttpStatus.OK,    "1000", "좋아요를 취소했습니다."),
+    FEED_COMMENT_CREATE_SUCCESS(HttpStatus.OK, "1000", "댓글을 등록했습니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -20,6 +20,16 @@
                     resultMap="com.kwang.climbstyle.domain.feed.repository.FeedLikeRepository.feedLikeResultMap"/>
     </resultMap>
 
+    <select id="existFeedByNo" parameterType="Integer" resultType="Boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM
+                tb_feed
+            WHERE
+                feed_no = #{feedNo}
+        )
+    </select>
+
     <select id="selectFeedListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
             resultType="Integer">
         SELECT
@@ -158,16 +168,6 @@
             f.feed_visible_yn = 'Y'
         AND
             u.user_delete_yn = 'N'
-    </select>
-
-    <select id="existFeedByNo" parameterType="Integer" resultType="Boolean">
-        SELECT EXISTS(
-            SELECT 1
-            FROM
-                tb_feed
-            WHERE
-                feed_no = #{feedNo}
-        )
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedEntity" useGeneratedKeys="true"

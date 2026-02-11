@@ -44,7 +44,8 @@ public class FeedValidationException {
         String[] fieldPriority = {"feedTitle",
                                   "feedContent",
                                   "feedVisibleYn",
-                                  "feedImages"};
+                                  "feedImages",
+                                  "feedCommentContent"};
 
         for (String priorityField : fieldPriority) {
             for (FieldError fieldError : fieldErrors) {
@@ -55,6 +56,7 @@ public class FeedValidationException {
                         case "feedContent": return FeedErrorCode.FEED_CONTENT_INVALID_FORMAT;
                         case "feedVisibleYn": return FeedErrorCode.FEED_VISIBLE_INVALID_FORMAT;
                         case "feedImages": return FeedErrorCode.FEED_IMAGE_REQUIRED;
+                        case "feedCommentContent": return FeedErrorCode.FEED_COMMENT_INVALID_FORMAT;
                     }
                 }
             }

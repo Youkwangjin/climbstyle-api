@@ -1,15 +1,18 @@
 package com.kwang.climbstyle.domain.feed.service;
 
+import com.kwang.climbstyle.code.feed.FeedCommentDeleteStatus;
 import com.kwang.climbstyle.code.feed.FeedErrorCode;
 import com.kwang.climbstyle.code.feed.FeedLikeVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
+import com.kwang.climbstyle.domain.feed.dto.request.FeedCommentCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedCommentListResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse;
+import com.kwang.climbstyle.domain.feed.entity.FeedCommentEntity;
 import com.kwang.climbstyle.domain.feed.entity.FeedEntity;
 import com.kwang.climbstyle.domain.feed.entity.FeedFileEntity;
 import com.kwang.climbstyle.domain.feed.entity.FeedLikeEntity;
@@ -153,5 +156,35 @@ public class FeedService {
                 .isLiked(!isLike)
                 .feedLikeCount(feedLikeCount)
                 .build();
+    }
+
+    @Transactional
+    public void commentFeed(Integer userNo, Integer feedNo, FeedCommentCreateRequest request) {
+        final String feedCommentContent = request.getFeedCommentContent();
+        final Integer feedCommentNo = request.getFeedCommentParentNo();
+
+        if (!feedRepository.existFeedByNo(feedNo)) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
+        }
+
+        if (feedCommentNo != null) {
+            if (!feedCommentRepository.existsByFeedCommentNo(feedCommentNo)) {
+                throw new ClimbStyleException(FeedErrorCode.FEED_COMMENT_NOT_FOUND);
+            }
+        }
+
+        final LocalDateTime feedCreated = LocalDateTime.now();
+        final String feedCommentDeleteYn = FeedCommentDeleteStatus.NOT_DELETED.getCode();
+
+        FeedCommentEntity feedCommentEntity = FeedCommentEntity.builder()
+                .feedNo(feedNo)
+                .userNo(userNo)
+                .feedCommentParentNo(feedCommentNo)
+                .feedCommentContent(feedCommentContent)
+                .feedCommentDeleteYn(feedCommentDeleteYn)
+                .feedCommentCreated(feedCreated)
+                .build();
+
+        feedCommentRepository.insert(feedCommentEntity);
     }
 }
