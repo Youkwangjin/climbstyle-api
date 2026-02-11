@@ -25,7 +25,8 @@ public class FeedApiController {
 
     @GetMapping(value = "/api/v1/feeds/{feedNo}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<FeedDetailResponse>> detailFeed(@PathVariable("feedNo") Integer feedNo) {
-        FeedDetailResponse data = feedService.detailFeed(feedNo);
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        FeedDetailResponse data = feedService.detailFeed(feedNo, userNo);
 
         return ApiResponseBuilder.ok(FeedSuccessCode.FEED_DETAIL_SUCCESS, data);
     }

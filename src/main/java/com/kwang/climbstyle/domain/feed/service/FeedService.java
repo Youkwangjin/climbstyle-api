@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -57,11 +58,13 @@ public class FeedService {
         return feedRepository.selectMyFeedList(request, userNo);
     }
 
-    public FeedDetailResponse detailFeed(Integer feedNo) {
+    public FeedDetailResponse detailFeed(Integer feedNo, Integer userNo) {
         FeedDetailResponse feed = feedRepository.selectFeedByNo(feedNo);
         if (feed == null) {
             throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
         }
+
+        feed.setIsAuthor(Objects.equals(feed.getUserNo(), userNo));
 
         List<String> feedFilePaths = feedFileRepository.selectFeedFilePathsByFeedNo(feedNo);
         if (feedFilePaths == null) {
