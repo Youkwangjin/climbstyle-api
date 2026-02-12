@@ -13,6 +13,7 @@ let totalImages = 0;
  * @property {number} feedCommentCount
  * @property {string[]} feedFilePaths
  * @property {FeedComment[]} feedCommentList
+ * @property {boolean} isAuthor
  */
 
 /**
@@ -48,6 +49,7 @@ function openFeedDetail(feedNo) {
             renderImages(feed.feedFilePaths);
             renderComments(feed.feedCommentList);
             updateLikeStatus(feed.feedLikeCount);
+            updateMoreButton(feed.isAuthor);
         })
         .catch(() => {
             alert("피드를 불러오는데 실패했습니다. 지속될 경우 관리자에게 문의하세요.");
@@ -182,6 +184,26 @@ function updateLikeStatus(likeCount) {
     }
 }
 
+function updateMoreButton(isAuthor) {
+    const moreWrapper = document.querySelector(".detail-more-wrapper");
+
+    if (!moreWrapper) {
+        return;
+    }
+
+    if (isAuthor) {
+        moreWrapper.style.display = "block";
+    } else {
+        moreWrapper.style.display = "none";
+    }
+}
+
+function toggleMoreMenu(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById("moreDropdown");
+    dropdown.classList.toggle("is-active");
+}
+
 function formatDate(dateString) {
     const date = new Date(dateString);
     const now = new Date();
@@ -207,4 +229,11 @@ document.addEventListener("keydown", (e) => {
 
     if (e.key === "ArrowLeft") prevImage();
     if (e.key === "ArrowRight") nextImage();
+});
+
+document.addEventListener("click", () => {
+    const dropdown = document.getElementById("moreDropdown");
+    if (dropdown) {
+        dropdown.classList.remove("is-active");
+    }
 });
