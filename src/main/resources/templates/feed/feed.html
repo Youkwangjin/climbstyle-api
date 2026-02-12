@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -95,18 +95,23 @@
                         <div class="modal-right">
                             <div class="detail-header">
                                 <div class="detail-user">
-                        <span class="detail-avatar">
-                            <img id="detailUserImage" src="" alt="프로필" />
-                        </span>
-                                <div class="detail-user-info">
-                                    <div class="detail-username" id="detailUsername"></div>
-                                    <div class="detail-date" id="detailDate"></div>
+                                    <span class="detail-avatar">
+                                        <img id="detailUserImage" src="" alt="프로필" />
+                                    </span>
+                                    <div class="detail-user-info">
+                                        <div class="detail-username" id="detailUsername"></div>
+                                        <div class="detail-date" id="detailDate"></div>
+                                    </div>
                                 </div>
-                                </div>
-                                <div sec:authorize="isAuthenticated()">
-                                    <button class="detail-more" type="button" aria-label="더보기">
+                                <div class="detail-more-wrapper" style="display: none;">
+                                    <button class="detail-more" type="button" aria-label="더보기" onclick="toggleMoreMenu(event)">
                                         <th:block th:replace="~{fragments/common/icons :: more}" />
                                     </button>
+
+                                    <div class="more-dropdown" id="moreDropdown">
+                                        <button type="button" class="more-item">수정하기</button>
+                                        <button type="button" class="more-item more-item-danger">삭제하기</button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="detail-body">
@@ -197,7 +202,7 @@
     });
 
     function like(button) {
-        API.callJson(`/api/v1/feed/${button.getAttribute("data-feed-no")}/like`, {
+        API.callJson(`/api/v1/feeds/${button.getAttribute("data-feed-no")}/like`, {
             method: "POST"
         })
             .then(async response => {
