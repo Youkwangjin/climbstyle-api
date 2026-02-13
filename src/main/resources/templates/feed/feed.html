@@ -37,9 +37,7 @@
                     <div class="f-top">
                         <div class="f-user">
                             <span class="f-avatar" aria-hidden="true">
-                                <img th:if="${feed.userImageUrl != null}"
-                                     th:src="${feed.userImageUrl}"
-                                     alt="사용자 프로필" />
+                                <img th:if="${feed.userImageUrl != null}" th:src="${feed.userImageUrl}" alt="사용자 프로필" />
                             </span>
                             <div class="f-user-meta">
                                 <div class="f-name" th:text="${feed.userNickName ?: '익명 사용자'}"></div>
@@ -133,10 +131,11 @@
                             <div class="detail-comments" id="detailComments">
                             </div>
                             <div class="detail-comment-form">
+                                <input type="hidden" id="feedCommentParentNo" />
                                 <label>
-                                    <input type="text" placeholder="댓글을 입력하세요..." />
+                                    <input type="text" id="feedCommentContent" placeholder="댓글을 입력하세요..." />
                                 </label>
-                                <button type="button">게시</button>
+                                <button type="button" onclick="submitComment()">게시</button>
                             </div>
                         </div>
                     </div>
@@ -180,6 +179,7 @@
 </section>
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/logout.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
 <script th:src="@{/js/feed/feed-detail.js}"></script>
 <script th:src="@{/js/common/icons.js}"></script>
 <script th:src="@{/js/common/api.js}"></script>
