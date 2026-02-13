@@ -31,6 +31,8 @@ function openFeedDetail(feedNo) {
             const feed = data.data;
             const modal = document.getElementById("feedDetailModal");
 
+            modal.dataset.feedNo = feedNo;
+
             currentImageIndex = 0;
 
             modal.classList.add("is-active");
@@ -202,6 +204,46 @@ function toggleMoreMenu(event) {
     event.stopPropagation();
     const dropdown = document.getElementById("moreDropdown");
     dropdown.classList.toggle("is-active");
+}
+
+function submitComment() {
+    if (!Validator.comment() || !confirm("댓글을 저장하시겠습니까?")) {
+        return;
+    }
+
+    const feedNo = getCurrentFeedNo();
+
+    API.callJson(`/api/v1/feeds/${feedNo}/comments`,{
+        method: "POST",
+        body: JSON.stringify({
+            feedCommentContent: document.getElementById("feedCommentContent").value.trim(),
+            feedCommentParentNo: document.getElementById("feedCommentParentNo").value.trim()
+        })
+    })
+        .then(async response => {
+            const body = await response.json();
+
+            if (response.ok) {
+                alert(body.message);
+                document.getElementById("feedCommentContent").value = "";
+                openFeedDetail(feedNo);
+            } else {
+                alert(body.message);
+            }
+        })
+        .catch(() => {
+            alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+        });
+}
+
+function getCurrentFeedNo() {
+    const modal = document.getElementById("feedDetailModal");
+
+    if (modal) {
+        return parseInt(modal.dataset.feedNo);
+    }
+
+    return null;
 }
 
 function formatDate(dateString) {

@@ -228,6 +228,12 @@ const Validator = {
         return true;
     },
 
+    comment() {
+        const feedCommentContent = document.getElementById("feedCommentContent").value.trim();
+        if (!this.rules.required(feedCommentContent, "댓글")) return false;
+        return this.rules.maxLength(feedCommentContent, "댓글", 500);
+    },
+
     checkField(fieldId, fieldName) {
         const value = document.getElementById(fieldId)?.value.trim();
 
