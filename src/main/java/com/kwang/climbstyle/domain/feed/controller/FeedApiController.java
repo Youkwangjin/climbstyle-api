@@ -53,7 +53,7 @@ public class FeedApiController {
         }
     }
 
-    @PostMapping(value = "/api/v1/feeds/{feedNo}/comment", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/v1/feeds/{feedNo}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> commentFeed(@PathVariable("feedNo") Integer feedNo,
                                                                   @Valid @RequestBody FeedCommentCreateRequest request) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
