@@ -120,7 +120,17 @@
                     tb_feed_like fl
                 WHERE
                     fl.feed_no = feed_list.feed_no
-            ) AS feed_like_count
+            ) AS feed_like_count,
+            (
+                SELECT
+                    COUNT(fc.feed_no)
+                FROM
+                    tb_feed_comment fc
+                WHERE
+                    fc.feed_no = feed_list.feed_no
+                AND
+                    fc.feed_comment_delete_yn = 'N'
+            ) AS feed_comment_count
         FROM (
              SELECT
                  u.user_image_url,
@@ -152,6 +162,7 @@
             f.feed_no,
             f.feed_title,
             f.feed_content,
+            f.feed_visible_yn,
             f.feed_created,
             u.user_no,
             u.user_nickname,
