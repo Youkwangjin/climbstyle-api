@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum FeedLikeVisibleStatus {
+public enum FeedVisibleStatus {
 
     VISIBLE("Y", "공개"),
     HIDDEN("N", "비공개"),
