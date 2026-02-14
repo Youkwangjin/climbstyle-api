@@ -51,7 +51,7 @@
         AND
             fc.feed_comment_delete_yn = 'N'
         ORDER BY
-            fc.feed_comment_created DESC
+            fc.feed_comment_created ASC
     </select>
 
     <select id="selectFeedCommentsCountByFeedNo" parameterType="Integer" resultType="Integer">

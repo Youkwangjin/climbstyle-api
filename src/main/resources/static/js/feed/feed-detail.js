@@ -20,6 +20,7 @@ let totalImages = 0;
  * @typedef {Object} FeedComment
  * @property {string} userNickname
  * @property {string} userImageUrl
+ * @property {number} feedCommentNo
  * @property {string} feedCommentContent
  * @property {string} feedCommentCreated
  */
@@ -158,17 +159,53 @@ function renderComments(comments) {
         return;
     }
 
-    container.innerHTML = comments.map(comment => `
+    const parentComments = comments.filter(c => !c.feedCommentParentNo);
+
+    const replyMap = {};
+    comments.forEach(comment => {
+        if (comment.feedCommentParentNo) {
+            if (!replyMap[comment.feedCommentParentNo]) {
+                replyMap[comment.feedCommentParentNo] = [];
+            }
+            replyMap[comment.feedCommentParentNo].push(comment);
+        }
+    });
+
+    container.innerHTML = parentComments.map(comment => `
         <div class="comment-item">
             <div class="comment-avatar">
                 <img src="${comment.userImageUrl || "/img/default-avatar.png"}" alt="프로필" />
             </div>
             <div class="comment-body">
-                <div class="comment-header">
+                <div class="comment-content">
                     <span class="comment-username">${comment.userNickname}</span>
-                    <span class="comment-date">${formatDate(comment.feedCommentCreated)}</span>
+                    <span class="comment-text">${comment.feedCommentContent}</span>
                 </div>
-                <div class="comment-content">${comment.feedCommentContent}</div>
+                <div class="comment-meta">
+                    <span class="comment-date">${formatDate(comment.feedCommentCreated)}</span>
+                    <span class="comment-reply" onclick="replyToComment(${comment.feedCommentNo}, '${comment.userNickname}')">답글 달기</span>
+                </div>
+                
+                ${replyMap[comment.feedCommentNo] ? `
+                    <div class="comment-replies">
+                        ${replyMap[comment.feedCommentNo].map(reply => `
+                            <div class="comment-item reply-item">
+                                <div class="comment-avatar">
+                                    <img src="${reply.userImageUrl || "/img/default-avatar.png"}" alt="프로필" />
+                                </div>
+                                <div class="comment-body">
+                                    <div class="comment-content">
+                                        <span class="comment-username">${reply.userNickname}</span>
+                                        <span class="comment-text">${reply.feedCommentContent}</span>
+                                    </div>
+                                    <div class="comment-meta">
+                                        <span class="comment-date">${formatDate(reply.feedCommentCreated)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
             </div>
         </div>
     `).join("");
@@ -178,7 +215,12 @@ function updateLikeStatus(likeCount) {
     const likeCountSpan = document.getElementById("detailLikeCount");
     const likeIcon = document.getElementById("detailLikeIcon");
 
-    likeCountSpan.textContent = likeCount ?? "-";
+    if (likeCount !== null && likeCount !== undefined) {
+        likeCountSpan.textContent = likeCount;
+    } else {
+        likeCountSpan.textContent = "-";
+    }
+
     if (likeCount > 0) {
         likeIcon.innerHTML = Icons.heartFilled;
     } else {
@@ -225,7 +267,11 @@ function submitComment() {
 
             if (response.ok) {
                 alert(body.message);
+
                 document.getElementById("feedCommentContent").value = "";
+                document.getElementById("feedCommentParentNo").value = "";
+
+                cancelReply();
                 openFeedDetail(feedNo);
             } else {
                 alert(body.message);
@@ -234,6 +280,56 @@ function submitComment() {
         .catch(() => {
             alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
         });
+}
+
+function replyToComment(commentNo, username) {
+    const parentNoInput = document.getElementById("feedCommentParentNo");
+    const commentInput = document.getElementById("feedCommentContent");
+    const commentForm = document.querySelector(".detail-comment-form");
+
+    parentNoInput.value = commentNo;
+
+    commentForm.classList.add("is-replying");
+
+    showReplyInfo(username);
+
+    commentInput.focus();
+    commentInput.placeholder = `${username}님에게 답글 작성 중...`;
+}
+
+function showReplyInfo(username) {
+    const commentForm = document.querySelector(".detail-comment-form");
+
+    const existingInfo = commentForm.querySelector(".reply-info");
+    if (existingInfo) {
+        existingInfo.remove();
+    }
+
+    const replyInfo = document.createElement("div");
+    replyInfo.className = "reply-info";
+    replyInfo.innerHTML = `
+        <span><strong>${username}</strong>님에게 답글 작성 중</span>
+        <button type="button" class="reply-cancel" onclick="cancelReply()">
+            ${Icons.xSmall}
+        </button>
+    `;
+
+    commentForm.insertBefore(replyInfo, commentForm.firstChild);
+}
+
+function cancelReply() {
+    const parentNoInput = document.getElementById("feedCommentParentNo");
+    const commentInput = document.getElementById("feedCommentContent");
+    const commentForm = document.querySelector(".detail-comment-form");
+
+    parentNoInput.value = "";
+    commentInput.placeholder = "댓글을 입력하세요...";
+    commentForm.classList.remove("is-replying");
+
+    const replyInfo = commentForm.querySelector(".reply-info");
+    if (replyInfo) {
+        replyInfo.remove();
+    }
 }
 
 function getCurrentFeedNo() {
