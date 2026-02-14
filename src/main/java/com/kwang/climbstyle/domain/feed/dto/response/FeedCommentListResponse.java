@@ -13,6 +13,8 @@ public class FeedCommentListResponse {
 
     private Integer feedCommentNo;
 
+    private Integer feedCommentParentNo;
+
     private String userNickname;
 
     private String userImageUrl;
