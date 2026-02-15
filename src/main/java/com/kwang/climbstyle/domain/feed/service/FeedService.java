@@ -4,10 +4,12 @@ import com.kwang.climbstyle.code.feed.FeedCommentDeleteStatus;
 import com.kwang.climbstyle.code.feed.FeedErrorCode;
 import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
+import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCommentCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
+import com.kwang.climbstyle.domain.feed.dto.request.FeedUpdateRequest;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedCommentListResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeResponse;
@@ -189,5 +191,31 @@ public class FeedService {
                 .build();
 
         feedCommentRepository.insert(feedCommentEntity);
+    }
+
+    @Transactional
+    public void updateFeed(Integer userNo, Integer feedNo, FeedUpdateRequest request) {
+        final String feedTitle = request.getFeedTitle();
+        final String feedContent = request.getFeedContent();
+        final String feedVisibleYn = request.getFeedVisibleYn();
+        final LocalDateTime feedUpdated = LocalDateTime.now();
+
+        if (!feedRepository.existFeedByNo(feedNo)) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
+        }
+
+        if (!feedRepository.existsFeedByNoAndUserNo(feedNo, userNo)) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        FeedEntity feedEntity = FeedEntity.builder()
+                .feedNo(feedNo)
+                .feedTitle(feedTitle)
+                .feedContent(feedContent)
+                .feedVisibleYn(feedVisibleYn)
+                .feedUpdated(feedUpdated)
+                .build();
+
+        feedRepository.update(feedEntity);
     }
 }

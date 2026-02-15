@@ -29,6 +29,18 @@
                 feed_no = #{feedNo}
         )
     </select>
+    
+    <select id="existsFeedByNoAndUserNo" parameterType="Integer" resultType="Boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM
+                tb_feed
+            WHERE
+                feed_no = #{feedNo}
+            AND
+                user_no = #{userNo}
+        )
+    </select>
 
     <select id="selectFeedListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
             resultType="Integer">
@@ -197,4 +209,16 @@
             #{feedCreated}
         )
     </insert>
+
+    <update id="update" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedEntity">
+        UPDATE
+            tb_feed
+        SET
+            feed_title = #{feedTitle},
+            feed_content = #{feedContent},
+            feed_visible_yn = #{feedVisibleYn},
+            feed_updated = #{feedUpdated}
+        WHERE
+            feed_no = #{feedNo}
+    </update>
 </mapper>

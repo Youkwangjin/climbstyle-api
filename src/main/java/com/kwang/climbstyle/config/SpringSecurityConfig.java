@@ -77,31 +77,37 @@ public class SpringSecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/css/**",
-                                                  "/img/**",
-                                                  "/js/**").permitAll()
+                        .requestMatchers("/css/**",
+                                         "/img/**",
+                                         "/js/**").permitAll()
 
-                                .requestMatchers("/",
-                                                  "/error",
-                                                  "/logout",
-                                                  "/auth/login","/feed",
-                                                  "/auth/register",
-                                                  "/api/v1/feeds/**").permitAll()
+                        .requestMatchers("/",
+                                        "/error",
+                                        "/logout",
+                                        "/auth/login",
+                                        "/feed",
+                                        "/auth/register").permitAll()
 
-                                .requestMatchers("/my/profile/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/my/profile/**").hasAuthority("ROLE_USER")
 
-                                .requestMatchers("/api/v1/users/id/availability",
-                                                 "/api/v1/users/email/availability",
-                                                 "/api/v1/users/nickname/availability",
-                                                 "/api/v1/login").permitAll()
+                        .requestMatchers("/api/v1/users/id/availability",
+                                         "/api/v1/users/email/availability",
+                                         "/api/v1/users/nickname/availability",
+                                         "/api/v1/login").permitAll()
 
-                                .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
 
-                                .requestMatchers("/api/v1/users/**",
-                                                 "/api/v1/feeds",
-                                                 "/api/v1/feeds/**").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/feeds").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/feeds/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/feeds").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/feeds/*").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/feeds/*").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/feeds/*/like").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/feeds/*/comments").hasAuthority("ROLE_USER")
 
-                .anyRequest().permitAll()
+                        .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_USER")
+
+                        .anyRequest().permitAll()
                 );
 
         http

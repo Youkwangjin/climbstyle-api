@@ -7,6 +7,7 @@ import com.kwang.climbstyle.common.response.ApiSuccessResponse;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCommentCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
+import com.kwang.climbstyle.domain.feed.dto.request.FeedUpdateRequest;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeResponse;
 import com.kwang.climbstyle.domain.feed.service.FeedService;
@@ -58,11 +59,20 @@ public class FeedApiController {
                                                                   @Valid @RequestBody FeedCommentCreateRequest request) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
         if (userNo == null) {
-            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+            throw new ClimbStyleException(HttpErrorCode.UNAUTHORIZED_ERROR);
         }
 
         feedService.commentFeed(userNo, feedNo, request);
 
         return ApiResponseBuilder.ok(FeedSuccessCode.FEED_COMMENT_CREATE_SUCCESS);
+    }
+
+    @PatchMapping(value = "/api/v1/feeds/{feedNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> updateFeed(@PathVariable ("feedNo") Integer feedNo,
+                                                                 @Valid @RequestBody FeedUpdateRequest request) {
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        feedService.updateFeed(userNo, feedNo, request);
+
+        return ApiResponseBuilder.ok(FeedSuccessCode.FEED_UPDATE_SUCCESS);
     }
 }
