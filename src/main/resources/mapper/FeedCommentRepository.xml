@@ -15,6 +15,18 @@
                      resultMap="com.kwang.climbstyle.domain.user.repository.UserRepository.userResultMap"/>
     </resultMap>
 
+    <select id="existsByFeedCommentNo" parameterType="Integer" resultType="Boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM
+                tb_feed_comment
+            WHERE
+                feed_comment_no = #{feedCommentNo}
+            AND
+                feed_comment_delete_yn = 'N'
+        )
+    </select>
+
     <select id="selectFeedCommentsByFeedNo" parameterType="Integer"
             resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedCommentListResponse">
         SELECT
@@ -37,9 +49,9 @@
         WHERE
             fc.feed_no = #{feedNo}
         AND
-            fc.feed_comment_delete_yn = 'Y'
+            fc.feed_comment_delete_yn = 'N'
         ORDER BY
-            fc.feed_comment_created DESC
+            fc.feed_comment_created ASC
     </select>
 
     <select id="selectFeedCommentsCountByFeedNo" parameterType="Integer" resultType="Integer">
@@ -52,4 +64,22 @@
         AND
             feed_comment_delete_yn = 'N'
     </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedCommentEntity">
+        INSERT INTO tb_feed_comment (
+            feed_no,
+            user_no,
+            feed_comment_parent_no,
+            feed_comment_content,
+            feed_comment_delete_yn,
+            feed_comment_created
+        ) VALUES (
+            #{feedNo},
+            #{userNo},
+            #{feedCommentParentNo},
+            #{feedCommentContent},
+            #{feedCommentDeleteYn},
+            #{feedCommentCreated}
+        )
+    </insert>
 </mapper>

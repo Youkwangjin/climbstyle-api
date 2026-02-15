@@ -20,6 +20,28 @@
                     resultMap="com.kwang.climbstyle.domain.feed.repository.FeedLikeRepository.feedLikeResultMap"/>
     </resultMap>
 
+    <select id="existFeedByNo" parameterType="Integer" resultType="Boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM
+                tb_feed
+            WHERE
+                feed_no = #{feedNo}
+        )
+    </select>
+    
+    <select id="existsFeedByNoAndUserNo" parameterType="Integer" resultType="Boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM
+                tb_feed
+            WHERE
+                feed_no = #{feedNo}
+            AND
+                user_no = #{userNo}
+        )
+    </select>
+
     <select id="selectFeedListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
             resultType="Integer">
         SELECT
@@ -110,7 +132,17 @@
                     tb_feed_like fl
                 WHERE
                     fl.feed_no = feed_list.feed_no
-            ) AS feed_like_count
+            ) AS feed_like_count,
+            (
+                SELECT
+                    COUNT(fc.feed_no)
+                FROM
+                    tb_feed_comment fc
+                WHERE
+                    fc.feed_no = feed_list.feed_no
+                AND
+                    fc.feed_comment_delete_yn = 'N'
+            ) AS feed_comment_count
         FROM (
              SELECT
                  u.user_image_url,
@@ -142,6 +174,7 @@
             f.feed_no,
             f.feed_title,
             f.feed_content,
+            f.feed_visible_yn,
             f.feed_created,
             u.user_no,
             u.user_nickname,
@@ -154,8 +187,6 @@
             f.user_no = u.user_no
         WHERE
             f.feed_no = #{feedNo}
-        AND
-            f.feed_visible_yn = 'Y'
         AND
             u.user_delete_yn = 'N'
     </select>
@@ -178,4 +209,16 @@
             #{feedCreated}
         )
     </insert>
+
+    <update id="update" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedEntity">
+        UPDATE
+            tb_feed
+        SET
+            feed_title = #{feedTitle},
+            feed_content = #{feedContent},
+            feed_visible_yn = #{feedVisibleYn},
+            feed_updated = #{feedUpdated}
+        WHERE
+            feed_no = #{feedNo}
+    </update>
 </mapper>

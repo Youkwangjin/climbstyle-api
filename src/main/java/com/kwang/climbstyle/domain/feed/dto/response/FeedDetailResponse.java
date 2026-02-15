@@ -14,9 +14,13 @@ public class FeedDetailResponse {
 
     private Integer feedNo;
 
+    private Integer userNo;
+
     private String feedTitle;
 
     private String feedContent;
+
+    private String feedVisibleYn;
 
     private List<String> feedFilePaths;
 
@@ -31,4 +35,6 @@ public class FeedDetailResponse {
     private Integer feedCommentCount;
 
     private LocalDateTime feedCreated;
+
+    private Boolean isAuthor;
 }

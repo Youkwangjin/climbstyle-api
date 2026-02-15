@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum FeedLikeVisibleStatus {
+public enum FeedCommentDeleteStatus {
 
-    VISIBLE("Y", "공개"),
-    HIDDEN("N", "비공개"),
+    NOT_DELETED("N", "미삭제"),
+    DELETED("Y", "삭제"),
     ;
 
     private final String code;

@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>ClimbStyle | 피드</title>
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/feed/feed.css}">
     <link rel="stylesheet" th:href="@{/css/feed/feed-detail.css}">
+    <link rel="stylesheet" th:href="@{/css/feed/feed-new.css}">
 </head>
 <body>
 <header>
@@ -35,9 +38,7 @@
                     <div class="f-top">
                         <div class="f-user">
                             <span class="f-avatar" aria-hidden="true">
-                                <img th:if="${feed.userImageUrl != null}"
-                                     th:src="${feed.userImageUrl}"
-                                     alt="사용자 프로필" />
+                                <img th:if="${feed.userImageUrl != null}" th:src="${feed.userImageUrl}" alt="사용자 프로필" />
                             </span>
                             <div class="f-user-meta">
                                 <div class="f-name" th:text="${feed.userNickName ?: '익명 사용자'}"></div>
@@ -49,16 +50,16 @@
                     <div class="f-actions">
                         <button class="f-btn"
                                 th:classappend="${feed.feedLikeCount != null && feed.feedLikeCount > 0} ? 'is-liked' : ''"
-                                type="button"
-                                aria-label="좋아요">
-                            <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
-                                <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
-                            </th:block>
-                            <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
-                                <th:block th:replace="~{fragments/common/icons :: heart}" />
-                            </th:block>
-                            <span th:if="${feed.feedLikeCount != null}" th:text="${feed.feedLikeCount}"></span>
-                            <span th:if="${feed.feedLikeCount == null}"></span>
+                                type="button" th:attr="data-feed-no=${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
+                            <span class="icon-container">
+                                <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
+                                    <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
+                                </th:block>
+                                <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
+                                    <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                </th:block>
+                            </span>
+                            <span class="like-count" th:text="${feed.feedLikeCount ?: 0}">0</span>
                         </button>
                         <button class="f-btn" type="button" aria-label="댓글">
                             <th:block th:replace="~{fragments/common/icons :: comment}"/>
@@ -93,18 +94,23 @@
                         <div class="modal-right">
                             <div class="detail-header">
                                 <div class="detail-user">
-                        <span class="detail-avatar">
-                            <img id="detailUserImage" src="" alt="프로필" />
-                        </span>
-                                <div class="detail-user-info">
-                                    <div class="detail-username" id="detailUsername"></div>
-                                    <div class="detail-date" id="detailDate"></div>
+                                    <span class="detail-avatar">
+                                        <img id="detailUserImage" src="" alt="프로필" />
+                                    </span>
+                                    <div class="detail-user-info">
+                                        <div class="detail-username" id="detailUsername"></div>
+                                        <div class="detail-date" id="detailDate"></div>
+                                    </div>
                                 </div>
-                                </div>
-                                <div sec:authorize="isAuthenticated()">
-                                    <button class="detail-more" type="button" aria-label="더보기">
+                                <div class="detail-more-wrapper" style="display: none;">
+                                    <button class="detail-more" type="button" aria-label="더보기" onclick="toggleMoreMenu(event)">
                                         <th:block th:replace="~{fragments/common/icons :: more}" />
                                     </button>
+
+                                    <div class="more-dropdown" id="moreDropdown">
+                                        <button type="button" class="more-item" onclick="updateFeed()">수정하기</button>
+                                        <button type="button" class="more-item more-item-danger" onclick="deleteFeed()">삭제하기</button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="detail-body">
@@ -126,10 +132,78 @@
                             <div class="detail-comments" id="detailComments">
                             </div>
                             <div class="detail-comment-form">
+                                <input type="hidden" id="feedCommentParentNo" />
                                 <label>
-                                    <input type="text" placeholder="댓글을 입력하세요..." />
+                                    <input type="text" id="feedCommentContent" placeholder="댓글을 입력하세요..." />
                                 </label>
-                                <button type="button">게시</button>
+                                <button type="button" onclick="submitComment()">게시</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="feedEditModal" class="modal" aria-hidden="true">
+                <div class="modal-backdrop" onclick="closeFeedEdit()"></div>
+                <div class="modal-container">
+                    <button class="modal-close" onclick="closeFeedEdit()" aria-label="닫기">
+                        <th:block th:replace="~{fragments/common/icons :: close}" />
+                    </button>
+                    <div class="modal-content">
+                        <div class="modal-left">
+                            <div class="edit-image-container">
+                                <div id="editSliderImages"></div>
+                            </div>
+                            <div class="edit-image-notice">
+                                <span>사진은 변경할 수 없어요</span>
+                            </div>
+                        </div>
+                        <div class="modal-right">
+                            <div class="detail-header">
+                                <div class="detail-user">
+                                    <span class="detail-avatar">
+                                        <img id="editUserImage" src="" alt="프로필" />
+                                    </span>
+                                    <div class="detail-user-info">
+                                        <div class="detail-username" id="editUsername"></div>
+                                        <div class="detail-date" id="editDate"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="edit-form-body">
+                                <div class="u-label">
+                                    <span>제목</span>
+                                    <label for="editFeedTitle">
+                                        <input type="text"
+                                               id="editFeedTitle"
+                                               class="u-input"
+                                               placeholder="예) 오늘의 볼더링 룩 / 겨울 암장 코디"
+                                               maxlength="50"
+                                               required />
+                                        <small class="u-help">50자 이내로 작성해주세요.</small>
+                                    </label>
+                                </div>
+                                <div class="u-label">
+                                    <span>내용</span>
+                                    <label for="editFeedContent">
+                                        <textarea id="editFeedContent"
+                                                  class="u-textarea"
+                                                  placeholder="오늘의 착장 포인트를 짧게 적어주세요."
+                                                  rows="5"></textarea>
+                                    </label>
+                                </div>
+                                <div class="u-label">
+                                    <span>공개 설정</span>
+                                    <label for="editFeedVisibleYn">
+                                        <select id="editFeedVisibleYn" class="u-select">
+                                            <option value="Y">전체 공개</option>
+                                            <option value="N">비공개</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="edit-form-footer">
+                                <button type="button" class="btn btn-secondary" onclick="closeFeedEdit()">취소</button>
+                                <button type="button" class="btn btn-primary" onclick="submitFeedEdit()">저장</button>
                             </div>
                         </div>
                     </div>
@@ -173,8 +247,11 @@
 </section>
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/logout.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
 <script th:src="@{/js/feed/feed-detail.js}"></script>
+<script th:src="@{/js/feed/feed-update.js}"></script>
 <script th:src="@{/js/common/icons.js}"></script>
+<script th:src="@{/js/common/api.js}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const feedCards = document.querySelectorAll(".f-card");
@@ -192,6 +269,47 @@
             });
         });
     });
+
+    function like(button) {
+        API.callJson(`/api/v1/feeds/${button.getAttribute("data-feed-no")}/like`, {
+            method: "POST"
+        })
+            .then(async response => {
+                const result = await response.json();
+
+                if (response.ok) {
+                    updateLikeButton(button, result.data.isLiked, result.data.feedLikeCount);
+                } else {
+                    alert(result.message);
+                }
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+
+    function updateLikeButton(button, isLiked, feedLikeCount) {
+        const iconContainer = button.querySelector(".icon-container");
+        const countSpan = button.querySelector(".like-count");
+
+        if (isLiked) {
+            button.classList.add("is-liked");
+        } else {
+            button.classList.remove("is-liked");
+        }
+
+        if (iconContainer && Icons) {
+            if (isLiked) {
+                iconContainer.innerHTML = Icons.heartFilled;
+            } else {
+                iconContainer.innerHTML = Icons.heart;
+            }
+        }
+
+        if (countSpan) {
+            countSpan.textContent = feedLikeCount;
+        }
+    }
 </script>
 </body>
 </html>
