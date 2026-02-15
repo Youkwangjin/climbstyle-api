@@ -20,6 +20,8 @@ public class FeedDetailResponse {
 
     private String feedContent;
 
+    private String feedVisibleYn;
+
     private List<String> feedFilePaths;
 
     private String userImageUrl;
