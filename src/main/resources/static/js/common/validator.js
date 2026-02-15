@@ -77,14 +77,6 @@ const Validator = {
             return true;
         },
 
-        number(value, fieldName) {
-            if (isNaN(value) || value === "") {
-                alert(`${fieldName}은(는) 숫자만 입력 가능합니다.`);
-                return false;
-            }
-            return true;
-        },
-
         minValue(value, fieldName, min) {
             if (parseFloat(value) < min) {
                 alert(`${fieldName}은(는) ${min} 이상이어야 합니다.`);
@@ -117,15 +109,6 @@ const Validator = {
                     alert(`${fieldName}은(는) ${allowedExts.join(', ')} 형식만 가능합니다.`);
                     return false;
                 }
-            }
-            return true;
-        },
-
-        phone(value, fieldName) {
-            const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
-            if (!phoneRegex.test(value)) {
-                alert(`올바른 ${fieldName} 형식이 아닙니다.`);
-                return false;
             }
             return true;
         },
@@ -189,16 +172,23 @@ const Validator = {
         return this.rules.match(newPassword, confirmPassword, "새 비밀번호");
     },
 
-    feed() {
-        const feedTitle = document.getElementById("feedTitle").value.trim();
-        const feedVisibleYn = document.getElementById("feedVisibleYn").value.trim();
+    _validateFeed(titleId, visibilityId) {
+        const feedTitle = document.getElementById(titleId).value.trim();
+        const feedVisibleYn = document.getElementById(visibilityId).value.trim();
 
         if (!this.rules.required(feedTitle, "제목")) return false;
         if (!this.rules.minLength(feedTitle, "제목", 2)) return false;
         if (!this.rules.maxLength(feedTitle, "제목", 50)) return false;
         if (!feedVisibleYn) {
             alert("공개 설정을 선택해주세요.");
-            feedVisibleYn.focus();
+            return false;
+        }
+
+        return true;
+    },
+
+    feed() {
+        if (!this._validateFeed("feedTitle", "feedVisibleYn")) {
             return false;
         }
 
@@ -226,6 +216,10 @@ const Validator = {
         }
 
         return true;
+    },
+
+    feedUpdate() {
+        return this._validateFeed("editFeedTitle", "editFeedVisibleYn");
     },
 
     comment() {
