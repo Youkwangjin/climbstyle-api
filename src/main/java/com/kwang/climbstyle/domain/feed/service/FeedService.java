@@ -1,6 +1,5 @@
 package com.kwang.climbstyle.domain.feed.service;
 
-import com.kwang.climbstyle.code.feed.FeedCommentDeleteStatus;
 import com.kwang.climbstyle.code.feed.FeedErrorCode;
 import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
@@ -179,14 +178,14 @@ public class FeedService {
         }
 
         final LocalDateTime feedCreated = LocalDateTime.now();
-        final String feedCommentDeleteYn = FeedCommentDeleteStatus.NOT_DELETED.getCode();
+        final String feedCommentVisibleYn = FeedVisibleStatus.VISIBLE.getCode();
 
         FeedCommentEntity feedCommentEntity = FeedCommentEntity.builder()
                 .feedNo(feedNo)
                 .userNo(userNo)
                 .feedCommentParentNo(feedCommentNo)
                 .feedCommentContent(feedCommentContent)
-                .feedCommentDeleteYn(feedCommentDeleteYn)
+                .feedCommentVisibleYn(feedCommentVisibleYn)
                 .feedCommentCreated(feedCreated)
                 .build();
 

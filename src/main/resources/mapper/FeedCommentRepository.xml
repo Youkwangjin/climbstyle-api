@@ -8,7 +8,7 @@
         <result property="userNo"               column="user_no"/>
         <result property="feedCommentParentNo"  column="feed_comment_parent_no"/>
         <result property="feedCommentContent"   column="feed_comment_content"/>
-        <result property="feedCommentDeleteYn"  column="feed_comment_delete_yn"/>
+        <result property="feedCommentVisibleYn"  column="feed_comment_visible_yn"/>
         <result property="feedCommentCreated"   column="feed_comment_created"/>
         <result property="feedCommentUpdated"   column="feed_comment_updated"/>
         <association property="user"            javaType="com.kwang.climbstyle.domain.user.entity.UserEntity"
@@ -23,7 +23,7 @@
             WHERE
                 feed_comment_no = #{feedCommentNo}
             AND
-                feed_comment_delete_yn = 'N'
+                feed_comment_visible_yn = 'Y'
         )
     </select>
 
@@ -34,7 +34,7 @@
             fc.feed_no,
             fc.feed_comment_parent_no,
             fc.feed_comment_content,
-            fc.feed_comment_delete_yn,
+            fc.feed_comment_visible_yn,
             fc.feed_comment_created,
             fc.feed_comment_updated,
             u.user_no,
@@ -49,7 +49,7 @@
         WHERE
             fc.feed_no = #{feedNo}
         AND
-            fc.feed_comment_delete_yn = 'N'
+            fc.feed_comment_visible_yn = 'Y'
         ORDER BY
             fc.feed_comment_created ASC
     </select>
@@ -62,7 +62,7 @@
         WHERE
             feed_no = #{feedNo}
         AND
-            feed_comment_delete_yn = 'N'
+            feed_comment_visible_yn = 'Y'
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedCommentEntity">
@@ -71,14 +71,14 @@
             user_no,
             feed_comment_parent_no,
             feed_comment_content,
-            feed_comment_delete_yn,
+            feed_comment_visible_yn,
             feed_comment_created
         ) VALUES (
             #{feedNo},
             #{userNo},
             #{feedCommentParentNo},
             #{feedCommentContent},
-            #{feedCommentDeleteYn},
+            #{feedCommentVisibleYn},
             #{feedCommentCreated}
         )
     </insert>
