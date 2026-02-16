@@ -89,7 +89,7 @@
                 WHERE
                     fc.feed_no = feed_list.feed_no
                 AND
-                    fc.feed_comment_delete_yn = 'N'
+                    fc.feed_comment_visible_yn = 'Y'
             ) AS feed_comment_count
         FROM (
              SELECT
@@ -141,7 +141,7 @@
                 WHERE
                     fc.feed_no = feed_list.feed_no
                 AND
-                    fc.feed_comment_delete_yn = 'N'
+                    fc.feed_comment_visible_yn = 'Y'
             ) AS feed_comment_count
         FROM (
              SELECT
