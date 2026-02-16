@@ -24,7 +24,7 @@ public class FeedCommentEntity {
 
     private String feedCommentContent;
 
-    private String feedCommentDeleteYn;
+    private String feedCommentVisibleYn;
 
     private LocalDateTime feedCommentCreated;
 
