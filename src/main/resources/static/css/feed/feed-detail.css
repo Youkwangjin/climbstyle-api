@@ -566,3 +566,12 @@
 .edit-form-footer .btn {
     min-width: 100px;
 }
+
+.edit-select-row {
+    display: flex;
+    gap: 12px;
+}
+
+.edit-select-row .u-label {
+    flex: 1;
+}

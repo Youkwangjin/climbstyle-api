@@ -197,6 +197,7 @@ public class FeedService {
         final String feedTitle = request.getFeedTitle();
         final String feedContent = request.getFeedContent();
         final String feedVisibleYn = request.getFeedVisibleYn();
+        final String feedLikeVisibleYn = request.getFeedLikeVisibleYn();
         final LocalDateTime feedUpdated = LocalDateTime.now();
 
         if (!feedRepository.existFeedByNo(feedNo)) {
@@ -212,6 +213,7 @@ public class FeedService {
                 .feedTitle(feedTitle)
                 .feedContent(feedContent)
                 .feedVisibleYn(feedVisibleYn)
+                .feedLikeVisibleYn(feedLikeVisibleYn)
                 .feedUpdated(feedUpdated)
                 .build();
 

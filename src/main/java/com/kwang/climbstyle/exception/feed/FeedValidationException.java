@@ -54,7 +54,7 @@ public class FeedValidationException {
                     switch (fieldName) {
                         case "feedTitle": return FeedErrorCode.FEED_TITLE_INVALID_FORMAT;
                         case "feedContent": return FeedErrorCode.FEED_CONTENT_INVALID_FORMAT;
-                        case "feedVisibleYn": return FeedErrorCode.FEED_VISIBLE_INVALID_FORMAT;
+                        case "feedVisibleYn", "feedLikeVisibleYn": return FeedErrorCode.FEED_VISIBLE_INVALID_FORMAT;
                         case "feedImages": return FeedErrorCode.FEED_IMAGE_REQUIRED;
                         case "feedCommentContent": return FeedErrorCode.FEED_COMMENT_INVALID_FORMAT;
                     }
