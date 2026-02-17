@@ -221,4 +221,12 @@
         WHERE
             feed_no = #{feedNo}
     </update>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE
+        FROM
+            tb_feed
+        WHERE
+            feed_no = #{feedNo}
+    </delete>
 </mapper>

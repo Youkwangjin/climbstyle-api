@@ -217,4 +217,23 @@ public class FeedService {
 
         feedRepository.update(feedEntity);
     }
+
+    @Transactional
+    public void deleteFeed(Integer userNo, Integer feedNo) {
+        if (!feedRepository.existFeedByNo(feedNo)) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
+        }
+
+        if (!feedRepository.existsFeedByNoAndUserNo(feedNo, userNo)) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        List<String> filePaths = feedFileRepository.selectFeedFilePathsByFeedNo(feedNo);
+
+        feedRepository.delete(feedNo);
+
+        for (String filePath : filePaths) {
+            fileService.fileDelete(filePath);
+        }
+    }
 }
