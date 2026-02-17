@@ -22,4 +22,8 @@ public class FeedUpdateRequest {
     @NotBlank
     @Pattern(regexp = "^[YN]$")
     private String feedVisibleYn;
+
+    @NotBlank
+    @Pattern(regexp = "^[YN]$")
+    private String feedLikeVisibleYn;
 }

@@ -197,6 +197,7 @@ public class FeedService {
         final String feedTitle = request.getFeedTitle();
         final String feedContent = request.getFeedContent();
         final String feedVisibleYn = request.getFeedVisibleYn();
+        final String feedLikeVisibleYn = request.getFeedLikeVisibleYn();
         final LocalDateTime feedUpdated = LocalDateTime.now();
 
         if (!feedRepository.existFeedByNo(feedNo)) {
@@ -212,9 +213,29 @@ public class FeedService {
                 .feedTitle(feedTitle)
                 .feedContent(feedContent)
                 .feedVisibleYn(feedVisibleYn)
+                .feedLikeVisibleYn(feedLikeVisibleYn)
                 .feedUpdated(feedUpdated)
                 .build();
 
         feedRepository.update(feedEntity);
+    }
+
+    @Transactional
+    public void deleteFeed(Integer userNo, Integer feedNo) {
+        if (!feedRepository.existFeedByNo(feedNo)) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
+        }
+
+        if (!feedRepository.existsFeedByNoAndUserNo(feedNo, userNo)) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        List<String> filePaths = feedFileRepository.selectFeedFilePathsByFeedNo(feedNo);
+
+        feedRepository.delete(feedNo);
+
+        for (String filePath : filePaths) {
+            fileService.fileDelete(filePath);
+        }
     }
 }

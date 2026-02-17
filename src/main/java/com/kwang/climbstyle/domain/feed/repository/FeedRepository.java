@@ -29,4 +29,6 @@ public interface FeedRepository {
     void insert(FeedEntity feedEntity);
 
     void update(FeedEntity feedEntity);
+
+    void delete(@Param("feedNo") Integer feedNo);
 }

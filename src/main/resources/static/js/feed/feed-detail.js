@@ -332,6 +332,41 @@ function cancelReply() {
     }
 }
 
+function updateFeed() {
+    const feedNo = getCurrentFeedNo();
+    if (feedNo) {
+        openFeedEdit(feedNo);
+    }
+}
+
+function deleteFeed() {
+    const feedNo = getCurrentFeedNo();
+    if (!feedNo) return;
+
+    if (!confirm("정말 삭제하시겠습니까?")) {
+        return;
+    }
+
+    API.callJson(`/api/v1/feeds/${feedNo}`, {
+        method: "DELETE"
+    })
+        .then(async response => {
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message);
+
+                closeFeedDetail();
+
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        })
+        .catch(() => {
+            alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+        });
+}
+
 function getCurrentFeedNo() {
     const modal = document.getElementById("feedDetailModal");
 

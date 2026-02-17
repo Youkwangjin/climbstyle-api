@@ -16,6 +16,7 @@ function openFeedEdit(feedNo) {
             document.getElementById("editFeedTitle").value = feed.feedTitle;
             document.getElementById("editFeedContent").value = feed.feedContent;
             document.getElementById("editFeedVisibleYn").value = feed.feedVisibleYn;
+            document.getElementById("editFeedLikeVisibleYn").value = feed.feedLikeVisibleYn;
 
             renderEditImages(feed.feedFilePaths);
 
@@ -58,7 +59,8 @@ function submitFeedEdit() {
         body: JSON.stringify({
             feedTitle: document.getElementById("editFeedTitle").value.trim(),
             feedContent: document.getElementById("editFeedContent").value.trim(),
-            feedVisibleYn: document.getElementById("editFeedVisibleYn").value
+            feedVisibleYn: document.getElementById("editFeedVisibleYn").value,
+            feedLikeVisibleYn : document.getElementById("editFeedLikeVisibleYn").value
         })
     })
         .then(async response => {

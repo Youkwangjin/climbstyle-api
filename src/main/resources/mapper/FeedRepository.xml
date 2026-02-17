@@ -175,6 +175,7 @@
             f.feed_title,
             f.feed_content,
             f.feed_visible_yn,
+            f.feed_like_visible_yn,
             f.feed_created,
             u.user_no,
             u.user_nickname,
@@ -217,8 +218,17 @@
             feed_title = #{feedTitle},
             feed_content = #{feedContent},
             feed_visible_yn = #{feedVisibleYn},
+            feed_like_visible_yn = #{feedLikeVisibleYn},
             feed_updated = #{feedUpdated}
         WHERE
             feed_no = #{feedNo}
     </update>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE
+        FROM
+            tb_feed
+        WHERE
+            feed_no = #{feedNo}
+    </delete>
 </mapper>
