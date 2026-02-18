@@ -1,7 +1,10 @@
 package com.kwang.climbstyle.common.menu;
 
+import com.kwang.climbstyle.code.menu.MenuCode;
 import com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse;
 import com.kwang.climbstyle.domain.menu.service.MenuService;
+import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
+import com.kwang.climbstyle.security.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +18,16 @@ public class GlobalMenuAdvice {
 
     private final MenuService menuService;
 
+    @ModelAttribute("navMenus")
+    public List<MenuCode> navMenus() {
+        return MenuCode.getNavMenus();
+    }
+
+    @ModelAttribute("ctaMenus")
+    public List<MenuCode> ctaMenus() {
+        return MenuCode.getCtaMenus();
+    }
+
     @ModelAttribute("userMenus")
     public List<UserMenuListResponse> userMenus(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -22,5 +35,19 @@ public class GlobalMenuAdvice {
         }
 
         return menuService.getUserMenuList();
+    }
+
+    @ModelAttribute("currentUser")
+    public UserProfileResponse currentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        return UserProfileResponse.builder()
+                .userNickName(userDetails.getUserNickname())
+                .userImgUrl(userDetails.getUserImageUrl())
+                .build();
     }
 }

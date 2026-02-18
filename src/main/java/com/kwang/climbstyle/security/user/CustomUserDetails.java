@@ -23,6 +23,14 @@ public class CustomUserDetails implements UserDetails {
         return userEntity.getUserNo();
     }
 
+    public String getUserNickname() {
+        return userEntity.getUserNickName();
+    }
+
+    public String getUserImageUrl() {
+        return userEntity.getUserImageUrl();
+    }
+
     @Override
     public String getUsername() {
         return userEntity.getUserId();

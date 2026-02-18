@@ -2,6 +2,10 @@ package com.kwang.climbstyle.code.menu;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -22,6 +26,28 @@ public enum MenuCode {
     private final String menuUseYn;
 
     private final MenuGroup menuGroup;
+
+    public static List<MenuCode> getNavMenus() {
+        List<MenuCode> result = new ArrayList<>();
+        for (MenuCode menuCode : values()) {
+            if (menuCode.getMenuGroup() == MenuGroup.NAV && StringUtils.equals(menuCode.menuUseYn, "Y")) {
+                result.add(menuCode);
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MenuCode> getCtaMenus() {
+        List<MenuCode> result = new ArrayList<>();
+        for (MenuCode menuCode : values()) {
+            if (menuCode.menuGroup == MenuGroup.CTA && StringUtils.equals(menuCode.menuUseYn, "Y")) {
+                result.add(menuCode);
+            }
+        }
+
+        return result;
+    }
 
     public enum MenuGroup {
         NAV, CTA
