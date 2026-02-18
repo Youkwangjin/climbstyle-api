@@ -2,6 +2,7 @@ package com.kwang.climbstyle.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kwang.climbstyle.security.filter.CustomUserJsonAuthenticationFilter;
+import com.kwang.climbstyle.security.handler.CustomAuthenticationEntryPoint;
 import com.kwang.climbstyle.security.handler.CustomLoginSuccessHandler;
 import com.kwang.climbstyle.security.handler.CustomLogoutHandler;
 import com.kwang.climbstyle.security.handler.CustomUserLoginFailureHandler;
@@ -30,15 +31,19 @@ public class SpringSecurityConfig {
 
     private final CustomUserLoginFailureHandler customUserLoginFailureHandler;
 
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
     private final CustomLogoutHandler customLogoutHandler;
 
     public SpringSecurityConfig(ObjectMapper objectMapper,
                                 CustomLoginSuccessHandler customLoginSuccessHandler,
                                 CustomUserLoginFailureHandler customUserLoginFailureHandler,
+                                CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
                                 CustomLogoutHandler customLogoutHandler) {
         this.objectMapper = objectMapper;
         this.customLoginSuccessHandler = customLoginSuccessHandler;
         this.customUserLoginFailureHandler = customUserLoginFailureHandler;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
         this.customLogoutHandler = customLogoutHandler;
     }
 
@@ -83,12 +88,14 @@ public class SpringSecurityConfig {
 
                         .requestMatchers("/",
                                         "/error",
+                                        "/auth/session-expired",
                                         "/logout",
                                         "/auth/login",
                                         "/feed",
                                         "/auth/register").permitAll()
 
-                        .requestMatchers("/my/profile/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/my/profile/**",
+                                         "/my/feed/**").hasAuthority("ROLE_USER")
 
                         .requestMatchers("/api/v1/users/id/availability",
                                          "/api/v1/users/email/availability",
@@ -108,6 +115,11 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_USER")
 
                         .anyRequest().permitAll()
+                );
+
+        http
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
                 );
 
         http
