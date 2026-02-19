@@ -36,6 +36,8 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    public static final String DELETE_FLAG = "true";
+
     @Transactional(readOnly = true)
     public void checkUserIdDuplicate(UserIdRequest request) {
         final String userId = request.getUserId();
@@ -215,6 +217,7 @@ public class UserService {
         final String userNickName = request.getUserNickName();
         final String userIntro = request.getUserIntro();
         final MultipartFile userProfileImg = request.getUserProfileImg();
+        final String userProfileDelete = request.getUserProfileDelete();
 
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {
@@ -236,7 +239,14 @@ public class UserService {
         }
 
         String userImageUrl = data.getUserImageUrl();
-        if (userProfileImg != null && !userProfileImg.isEmpty()) {
+
+        if (StringUtils.equals(DELETE_FLAG, userProfileDelete)) {
+            if (userImageUrl != null) {
+                fileService.fileDelete(userImageUrl);
+                userImageUrl = null;
+            }
+
+        } else if (userProfileImg != null && !userProfileImg.isEmpty()) {
             String oldUserImageUrl = data.getUserImageUrl();
             String extension = FilenameUtils.getExtension(userProfileImg.getOriginalFilename());
             String storedFilename = String.format("%d_%s.%s", userNo, UUID.randomUUID().toString().replaceAll("-", ""),extension);
@@ -247,6 +257,7 @@ public class UserService {
                 fileService.fileDelete(oldUserImageUrl);
             }
         }
+
         final LocalDateTime userUpdated = LocalDateTime.now();
 
         UserEntity user = UserEntity.builder()

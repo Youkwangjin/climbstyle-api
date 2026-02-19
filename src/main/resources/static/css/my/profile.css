@@ -354,6 +354,11 @@
     background: #f9fafb;
 }
 
+.btn-outline-danger {
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
 .my-avatar-upload {
     display: flex;
     align-items: center;
