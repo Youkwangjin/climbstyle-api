@@ -20,7 +20,7 @@
             <h1 id="login-title">로그인</h1>
             <p class="auth-sub">클라이밍 패션 피드와 쇼핑을 한 번에, ClimbStyle에 로그인하세요.</p>
 
-            <form class="auth-form">
+            <form class="auth-form" onsubmit="login(); return false;">
                 <div class="field">
                     <label for="userId">아이디</label>
                     <input id="userId"
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="field">
-                    <button class="btn btn-primary auth-submit" type="button" onclick="login()">로그인</button>
+                    <button class="btn btn-primary auth-submit" type="submit">로그인</button>
                 </div>
 
                 <p class="auth-footer">아직 계정이 없나요?<a th:href="@{/auth/register}">회원가입</a></p>
