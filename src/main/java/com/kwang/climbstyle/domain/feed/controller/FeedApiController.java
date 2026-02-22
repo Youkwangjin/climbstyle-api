@@ -75,4 +75,12 @@ public class FeedApiController {
 
         return ApiResponseBuilder.ok(FeedSuccessCode.FEED_UPDATE_SUCCESS);
     }
+
+    @DeleteMapping(value = "/api/v1/feeds/{feedNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> deleteFeed(@PathVariable("feedNo") Integer feedNo) {
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        feedService.deleteFeed(userNo, feedNo);
+
+        return ApiResponseBuilder.ok(FeedSuccessCode.FEED_DELETE_SUCCESS);
+    }
 }

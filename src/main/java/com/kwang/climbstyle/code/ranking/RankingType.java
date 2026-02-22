@@ -1,14 +1,15 @@
-package com.kwang.climbstyle.code.feed;
+package com.kwang.climbstyle.code.ranking;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum FeedCommentDeleteStatus {
+public enum RankingType {
 
-    NOT_DELETED("N", "미삭제"),
-    DELETED("Y", "삭제"),
+    REALTIME("REALTIME", "실시간"),
+    WEEKLY("WEEKLY", "주간"),
+    MONTHLY("MONTHLY", "월간"),
     ;
 
     private final String code;

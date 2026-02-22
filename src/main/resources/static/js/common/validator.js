@@ -184,6 +184,12 @@ const Validator = {
             return false;
         }
 
+        if (feedVisibleYn === "N") {
+            if (!confirm("게시글을 비공개로 설정하면 랭킹 시스템에서 제외됩니다.")) {
+                return false;
+            }
+        }
+
         return true;
     },
 
@@ -219,7 +225,19 @@ const Validator = {
     },
 
     feedUpdate() {
-        return this._validateFeed("editFeedTitle", "editFeedVisibleYn");
+        if (!this._validateFeed("editFeedTitle", "editFeedVisibleYn")) {
+            return false;
+        }
+
+        const feedLikeVisibleYn = document.getElementById("editFeedLikeVisibleYn").value.trim();
+
+        if (feedLikeVisibleYn === "N") {
+            if (!confirm("좋아요를 비공개로 설정하면 랭킹 시스템에서 제외됩니다.")) {
+                return false;
+            }
+        }
+
+        return true;
     },
 
     comment() {

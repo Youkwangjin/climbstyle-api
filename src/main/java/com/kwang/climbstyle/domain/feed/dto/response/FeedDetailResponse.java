@@ -22,6 +22,8 @@ public class FeedDetailResponse {
 
     private String feedVisibleYn;
 
+    private String feedLikeVisibleYn;
+
     private List<String> feedFilePaths;
 
     private String userImageUrl;

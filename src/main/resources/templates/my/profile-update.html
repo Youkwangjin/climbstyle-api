@@ -95,7 +95,12 @@
                                              alt="프로필 이미지" class="preview-image">
                                     </div>
                                     <div class="my-avatar-upload-meta">
-                                        <button type="button" class="btn btn-outline" onclick="upload()">이미지 업로드</button>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button type="button" class="btn btn-outline" onclick="upload()">이미지 업로드</button>
+                                            <button type="button" class="btn btn-outline btn-outline-danger"
+                                                    th:if="${profile.userImgUrl != null}"
+                                                    onclick="ProfileImg.delete()">이미지 삭제</button>
+                                        </div>
                                         <input id="userProfileImg" name="userProfileImg"
                                                type="file" accept="image/*" style="display: none;" onchange="readURL(this)" />
                                         <p class="my-field-help">5MB 이하의 JPG, PNG 이미지를 업로드할 수 있어요.</p>
@@ -190,9 +195,13 @@
         formData.append("userNickName", document.getElementById("userNickName").value.trim());
         formData.append("userIntro", document.getElementById("userIntro").value.trim());
 
-        const userProfileImg = document.getElementById("userProfileImg").files[0];
-        if (userProfileImg) {
-            formData.append("userProfileImg", userProfileImg);
+        if (ProfileImg.isDeleted()) {
+            formData.append("userProfileDelete", "true");
+        } else {
+            const userProfileImg = document.getElementById("userProfileImg").files[0];
+            if (userProfileImg) {
+                formData.append("userProfileImg", userProfileImg);
+            }
         }
 
         API.callFormData(`/api/v1/users/${document.getElementById("userNo").value}`, {
@@ -208,7 +217,7 @@
                 }
 
                 alert(body.message);
-                location.href = "/my/profile";
+                logout();
             })
             .catch(() => {
                 alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
@@ -284,6 +293,24 @@
         };
         reader.readAsDataURL(file);
     }
+
+    const ProfileImg = (() => {
+        let isDeleted = false;
+
+        return {
+            delete() {
+                const previewImg = document.querySelector(".my-avatar-preview .preview-image");
+                if (previewImg) previewImg.remove();
+
+                document.getElementById("userProfileImg").value = "";
+                isDeleted = true;
+            },
+
+            isDeleted() {
+                return isDeleted;
+            }
+        };
+    })();
 </script>
 </body>
 </html>
