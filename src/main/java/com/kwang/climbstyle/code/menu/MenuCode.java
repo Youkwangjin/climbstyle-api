@@ -11,7 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum MenuCode {
     FEED("피드", "/feed", "Y", MenuGroup.NAV),
-    RANKING("랭킹", "/ranking", "Y", MenuGroup.NAV),
+    RANKING("랭킹", "/rankings/realtime", "Y", MenuGroup.NAV),
     SHOP("샵", "/shop", "Y", MenuGroup.NAV),
     FAQ("FAQ", "/faq", "Y", MenuGroup.NAV),
 
