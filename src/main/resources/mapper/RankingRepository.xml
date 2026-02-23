@@ -15,7 +15,24 @@
                      resultMap="com.kwang.climbstyle.domain.feed.repository.FeedRepository.feedResultMap"/>
     </resultMap>
 
-    <select id="selectRankingList" parameterType="string"
+    <select id="selectRankingListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="Integer">
+        SELECT
+            COUNT(r.ranking_no)
+        FROM
+            tb_ranking r
+        INNER JOIN
+            tb_feed f
+            ON r.feed_no = f.feed_no
+        WHERE
+            r.ranking_type = #{rankingType}
+        AND
+            f.feed_visible_yn = 'Y'
+        AND
+            f.feed_like_visible_yn = 'Y'
+    </select>
+
+    <select id="selectRankingList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
             resultType="com.kwang.climbstyle.domain.ranking.dto.response.RankingListResponse">
         SELECT
             r.ranking_no,
@@ -38,7 +55,7 @@
         INNER JOIN
             tb_user u
             ON f.user_no = u.user_no
-        LEFT JOIN
+        INNER JOIN
             tb_feed_file ff
             ON f.feed_no = ff.feed_no
         AND
@@ -49,8 +66,76 @@
             f.feed_visible_yn = 'Y'
         AND
             f.feed_like_visible_yn = 'Y'
-        AND
-            u.user_delete_yn = 'N'
         ORDER BY r.ranking_order ASC
+        LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
     </select>
+
+    <select id="selectRankingByType" resultMap="rankingResultMap">
+        SELECT
+            ranking_no,
+            feed_no,
+            ranking_type,
+            ranking_order,
+            ranking_like_count,
+            ranking_previous_order,
+            ranking_updated
+        FROM
+            tb_ranking
+        WHERE
+            ranking_type = #{rankingType}
+    </select>
+
+    <select id="selectRankingFeedByLikeCount" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.ranking.dto.response.RankingFeedResponse">
+        SELECT
+            f.feed_no,
+            f.feed_created,
+            COUNT(fl.feed_like_no) AS feed_like_count
+        FROM
+            tb_feed f
+        INNER JOIN
+            tb_feed_file ff
+            ON f.feed_no = ff.feed_no
+            AND ff.feed_file_sort_order = 1
+        INNER JOIN
+            tb_feed_like fl
+            ON f.feed_no = fl.feed_no
+        WHERE
+            f.feed_visible_yn = 'Y'
+        AND
+            f.feed_like_visible_yn = 'Y'
+        GROUP BY
+            f.feed_no, f.feed_created
+        ORDER BY
+            feed_like_count DESC,
+            f.feed_created ASC,
+            f.feed_no ASC
+        LIMIT #{rankingTypeLimit}
+    </select>
+
+    <insert id="insertBatch" parameterType="com.kwang.climbstyle.domain.ranking.entity.RankingEntity">
+        INSERT INTO tb_ranking (
+            feed_no,
+            ranking_type,
+            ranking_order,
+            ranking_like_count,
+            ranking_previous_order,
+            ranking_updated
+        ) VALUES (
+            #{feedNo},
+            #{rankingType},
+            #{rankingOrder},
+            #{rankingLikeCount},
+            #{rankingPreviousOrder},
+            #{rankingUpdated}
+        )
+    </insert>
+
+    <delete id="deleteBatch" parameterType="String">
+        DELETE
+        FROM
+            tb_ranking
+        WHERE
+            ranking_type = #{rankingType}
+    </delete>
 </mapper>

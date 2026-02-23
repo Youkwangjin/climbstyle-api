@@ -7,12 +7,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RankingType {
 
-    REALTIME("REALTIME", "실시간"),
-    WEEKLY("WEEKLY", "주간"),
-    MONTHLY("MONTHLY", "월간"),
+    REALTIME("REALTIME", "실시간", 100),
+    WEEKLY("WEEKLY", "주간", 100),
+    MONTHLY("MONTHLY", "월간", 100),
     ;
 
     private final String code;
 
     private final String description;
+
+    private final Integer limit;
 }
