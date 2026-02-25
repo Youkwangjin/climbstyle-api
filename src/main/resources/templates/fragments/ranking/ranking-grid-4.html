@@ -1,0 +1,39 @@
+<div class="ranking-grid-4" th:fragment="grid4(rankingList)">
+    <article class="ranking-item"
+             th:each="rank : ${rankingList}"
+             th:if="${rank.rankingOrder >= 7 && rank.rankingOrder <= 10}">
+        <div class="ranking-image">
+            <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}"
+                 alt="피드" />
+        </div>
+        <div class="ranking-content">
+            <div class="ranking-header">
+                <div class="ranking-rank" th:text="${rank.rankingOrder} + '등'">7등</div>
+                <div class="rank-change rank-new"
+                     th:if="${rank.rankingPreviousOrder == null}">NEW</div>
+                <div class="rank-change rank-up"
+                     th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder > rank.rankingOrder}">
+                    <span class="rank-arrow">↑</span>
+                    <span class="rank-number" th:text="${rank.rankingPreviousOrder - rank.rankingOrder}">3</span>
+                </div>
+                <div class="rank-change rank-down"
+                     th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder < rank.rankingOrder}">
+                    <span class="rank-arrow">↓</span>
+                    <span class="rank-number" th:text="${rank.rankingOrder - rank.rankingPreviousOrder}">1</span>
+                </div>
+                <div class="rank-change rank-same"
+                     th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder == rank.rankingOrder}">—</div>
+            </div>
+            <h4 class="ranking-title" th:text="${rank.feedTitle}">제목</h4>
+            <div class="ranking-user">
+                <img th:src="${rank.userImageUrl != null ? rank.userImageUrl : '/img/default-avatar.png'}"
+                     alt="프로필" class="ranking-avatar" />
+                <span class="ranking-username" th:text="${rank.userNickname}">사용자</span>
+            </div>
+            <div class="ranking-likes">
+                <th:block th:replace="~{fragments/common/icons :: heart}" />
+                <span th:text="${#numbers.formatInteger(rank.rankingLikeCount, 0, 'COMMA')}">480</span>
+            </div>
+        </div>
+    </article>
+</div>
