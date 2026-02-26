@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.ranking.repository.RankingHistoryRepository">
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.ranking.entity.RankingHistoryEntity">
+        INSERT INTO tb_ranking_history (
+            ranking_history_type,
+            ranking_history_status,
+            ranking_history_started,
+            ranking_history_ended,
+            ranking_history_execution_time,
+            ranking_history_processed_count,
+            ranking_history_created
+        ) VALUES (
+            #{rankingHistoryType},
+            #{rankingHistoryStatus},
+            #{rankingHistoryStarted},
+            #{rankingHistoryEnded},
+            #{rankingHistoryExecutionTime},
+            #{rankingHistoryProcessedCount},
+            #{rankingHistoryCreated}
+        )
+    </insert>
+</mapper>

@@ -20,7 +20,7 @@ public interface RankingRepository {
 
     List<RankingFeedResponse> selectRankingFeedByLikeCount(@Param("rankingTypeLimit") Integer rankingTypeLimit);
 
-    void insertBatch(RankingEntity rankingEntity);
+    void insert(RankingEntity rankingEntity);
 
-    void deleteBatch(String rankingType);
+    void delete(@Param("rankingType") String rankingType);
 }
