@@ -113,7 +113,7 @@
         LIMIT #{rankingTypeLimit}
     </select>
 
-    <insert id="insertBatch" parameterType="com.kwang.climbstyle.domain.ranking.entity.RankingEntity">
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.ranking.entity.RankingEntity">
         INSERT INTO tb_ranking (
             feed_no,
             ranking_type,
@@ -131,7 +131,7 @@
         )
     </insert>
 
-    <delete id="deleteBatch" parameterType="String">
+    <delete id="delete" parameterType="String">
         DELETE
         FROM
             tb_ranking

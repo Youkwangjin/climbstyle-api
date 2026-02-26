@@ -1,12 +1,16 @@
 package com.kwang.climbstyle.domain.ranking.service;
 
+import com.kwang.climbstyle.code.ranking.RankingHistoryStatus;
 import com.kwang.climbstyle.code.ranking.RankingType;
 import com.kwang.climbstyle.domain.ranking.dto.response.RankingFeedResponse;
 import com.kwang.climbstyle.domain.ranking.entity.RankingEntity;
+import com.kwang.climbstyle.domain.ranking.entity.RankingHistoryEntity;
+import com.kwang.climbstyle.domain.ranking.repository.RankingHistoryRepository;
 import com.kwang.climbstyle.domain.ranking.repository.RankingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,70 +26,100 @@ public class RankingBatchService {
 
     private final RankingRepository rankingRepository;
 
+    private final RankingHistoryRepository rankingHistoryRepository;
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    @Transactional
     public void updateRealtimeRanking() {
-        final long startTime = System.currentTimeMillis();
+        final LocalDateTime rankingHistoryStarted = LocalDateTime.now();
+        final long startTimeMs = System.currentTimeMillis();
         final String rankingType = RankingType.REALTIME.getCode();
         final Integer rankingTypeLimit = RankingType.REALTIME.getLimit();
 
-        log.info("========== Start Realtime Ranking Batch : {} ==========",
-                LocalDateTime.now().format(FORMATTER));
+        log.info("========== 실시간 랭킹 배치 작업 시작 : {} ==========", rankingHistoryStarted.format(FORMATTER));
         log.info("");
 
-        log.info("Step 1: Loading previous ranking data...");
-        List<RankingEntity> rankingEntityList = rankingRepository.selectRankingByType(rankingType);
-        log.info("Previous ranking count: {}", rankingEntityList.size());
+        String rankingHistoryStatus = RankingHistoryStatus.SUCCESS.getCode();
+        int rankingHistoryProcessedCount = 0;
 
-        Map<Integer, Integer> previousRankMap = new HashMap<>();
-        for (RankingEntity rankingEntity : rankingEntityList) {
-            previousRankMap.put(rankingEntity.getFeedNo(), rankingEntity.getRankingOrder());
+        try {
+            log.info("기존 랭킹 데이터 조회");
+            List<RankingEntity> rankingEntityList = rankingRepository.selectRankingByType(rankingType);
+            log.info("기존 랭킹 개수: {}", rankingEntityList.size());
+
+            Map<Integer, Integer> previousRankMap = new HashMap<>();
+            for (RankingEntity rankingEntity : rankingEntityList) {
+                previousRankMap.put(rankingEntity.getFeedNo(), rankingEntity.getRankingOrder());
+            }
+
+            log.info("좋아요 수 기준 새 랭킹 계산");
+            List<RankingFeedResponse> feedResponses = rankingRepository.selectRankingFeedByLikeCount(rankingTypeLimit);
+            log.info("새 랭킹 개수: {}", feedResponses.size());
+
+            List<RankingEntity> newRankingEntityList = new ArrayList<>();
+            LocalDateTime now = LocalDateTime.now();
+
+            for (int i = 0; i < feedResponses.size(); i++) {
+                RankingFeedResponse feedResponse = feedResponses.get(i);
+                int currentRank = i + 1;
+                Integer previousRank = previousRankMap.get(feedResponse.getFeedNo());
+
+                RankingEntity rankingEntity = RankingEntity.builder()
+                        .feedNo(feedResponse.getFeedNo())
+                        .rankingType(rankingType)
+                        .rankingOrder(currentRank)
+                        .rankingLikeCount(feedResponse.getFeedLikeCount())
+                        .rankingPreviousOrder(previousRank)
+                        .rankingUpdated(now)
+                        .build();
+
+                newRankingEntityList.add(rankingEntity);
+            }
+
+            log.info("기존 랭킹 데이터 삭제");
+            rankingRepository.delete(rankingType);
+            log.info("삭제된 랭킹 타입: {}", rankingType);
+
+            log.info("새 랭킹 데이터 삽입");
+            for (RankingEntity rankingEntity : newRankingEntityList) {
+                rankingRepository.insert(rankingEntity);
+            }
+            log.info("삽입된 랭킹 개수: {}", newRankingEntityList.size());
+
+            rankingHistoryProcessedCount = newRankingEntityList.size();
+
+            log.info("");
+            log.info("========== 실시간 랭킹 배치 작업 완료 ==========");
+        } catch (Exception e) {
+            rankingHistoryStatus = RankingHistoryStatus.FAILED.getCode();
+
+            log.error("");
+            log.error("========== 실시간 랭킹 배치 실패 ==========", e);
+            throw e;
+        } finally {
+            saveHistory(rankingType, rankingHistoryStatus, rankingHistoryStarted, startTimeMs, rankingHistoryProcessedCount);
         }
+    }
 
-        log.info("Step 2: Calculating new ranking based on like count...");
-        List<RankingFeedResponse> feedResponses = rankingRepository.selectRankingFeedByLikeCount(rankingTypeLimit);
-        log.info("New ranking count: {}", feedResponses.size());
+    private void saveHistory(String rankingType, String rankingHistoryStatus, LocalDateTime rankingHistoryStarted,
+                             long startTimeMs, int rankingHistoryProcessedCount) {
 
-        log.info("Step 3: Creating ranking entities...");
-        List<RankingEntity> newRankings = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime rankingHistoryEnded = LocalDateTime.now();
+        final LocalDateTime rankingHistoryCreated = LocalDateTime.now();
+        final long executionTimeMs = System.currentTimeMillis() - startTimeMs;
+        final int rankingHistoryExecutionTime = (int) executionTimeMs;
 
-        for (int i = 0; i < feedResponses.size(); i++) {
-            RankingFeedResponse feedResponse = feedResponses.get(i);
-            int currnetRank = i + 1;
+        RankingHistoryEntity rankingHistoryEntity = RankingHistoryEntity.builder()
+                .rankingHistoryType(rankingType)
+                .rankingHistoryStatus(rankingHistoryStatus)
+                .rankingHistoryStarted(rankingHistoryStarted)
+                .rankingHistoryEnded(rankingHistoryEnded)
+                .rankingHistoryExecutionTime(rankingHistoryExecutionTime)
+                .rankingHistoryProcessedCount(rankingHistoryProcessedCount)
+                .rankingHistoryCreated(rankingHistoryCreated)
+                .build();
 
-            Integer previousRank = previousRankMap.get(feedResponse.getFeedNo());
-
-            RankingEntity rankingEntity = RankingEntity.builder()
-                    .feedNo(feedResponse.getFeedNo())
-                    .rankingType(rankingType)
-                    .rankingOrder(currnetRank)
-                    .rankingLikeCount(feedResponse.getFeedLikeCount())
-                    .rankingPreviousOrder(previousRank)
-                    .rankingUpdated(now)
-                    .build();
-
-            newRankings.add(rankingEntity);
-        }
-
-        log.info("Step 4: Deleting previous ranking data...");
-        rankingRepository.deleteBatch(rankingType);
-        log.info("Deleted ranking type: {}", rankingType);
-
-        log.info("Step 5: Inserting new ranking data...");
-        for (RankingEntity ranking : newRankings) {
-            rankingRepository.insertBatch(ranking);
-        }
-        log.info("Inserted {} rankings", newRankings.size());
-
-        final long endTime = System.currentTimeMillis();
-        final long executionTime = endTime - startTime;
-
-        log.info("");
-        log.info("========== Complete Realtime Ranking Batch ==========");
-        log.info("Execution time: {} ms ({} sec)", executionTime, executionTime / 1000.0);
-        log.info("Updated at: {}", now.format(FORMATTER));
-        log.info("=====================================================");
-        log.info("");
+        rankingHistoryRepository.insert(rankingHistoryEntity);
     }
 }
