@@ -9,6 +9,9 @@ import com.kwang.climbstyle.domain.ranking.repository.RankingHistoryRepository;
 import com.kwang.climbstyle.domain.ranking.repository.RankingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +33,7 @@ public class RankingBatchService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    @Retryable(retryFor = {DataAccessException.class, RuntimeException.class}, backoff = @Backoff(delay = 1000, multiplier = 2, maxDelay = 10000))
     @Transactional
     public void updateRealtimeRanking() {
         final LocalDateTime rankingHistoryStarted = LocalDateTime.now();
