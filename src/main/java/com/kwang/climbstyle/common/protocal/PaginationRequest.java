@@ -53,8 +53,15 @@ public abstract class PaginationRequest {
         }
 
         int finalPage = (this.totalCount + (this.pageSize - 1)) / this.pageSize;
+
         if (pageNo > finalPage) {
             pageNo = finalPage;
+            this.setPageNo(String.valueOf(pageNo));
+        }
+
+        if (pageNo < 1) {
+            pageNo = 1;
+            this.setPageNo("1");
         }
 
         int startPage = ((pageNo - 1) / this.blockSize) * this.blockSize + 1;

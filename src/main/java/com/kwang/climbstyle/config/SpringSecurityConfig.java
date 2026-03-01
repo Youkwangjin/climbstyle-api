@@ -91,8 +91,12 @@ public class SpringSecurityConfig {
                                         "/auth/session-expired",
                                         "/logout",
                                         "/auth/login",
+                                        "/auth/register",
                                         "/feed",
-                                        "/auth/register").permitAll()
+                                        "/rankings/realtime/*",
+                                        "/rankings/weekly/*",
+                                        "/rankings/monthly/*"
+                                        ).permitAll()
 
                         .requestMatchers("/my/profile/**",
                                          "/my/feed/**").hasAuthority("ROLE_USER")

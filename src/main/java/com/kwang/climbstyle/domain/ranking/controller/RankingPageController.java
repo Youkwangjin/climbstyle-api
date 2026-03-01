@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.domain.ranking.controller;
 
+import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.domain.ranking.dto.response.RankingListResponse;
 import com.kwang.climbstyle.domain.ranking.service.RankingService;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +16,13 @@ public class RankingPageController {
 
     private final RankingService rankingService;
 
-    @GetMapping(value = "/ranking")
-    public String ranking(Model model) {
-        List<RankingListResponse> response = rankingService.getRankingList();
+    @GetMapping(value = "/rankings/realtime")
+    public String realtime(CommonListRequest request, Model model) {
+        List<RankingListResponse> response = rankingService.getRealtimeRankingList(request);
         model.addAttribute("rankingList", response);
+        model.addAttribute("request", request);
+        model.addAttribute("currentUrl", "/rankings/realtime");
 
-        return "ranking/ranking";
+        return "ranking/realtime";
     }
 }

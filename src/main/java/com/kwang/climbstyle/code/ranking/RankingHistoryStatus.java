@@ -5,16 +5,13 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum RankingType {
+public enum RankingHistoryStatus {
 
-    REALTIME("REALTIME", "실시간", 100),
-    WEEKLY("WEEKLY", "주간", 100),
-    MONTHLY("MONTHLY", "월간", 100),
+    SUCCESS("SUCCESS", "성공"),
+    FAILED("FAILED", "실패"),
     ;
 
     private final String code;
 
     private final String description;
-
-    private final Integer limit;
 }

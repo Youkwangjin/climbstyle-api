@@ -1,0 +1,473 @@
+#ranking .sub {
+    color: var(--muted);
+}
+
+.ranking-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.tab-btn {
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-btn:hover {
+    background: #f9fafb;
+}
+
+.tab-btn.is-active {
+    background: var(--brand);
+    color: #fff;
+    border-color: transparent;
+}
+
+.ranking-updated {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 32px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px;
+}
+
+.empty-state p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 16px;
+}
+
+.podium {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    align-items: flex-end;
+    margin-bottom: 48px;
+}
+
+.podium-card {
+    border-radius: 16px;
+    background: #fff;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.podium-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(15,23,42,.12);
+}
+
+.podium-image {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    background: #f9fafb;
+    aspect-ratio: 4 / 5;
+    min-height: auto;
+    max-height: none;
+}
+
+.podium-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+}
+
+.podium-info {
+    padding: 20px 16px 16px;
+}
+
+.podium-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.podium-rank {
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--brand);
+}
+
+.rank-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.rank-change.rank-up {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.rank-change.rank-up .rank-arrow {
+    font-size: 14px;
+}
+
+.rank-change.rank-down {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.rank-change.rank-down .rank-arrow {
+    font-size: 14px;
+}
+
+.rank-change.rank-new {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.rank-change.rank-same {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.podium-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.podium-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.podium-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 2px solid var(--line);
+}
+
+.podium-username {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.podium-likes {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.podium-likes svg {
+    width: 16px;
+    height: 16px;
+}
+
+.podium-1 {
+    border: 2px solid #fbbf24;
+    background: linear-gradient(180deg, #fffbeb 0%, #fff 100%);
+    margin-bottom: 60px;
+}
+
+.podium-1 .podium-info {
+    padding: 24px 20px 20px;
+}
+
+.podium-1 .podium-rank {
+    font-size: 14px;
+}
+
+.podium-1 .podium-title {
+    font-size: 18px;
+}
+
+.podium-2 {
+    border: 2px solid #cbd5e1;
+    background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
+    margin-bottom: 30px;
+}
+
+.podium-3 {
+    border: 2px solid #cd7f32;
+    background: linear-gradient(180deg, #fef3c7 0%, #fff 100%);
+    margin-bottom: 0;
+}
+
+.ranking-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.ranking-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.ranking-grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+}
+
+.ranking-item {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ranking-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(15,23,42,.1);
+}
+
+.ranking-image {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    background: #f9fafb;
+    aspect-ratio: 4 / 5;
+    min-height: auto;
+    max-height: none;
+}
+
+.ranking-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+}
+
+.ranking-content {
+    padding: 12px;
+}
+
+.ranking-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.ranking-rank {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--brand);
+}
+
+.ranking-item .rank-change {
+    padding: 3px 6px;
+    font-size: 10px;
+}
+
+.ranking-item .rank-change .rank-arrow {
+    font-size: 12px;
+}
+
+.ranking-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ranking-user {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.ranking-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    border: 2px solid var(--line);
+}
+
+.ranking-username {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.ranking-likes {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.ranking-likes svg {
+    width: 14px;
+    height: 14px;
+}
+
+.pagination {
+    display: grid;
+    place-items: center;
+    margin-top: 32px;
+}
+
+.pagination-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+}
+
+.page-list {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+}
+
+.page-btn,
+.page-num {
+    height: 34px;
+    min-width: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fff;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+    text-decoration: none;
+}
+
+.page-btn:hover,
+.page-num:hover {
+    background: #f9fafb;
+}
+
+.page-num.is-active {
+    border-color: transparent;
+    background: var(--brand);
+    color: #fff;
+}
+
+.page-ellipsis {
+    padding: 0 4px;
+    color: var(--muted);
+    font-weight: 900;
+}
+
+.page-btn:disabled,
+.page-num:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+@media (max-width: 1280px) {
+    .ranking-grid-5 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .ranking-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .ranking-grid-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .ranking-grid-5 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .podium {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .podium-1,
+    .podium-2,
+    .podium-3 {
+        margin-bottom: 0;
+    }
+
+    .ranking-grid-3,
+    .ranking-grid-4,
+    .ranking-grid-5 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .ranking-grid-3,
+    .ranking-grid-4,
+    .ranking-grid-5 {
+        grid-template-columns: 1fr;
+    }
+
+    .pagination-inner {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .page-btn,
+    .page-num {
+        height: 32px;
+        min-width: 32px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+}
