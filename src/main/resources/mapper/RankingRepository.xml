@@ -113,6 +113,36 @@
         LIMIT #{rankingTypeLimit}
     </select>
 
+    <select id="selectWeeklyRankingFeedByLikeCount"
+            resultType="com.kwang.climbstyle.domain.ranking.dto.response.RankingFeedResponse">
+        SELECT
+            f.feed_no,
+            f.feed_created,
+            COUNT(fl.feed_like_no) AS feed_like_count
+        FROM
+            tb_feed f
+        INNER JOIN
+            tb_feed_file ff
+            ON f.feed_no = ff.feed_no
+            AND ff.feed_file_sort_order = 1
+        INNER JOIN
+            tb_feed_like fl
+            ON f.feed_no = fl.feed_no
+        WHERE
+            f.feed_visible_yn = 'Y'
+        AND
+            f.feed_like_visible_yn = 'Y'
+        AND
+            f.feed_created >= #{weekStartDate}
+        GROUP BY
+            f.feed_no, f.feed_created
+        ORDER BY
+            feed_like_count DESC,
+            f.feed_created ASC,
+            f.feed_no ASC
+        LIMIT #{rankingTypeLimit}
+    </select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.ranking.entity.RankingEntity">
         INSERT INTO tb_ranking (
             feed_no,
