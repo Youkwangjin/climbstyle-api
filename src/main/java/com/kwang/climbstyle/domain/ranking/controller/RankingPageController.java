@@ -18,11 +18,21 @@ public class RankingPageController {
 
     @GetMapping(value = "/rankings/realtime")
     public String realtime(CommonListRequest request, Model model) {
-        List<RankingListResponse> response = rankingService.getRealtimeRankingList(request);
-        model.addAttribute("rankingList", response);
+        List<RankingListResponse> responses = rankingService.getRealtimeRankingList(request);
+        model.addAttribute("rankingList", responses);
         model.addAttribute("request", request);
         model.addAttribute("currentUrl", "/rankings/realtime");
 
         return "ranking/realtime";
+    }
+
+    @GetMapping(value = "/rankings/weekly")
+    public String weekly(CommonListRequest request, Model model) {
+        List<RankingListResponse> responses = rankingService.getWeeklyRankingList(request);
+        model.addAttribute("rankingList", responses);
+        model.addAttribute("request", request);
+        model.addAttribute("currentUrl", "/rankings/weekly");
+
+        return "ranking/weekly";
     }
 }

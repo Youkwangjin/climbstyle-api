@@ -21,4 +21,11 @@ public class RankingService {
 
         return rankingRepository.selectRankingList(request, rankingType);
     }
+
+    public List<RankingListResponse> getWeeklyRankingList(CommonListRequest request) {
+        final String rankingType = RankingType.WEEKLY.getCode();
+        request.setTotalCount(rankingRepository.selectRankingListCountByRequest(request, rankingType));
+
+        return rankingRepository.selectRankingList(request, rankingType);
+    }
 }
