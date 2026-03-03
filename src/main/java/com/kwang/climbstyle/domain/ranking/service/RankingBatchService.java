@@ -130,11 +130,11 @@ public class RankingBatchService {
                 previousRankMap.put(rankingEntity.getFeedNo(), rankingEntity.getRankingOrder());
             }
 
-            LocalDateTime weekStartDate = LocalDateTime.now().minusDays(7);
-            log.info("주간 좋아요 수 기준 새 랭킹 계산 (기준일: {} 이후)", weekStartDate.format(FORMATTER));
+            LocalDateTime startDate = LocalDateTime.now().minusDays(7);
+            log.info("주간 좋아요 수 기준 새 랭킹 계산 (기준일: {} 이후)", startDate.format(FORMATTER));
 
             log.info("좋아요 수 기준 새 주간 랭킹 계산");
-            List<RankingFeedResponse> feedResponses = rankingRepository.selectWeeklyRankingFeedByLikeCount(rankingTypeLimit, weekStartDate);
+            List<RankingFeedResponse> feedResponses = rankingRepository.selectPeriodRankingFeedByLikeCount(rankingTypeLimit, startDate);
             log.info("새 주간 랭킹 개수: {}", feedResponses.size());
 
             List<RankingEntity> newRankingEntityList = new ArrayList<>();

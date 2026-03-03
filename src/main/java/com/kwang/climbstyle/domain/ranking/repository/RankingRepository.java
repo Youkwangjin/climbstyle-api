@@ -19,9 +19,9 @@ public interface RankingRepository {
 
     List<RankingEntity> selectRankingByType(@Param("rankingType") String rankingType);
 
-    List<RankingFeedResponse> selectRankingFeedByLikeCount(@Param("rankingTypeLimit") Integer rankingTypeLimit);
+    List<RankingFeedResponse> selectRealTimeRankingFeedByLikeCount(@Param("rankingTypeLimit") Integer rankingTypeLimit);
 
-    List<RankingFeedResponse> selectWeeklyRankingFeedByLikeCount(Integer rankingTypeLimit, LocalDateTime weekStartDate);
+    List<RankingFeedResponse> selectPeriodRankingFeedByLikeCount(Integer rankingTypeLimit, LocalDateTime startDate);
 
     void insert(RankingEntity rankingEntity);
 
