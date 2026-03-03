@@ -58,7 +58,7 @@ public class RankingBatchService {
             }
 
             log.info("좋아요 수 기준 새 실시간 랭킹 계산");
-            List<RankingFeedResponse> feedResponses = rankingRepository.selectRankingFeedByLikeCount(rankingTypeLimit);
+            List<RankingFeedResponse> feedResponses = rankingRepository.selectRealTimeRankingFeedByLikeCount(rankingTypeLimit);
             log.info("새 실시간 랭킹 개수: {}", feedResponses.size());
 
             List<RankingEntity> newRankingEntityList = new ArrayList<>();
@@ -176,6 +176,83 @@ public class RankingBatchService {
 
             log.error("");
             log.error("========== 주간 랭킹 배치 실패 ==========", e);
+            throw e;
+
+        } finally {
+            saveHistory(rankingType, rankingHistoryStatus, rankingHistoryStarted, startTimeMs, rankingHistoryProcessedCount);
+        }
+    }
+
+    @Retryable(retryFor = {DataAccessException.class, RuntimeException.class}, backoff = @Backoff(delay = 1000, multiplier = 2, maxDelay = 10000))
+    @Transactional
+    public void updateMonthlyRanking() {
+        final LocalDateTime rankingHistoryStarted = LocalDateTime.now();
+        final long startTimeMs = System.currentTimeMillis();
+        final String rankingType = RankingType.MONTHLY.getCode();
+        final Integer rankingTypeLimit = RankingType.MONTHLY.getLimit();
+
+        log.info("========== 월간 랭킹 배치 작업 시작 : {} ==========", rankingHistoryStarted.format(FORMATTER));
+        log.info("");
+
+        String rankingHistoryStatus = RankingHistoryStatus.SUCCESS.getCode();
+        int rankingHistoryProcessedCount = 0;
+
+        try {
+            log.info("기존 월간 랭킹 데이터 조회");
+            List<RankingEntity> rankingEntityList = rankingRepository.selectRankingByType(rankingType);
+            log.info("기존 월간 랭킹 개수: {}", rankingEntityList.size());
+
+            Map<Integer, Integer> previousRankMap = new HashMap<>();
+            for (RankingEntity rankingEntity : rankingEntityList) {
+                previousRankMap.put(rankingEntity.getFeedNo(), rankingEntity.getRankingOrder());
+            }
+
+            LocalDateTime startDate = LocalDateTime.now().withDayOfMonth(1).toLocalDate().atStartOfDay();
+            log.info("월간 좋아요 수 기준 새 랭킹 계산 (기준일: {} 이후)", startDate.format(FORMATTER));
+
+            log.info("좋아요 수 기준 새 월간 랭킹 계산");
+            List<RankingFeedResponse> feedResponses = rankingRepository.selectPeriodRankingFeedByLikeCount(rankingTypeLimit, startDate);
+            log.info("새 월간 랭킹 개수: {}", feedResponses.size());
+
+            List<RankingEntity> newRankingEntityList = new ArrayList<>();
+            final LocalDateTime rankingUpdated = LocalDateTime.now();
+
+            for (int i = 0; i < feedResponses.size(); i++) {
+                RankingFeedResponse feedResponse = feedResponses.get(i);
+                int currentRank = i + 1;
+                Integer previousRank = previousRankMap.get(feedResponse.getFeedNo());
+
+                RankingEntity rankingEntity = RankingEntity.builder()
+                        .feedNo(feedResponse.getFeedNo())
+                        .rankingType(rankingType)
+                        .rankingOrder(currentRank)
+                        .rankingLikeCount(feedResponse.getFeedLikeCount())
+                        .rankingPreviousOrder(previousRank)
+                        .rankingUpdated(rankingUpdated)
+                        .build();
+
+                newRankingEntityList.add(rankingEntity);
+            }
+
+            log.info("기존 월간 랭킹 데이터 삭제");
+            rankingRepository.delete(rankingType);
+            log.info("삭제된 월간 랭킹 타입: {}", rankingType);
+
+            log.info("새 월간 랭킹 데이터 삽입");
+            for (RankingEntity rankingEntity : newRankingEntityList) {
+                rankingRepository.insert(rankingEntity);
+            }
+            log.info("삽입된 월간 랭킹 개수: {}", newRankingEntityList.size());
+
+            rankingHistoryProcessedCount = newRankingEntityList.size();
+
+            log.info("");
+            log.info("========== 월간 랭킹 배치 작업 완료 ==========");
+        } catch (Exception e) {
+            rankingHistoryStatus = RankingHistoryStatus.FAILED.getCode();
+
+            log.error("");
+            log.error("========== 월간 랭킹 배치 실패 ==========", e);
             throw e;
 
         } finally {
