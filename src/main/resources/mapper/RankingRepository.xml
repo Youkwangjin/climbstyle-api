@@ -85,7 +85,7 @@
             ranking_type = #{rankingType}
     </select>
 
-    <select id="selectRankingFeedByLikeCount" parameterType="Integer"
+    <select id="selectRealTimeRankingFeedByLikeCount" parameterType="Integer"
             resultType="com.kwang.climbstyle.domain.ranking.dto.response.RankingFeedResponse">
         SELECT
             f.feed_no,
@@ -94,10 +94,6 @@
         FROM
             tb_feed f
         INNER JOIN
-            tb_feed_file ff
-            ON f.feed_no = ff.feed_no
-            AND ff.feed_file_sort_order = 1
-        INNER JOIN
             tb_feed_like fl
             ON f.feed_no = fl.feed_no
         WHERE
@@ -105,7 +101,8 @@
         AND
             f.feed_like_visible_yn = 'Y'
         GROUP BY
-            f.feed_no, f.feed_created
+            f.feed_no,
+            f.feed_created
         ORDER BY
             feed_like_count DESC,
             f.feed_created ASC,
@@ -113,7 +110,7 @@
         LIMIT #{rankingTypeLimit}
     </select>
 
-    <select id="selectWeeklyRankingFeedByLikeCount"
+    <select id="selectPeriodRankingFeedByLikeCount"
             resultType="com.kwang.climbstyle.domain.ranking.dto.response.RankingFeedResponse">
         SELECT
             f.feed_no,
@@ -122,10 +119,6 @@
         FROM
             tb_feed f
         INNER JOIN
-            tb_feed_file ff
-            ON f.feed_no = ff.feed_no
-            AND ff.feed_file_sort_order = 1
-        INNER JOIN
             tb_feed_like fl
             ON f.feed_no = fl.feed_no
         WHERE
@@ -133,9 +126,10 @@
         AND
             f.feed_like_visible_yn = 'Y'
         AND
-            f.feed_created >= #{weekStartDate}
+            fl.feed_like_created >= #{startDate}
         GROUP BY
-            f.feed_no, f.feed_created
+            f.feed_no,
+            f.feed_created
         ORDER BY
             feed_like_count DESC,
             f.feed_created ASC,

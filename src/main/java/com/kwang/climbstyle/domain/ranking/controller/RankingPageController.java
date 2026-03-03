@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.domain.ranking.controller;
 
+import com.kwang.climbstyle.code.ranking.RankingType;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.domain.ranking.dto.response.RankingListResponse;
 import com.kwang.climbstyle.domain.ranking.service.RankingService;
@@ -21,9 +22,11 @@ public class RankingPageController {
         List<RankingListResponse> responses = rankingService.getRealtimeRankingList(request);
         model.addAttribute("rankingList", responses);
         model.addAttribute("request", request);
-        model.addAttribute("currentUrl", "/rankings/realtime");
+        model.addAttribute("currentUrl", RankingType.REALTIME.getUrl());
+        model.addAttribute("pageTitle", RankingType.REALTIME.getDescription());
+        model.addAttribute("allRankingTypes", RankingType.values());
 
-        return "ranking/realtime";
+        return "ranking/list";
     }
 
     @GetMapping(value = "/rankings/weekly")
@@ -31,8 +34,10 @@ public class RankingPageController {
         List<RankingListResponse> responses = rankingService.getWeeklyRankingList(request);
         model.addAttribute("rankingList", responses);
         model.addAttribute("request", request);
-        model.addAttribute("currentUrl", "/rankings/weekly");
+        model.addAttribute("currentUrl", RankingType.WEEKLY.getUrl());
+        model.addAttribute("pageTitle", RankingType.WEEKLY.getDescription());
+        model.addAttribute("allRankingTypes", RankingType.values());
 
-        return "ranking/weekly";
+        return "ranking/list";
     }
 }

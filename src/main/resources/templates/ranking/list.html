@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ClimbStyle | 실시간 랭킹</title>
+    <title th:text="'ClimbStyle | ' + ${pageTitle}">ClimbStyle | 랭킹</title>
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/ranking/ranking.css}">
 </head>
@@ -16,15 +16,13 @@
     <div class="container">
         <div class="head">
             <div>
-                <h2>🏆 피드 랭킹</h2>
+                <h2 th:text="'🏆 피드 ' + ${pageTitle}">🏆 피드 랭킹</h2>
                 <p class="sub">최고의 클라이밍 패션을 발견하세요</p>
             </div>
         </div>
 
         <div class="ranking-tabs">
-            <a th:href="@{/rankings/weekly}" class="tab-btn">주간</a>
-            <a th:href="@{/rankings/realtime}" class="tab-btn is-active">실시간</a>
-            <a th:href="@{/rankings/monthly}" class="tab-btn">월간</a>
+            <a th:each="type : ${allRankingTypes}" th:href="${type.url}" class="tab-btn" th:classappend="${currentUrl == type.url ? 'is-active' : ''}" th:text="${type.shortDescription}">탭</a>
         </div>
 
         <p class="ranking-updated"
@@ -36,7 +34,7 @@
             <p>아직 랭킹 데이터가 없습니다.</p>
         </div>
 
-        <div th:if="${request.pageNoAsInt == 1 && rankingList.size() >= 3}">
+        <div th:if="${request.pageNoAsInt == 1 && !#lists.isEmpty(rankingList)}">
             <th:block th:replace="~{fragments/ranking/ranking-podium :: podium(${rankingList})}"/>
             <th:block th:if="${rankingList.size() >= 6}"
                       th:replace="~{fragments/ranking/ranking-grid-3 :: grid3(${rankingList})}"/>
@@ -55,7 +53,6 @@
         )}"/>
     </div>
 </section>
-
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/icons.js}"></script>
 </body>
