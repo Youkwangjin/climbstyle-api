@@ -40,4 +40,16 @@ public class RankingPageController {
 
         return "ranking/list";
     }
+
+    @GetMapping(value = "/rankings/monthly")
+    public String monthly(CommonListRequest request, Model model) {
+        List<RankingListResponse> responses = rankingService.getMonthlyRankingList(request);
+        model.addAttribute("rankingList", responses);
+        model.addAttribute("request", request);
+        model.addAttribute("currentUrl", RankingType.MONTHLY.getUrl());
+        model.addAttribute("pageTitle", RankingType.MONTHLY.getDescription());
+        model.addAttribute("allRankingTypes", RankingType.values());
+
+        return "ranking/list";
+    }
 }
