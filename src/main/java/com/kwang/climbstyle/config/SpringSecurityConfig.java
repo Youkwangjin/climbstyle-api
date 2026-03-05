@@ -95,7 +95,8 @@ public class SpringSecurityConfig {
                                         "/feed",
                                         "/rankings/realtime/*",
                                         "/rankings/weekly/*",
-                                        "/rankings/monthly/*"
+                                        "/rankings/monthly/*",
+                                        "/notice/list/*"
                                         ).permitAll()
 
                         .requestMatchers("/my/profile/**",
