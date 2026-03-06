@@ -6,6 +6,7 @@ import com.kwang.climbstyle.domain.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,6 +18,13 @@ public class NoticeService {
     public List<NoticeListResponse> getNoticeList(NoticeListRequest request) {
         request.setTotalCount(noticeRepository.selectNoticeListCountByRequest(request));
 
-        return noticeRepository.selectNoticeList(request);
+        List<NoticeListResponse> noticeList = noticeRepository.selectNoticeList(request);
+
+        LocalDateTime sevenDaysAgo =  LocalDateTime.now().minusDays(7);
+        for (NoticeListResponse notice : noticeList) {
+            notice.setNoticeNew(notice.getNoticeCreated().isAfter(sevenDaysAgo));
+        }
+
+        return noticeList;
     }
 }
