@@ -12,7 +12,7 @@ import java.util.List;
 public enum MenuCode {
     FEED("피드", "/feed", "Y", MenuGroup.NAV),
     RANKING("랭킹", "/rankings/realtime", "Y", MenuGroup.NAV),
-    SHOP("샵", "/shop", "Y", MenuGroup.NAV),
+    SHOP("공지사항", "/notice/list", "Y", MenuGroup.NAV),
     FAQ("FAQ", "/faq", "Y", MenuGroup.NAV),
 
     LOGIN("로그인", "/auth/login", "Y", MenuGroup.CTA),
