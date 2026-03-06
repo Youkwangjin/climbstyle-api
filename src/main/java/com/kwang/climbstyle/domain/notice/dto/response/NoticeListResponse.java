@@ -24,4 +24,6 @@ public class NoticeListResponse {
     private String noticePinYn;
 
     private LocalDateTime noticeCreated;
+
+    private Boolean noticeNew;
 }

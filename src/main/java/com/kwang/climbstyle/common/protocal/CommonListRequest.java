@@ -34,7 +34,10 @@ public class CommonListRequest extends PaginationRequest {
         }
         try {
             int num = Integer.parseInt(pageNo.trim());
-            return num > 0 ? num : 1;
+            if (num > 0) {
+                return num;
+            }
+            return 1;
         } catch (NumberFormatException e) {
             return 1;
         }
