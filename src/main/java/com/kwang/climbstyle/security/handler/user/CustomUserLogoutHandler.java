@@ -1,4 +1,4 @@
-package com.kwang.climbstyle.security.handler;
+package com.kwang.climbstyle.security.handler.user;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CustomLogoutHandler implements LogoutHandler {
+public class CustomUserLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
