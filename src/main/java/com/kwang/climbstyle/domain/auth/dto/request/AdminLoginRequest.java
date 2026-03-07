@@ -10,14 +10,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LoginRequest {
+public class AdminLoginRequest {
 
     @NotBlank
     @Size(min = 5, max = 20)
     @Pattern(regexp = "^[A-Za-z0-9]+$")
-    private String userId;
+    private String adminId;
 
     @NotBlank
     @Size(min = 4)
-    private String userPassword;
+    private String adminPassword;
 }

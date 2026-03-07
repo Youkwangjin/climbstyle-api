@@ -1,4 +1,4 @@
-package com.kwang.climbstyle.security.handler;
+package com.kwang.climbstyle.security.handler.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kwang.climbstyle.code.auth.AuthSuccessCode;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
+public class CustomUserLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final ObjectMapper objectMapper;
 
