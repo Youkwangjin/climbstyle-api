@@ -13,6 +13,9 @@
         <result property="adminImageUrl"        column="admin_image_url"/>
         <result property="adminCreated"         column="admin_created"/>
         <result property="adminUpdated"         column="admin_updated"/>
+        <collection property="adminRoles"       ofType="String">
+            <result column="role_name"/>
+        </collection>
     </resultMap>
 
     <select id="selectAdminById" parameterType="String" resultMap="adminResultMap">
@@ -25,7 +28,8 @@
             a.admin_nickname,
             a.admin_image_url,
             a.admin_created,
-            a.admin_updated
+            a.admin_updated,
+            r.role_name
         FROM
             tb_admin a
         LEFT JOIN
