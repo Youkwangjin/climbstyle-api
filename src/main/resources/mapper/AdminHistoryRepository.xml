@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.admin.repository.AdminHistoryRepository">
+    <resultMap id="adminLoginHistoryResultMap"          type="com.kwang.climbstyle.domain.admin.entity.AdminLoginHistoryEntity">
+        <id property="adminLoginHistoryNo"              column="admin_login_history_no"/>
+        <result property="adminNo"                      column="admin_no"/>
+        <result property="adminLoginHistoryFailId"      column="admin_login_history_fail_id"/>
+        <result property="adminLoginHistorySuccessYn"   column="admin_login_history_success_yn"/>
+        <result property="adminLoginHistoryIp"          column="admin_login_history_ip"/>
+        <result property="adminLoginHistoryUserAgent"   column="admin_login_history_user_agent"/>
+        <result property="adminLoginHistoryAt"          column="admin_login_history_at"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.admin.entity.AdminLoginHistoryEntity">
+        INSERT INTO tb_admin_login_history (
+            admin_no,
+            admin_login_history_fail_id,
+            admin_login_history_success_yn,
+            admin_login_history_ip,
+            admin_login_history_user_agent,
+            admin_login_history_at
+        ) VALUES (
+            #{adminNo},
+            #{adminLoginHistoryFailId},
+            #{adminLoginHistorySuccessYn},
+            #{adminLoginHistoryIp},
+            #{adminLoginHistoryUserAgent},
+            #{adminLoginHistoryAt}
+        )
+    </insert>
+</mapper>

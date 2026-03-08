@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.admin.repository.AdminRepository">
+    <resultMap id="adminResultMap"              type="com.kwang.climbstyle.domain.admin.entity.AdminEntity">
+        <id property="adminNo"                  column="admin_no"/>
+        <result property="adminId"              column="admin_id"/>
+        <result property="adminPassword"        column="admin_password"/>
+        <result property="adminName"            column="admin_name"/>
+        <result property="adminEmail"           column="admin_email"/>
+        <result property="adminNickname"        column="admin_nickname"/>
+        <result property="adminImageUrl"        column="admin_image_url"/>
+        <result property="adminCreated"         column="admin_created"/>
+        <result property="adminUpdated"         column="admin_updated"/>
+        <collection property="adminRoles"       ofType="String">
+            <result column="role_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectAdminById" parameterType="String" resultMap="adminResultMap">
+        SELECT
+            a.admin_no,
+            a.admin_id,
+            a.admin_password,
+            a.admin_name,
+            a.admin_email,
+            a.admin_nickname,
+            a.admin_image_url,
+            a.admin_created,
+            a.admin_updated,
+            r.role_name
+        FROM
+            tb_admin a
+        LEFT JOIN
+            tb_admin_role ar
+        ON a.admin_no = ar.admin_no
+        LEFT JOIN
+            tb_role r
+        ON ar.role_no = r.role_no
+        WHERE
+            a.admin_id = #{adminId}
+    </select>
+</mapper>

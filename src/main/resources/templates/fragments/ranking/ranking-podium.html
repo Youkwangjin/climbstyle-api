@@ -1,40 +1,45 @@
-<div class="podium" th:fragment="podium(rankingList)">
-    <article class="podium-card podium-2" th:with="rank=${rankingList[1]}">
-        <div class="podium-image">
-            <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}"
-                 alt="2등 피드" />
-        </div>
-        <div class="podium-info">
-            <div class="podium-header">
-                <div class="podium-rank" th:text="${rank.rankingOrder} + '등'">2등</div>
-                <!-- 순위 변동 -->
-                <div class="rank-change rank-new"
-                     th:if="${rank.rankingPreviousOrder == null}">NEW</div>
-                <div class="rank-change rank-up"
-                     th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder > rank.rankingOrder}">
-                    <span class="rank-arrow">↑</span>
-                    <span class="rank-number" th:text="${rank.rankingPreviousOrder - rank.rankingOrder}">3</span>
+<div class="podium"
+     th:fragment="podium(rankingList)"
+     th:classappend="${rankingList.size() == 1 ? 'podium-single' :
+                      (rankingList.size() == 2 ? 'podium-double' : '')}">
+
+    <div th:if="${rankingList.size() >= 2}" style="display: contents;">
+        <article class="podium-card podium-2" th:with="rank=${rankingList[1]}">
+            <div class="podium-image">
+                <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}" alt="2등 피드" />
+            </div>
+            <div class="podium-info">
+                <div class="podium-header">
+                    <div class="podium-rank" th:text="${rank.rankingOrder} + '등'">2등</div>
+                    <div class="rank-change rank-new"
+                         th:if="${rank.rankingPreviousOrder == null}">NEW</div>
+                    <div class="rank-change rank-up"
+                         th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder > rank.rankingOrder}">
+                        <span class="rank-arrow">↑</span>
+                        <span class="rank-number" th:text="${rank.rankingPreviousOrder - rank.rankingOrder}">3</span>
+                    </div>
+                    <div class="rank-change rank-down"
+                         th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder < rank.rankingOrder}">
+                        <span class="rank-arrow">↓</span>
+                        <span class="rank-number" th:text="${rank.rankingOrder - rank.rankingPreviousOrder}">1</span>
+                    </div>
+                    <div class="rank-change rank-same"
+                         th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder == rank.rankingOrder}">—</div>
                 </div>
-                <div class="rank-change rank-down"
-                     th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder < rank.rankingOrder}">
-                    <span class="rank-arrow">↓</span>
-                    <span class="rank-number" th:text="${rank.rankingOrder - rank.rankingPreviousOrder}">1</span>
+                <h3 class="podium-title" th:text="${rank.feedTitle}">제목</h3>
+                <div class="podium-user">
+                    <img th:src="${rank.userImageUrl != null ? rank.userImageUrl : '/img/default-avatar.png'}"
+                         alt="프로필" class="podium-avatar" />
+                    <span class="podium-username" th:text="${rank.userNickname}">사용자</span>
                 </div>
-                <div class="rank-change rank-same"
-                     th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder == rank.rankingOrder}">—</div>
+                <div class="podium-likes">
+                    <th:block th:replace="~{fragments/common/icons :: heart}" />
+                    <span th:text="${#numbers.formatInteger(rank.rankingLikeCount, 0, 'COMMA')}">980</span>
+                </div>
             </div>
-            <h3 class="podium-title" th:text="${rank.feedTitle}">제목</h3>
-            <div class="podium-user">
-                <img th:src="${rank.userImageUrl != null ? rank.userImageUrl : '/img/default-avatar.png'}"
-                     alt="프로필" class="podium-avatar" />
-                <span class="podium-username" th:text="${rank.userNickname}">사용자</span>
-            </div>
-            <div class="podium-likes">
-                <th:block th:replace="~{fragments/common/icons :: heart}" />
-                <span th:text="${#numbers.formatInteger(rank.rankingLikeCount, 0, 'COMMA')}">980</span>
-            </div>
-        </div>
-    </article>
+        </article>
+    </div>
+
     <article class="podium-card podium-1" th:with="rank=${rankingList[0]}">
         <div class="podium-image">
             <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}"
@@ -70,39 +75,42 @@
             </div>
         </div>
     </article>
-    <article class="podium-card podium-3" th:with="rank=${rankingList[2]}">
-        <div class="podium-image">
-            <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}"
-                 alt="3등 피드" />
-        </div>
-        <div class="podium-info">
-            <div class="podium-header">
-                <div class="podium-rank" th:text="${rank.rankingOrder} + '등'">3등</div>
-                <div class="rank-change rank-new"
-                     th:if="${rank.rankingPreviousOrder == null}">NEW</div>
-                <div class="rank-change rank-up"
-                     th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder > rank.rankingOrder}">
-                    <span class="rank-arrow">↑</span>
-                    <span class="rank-number" th:text="${rank.rankingPreviousOrder - rank.rankingOrder}">3</span>
+
+    <div th:if="${rankingList.size() >= 3}" style="display: contents;">
+        <article class="podium-card podium-3" th:with="rank=${rankingList[2]}">
+            <div class="podium-image">
+                <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}"
+                     alt="3등 피드" />
+            </div>
+            <div class="podium-info">
+                <div class="podium-header">
+                    <div class="podium-rank" th:text="${rank.rankingOrder} + '등'">3등</div>
+                    <div class="rank-change rank-new"
+                         th:if="${rank.rankingPreviousOrder == null}">NEW</div>
+                    <div class="rank-change rank-up"
+                         th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder > rank.rankingOrder}">
+                        <span class="rank-arrow">↑</span>
+                        <span class="rank-number" th:text="${rank.rankingPreviousOrder - rank.rankingOrder}">3</span>
+                    </div>
+                    <div class="rank-change rank-down"
+                         th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder < rank.rankingOrder}">
+                        <span class="rank-arrow">↓</span>
+                        <span class="rank-number" th:text="${rank.rankingOrder - rank.rankingPreviousOrder}">1</span>
+                    </div>
+                    <div class="rank-change rank-same"
+                         th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder == rank.rankingOrder}">—</div>
                 </div>
-                <div class="rank-change rank-down"
-                     th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder < rank.rankingOrder}">
-                    <span class="rank-arrow">↓</span>
-                    <span class="rank-number" th:text="${rank.rankingOrder - rank.rankingPreviousOrder}">1</span>
+                <h3 class="podium-title" th:text="${rank.feedTitle}">제목</h3>
+                <div class="podium-user">
+                    <img th:src="${rank.userImageUrl != null ? rank.userImageUrl : '/img/default-avatar.png'}"
+                         alt="프로필" class="podium-avatar" />
+                    <span class="podium-username" th:text="${rank.userNickname}">사용자</span>
                 </div>
-                <div class="rank-change rank-same"
-                     th:if="${rank.rankingPreviousOrder != null && rank.rankingPreviousOrder == rank.rankingOrder}">—</div>
+                <div class="podium-likes">
+                    <th:block th:replace="~{fragments/common/icons :: heart}" />
+                    <span th:text="${#numbers.formatInteger(rank.rankingLikeCount, 0, 'COMMA')}">720</span>
+                </div>
             </div>
-            <h3 class="podium-title" th:text="${rank.feedTitle}">제목</h3>
-            <div class="podium-user">
-                <img th:src="${rank.userImageUrl != null ? rank.userImageUrl : '/img/default-avatar.png'}"
-                     alt="프로필" class="podium-avatar" />
-                <span class="podium-username" th:text="${rank.userNickname}">사용자</span>
-            </div>
-            <div class="podium-likes">
-                <th:block th:replace="~{fragments/common/icons :: heart}" />
-                <span th:text="${#numbers.formatInteger(rank.rankingLikeCount, 0, 'COMMA')}">720</span>
-            </div>
-        </div>
-    </article>
+        </article>
+    </div>
 </div>

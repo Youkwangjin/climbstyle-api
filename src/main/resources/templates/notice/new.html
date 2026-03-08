@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>공지사항 작성 | ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/notice/new.css}">
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header :: header}"></div>
+</header>
+<section class="section">
+    <div class="container">
+        <div class="form-wrap">
+            <div class="form-header">
+                <h1>공지사항 작성</h1>
+                <button type="button" class="btn" onclick="noticeList()">목록</button>
+            </div>
+            <form class="notice-form">
+                <div class="form-row">
+                    <label class="form-label" for="noticeCategory">카테고리</label>
+                    <div class="select-wrap">
+                        <select class="form-select" id="noticeCategory">
+                            <option value="">선택하세요</option>
+                            <option value="0">공지</option>
+                            <option value="1">업데이트</option>
+                            <option value="2">이벤트</option>
+                        </select>
+                        <span class="select-arrow">
+                            <th:block th:replace="~{fragments/common/icons :: chevron-down}" />
+                        </span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="noticeTitle">제목</label>
+                    <input class="form-input" type="text" id="noticeTitle" placeholder="제목을 입력하세요" maxlength="100" />
+                    <span class="form-hint">최대 100자</span>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">내용</label>
+                    <div class="editor-wrap">
+                        <div id="quill-editor"></div>
+                    </div>
+                    <input type="hidden" id="noticeContent" />
+                </div>
+                <div class="form-row">
+                    <label class="form-label">첨부파일</label>
+                    <div class="file-wrap">
+                        <div class="file-upload-wrap">
+                            <label class="file-upload-label" for="attachFiles">
+                                <span class="file-upload-icon">
+                                    <th:block th:replace="~{fragments/common/icons :: upload}" />
+                                </span>
+                                <span>파일을 선택하거나 드래그하세요</span>
+                                <span class="file-upload-hint">최대 5개, 파일당 10MB 이하</span>
+                            </label>
+                            <input type="file" id="attachFiles" name="attachFiles"
+                                   multiple class="file-input" />
+                        </div>
+                        <ul class="file-list" id="fileList"></ul>
+                    </div>
+                </div>
+                <div class="form-row form-row-inline">
+                    <label class="form-label">고정 공지</label>
+                    <label class="toggle-wrap">
+                        <input type="checkbox" id="noticePinYn" value="Y" class="toggle-input" />
+                        <span class="toggle-track">
+                            <span class="toggle-thumb"></span>
+                        </span>
+                        <span class="toggle-text">목록 상단에 고정합니다</span>
+                    </label>
+                </div>
+                <div class="form-footer">
+                    <button type="button" class="btn" onclick="noticeReset()">취소</button>
+                    <button type="submit" class="btn btn-primary">등록하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script th:src="@{/js/common/logout.js}"></script>
+<script th:src="@{/js/common/icons.js}"></script>
+<script th:src="@{/js/common/quillEditor.js}"></script>
+<script>
+    function noticeList() {}
+    function noticeReset() {}
+</script>
+</body>
+</html>

@@ -20,4 +20,9 @@ public class RankingScheduler {
     public void updateWeeklyRanking() {
         rankingBatchService.updateWeeklyRanking();
     }
+
+    @Scheduled(cron = "5 0 0 1 * *")
+    public void updateMonthlyRanking() {
+        rankingBatchService.updateMonthlyRanking();
+    }
 }

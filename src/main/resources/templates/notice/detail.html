@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>공지사항 상세 | ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/notice/detail.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header :: header}"></div>
+</header>
+<section class="section">
+    <div class="container">
+        <div class="detail-wrap">
+            <div class="detail-header">
+                <div class="detail-header-top">
+                    <div class="detail-category">
+                        <th:block th:switch="${detail.noticeCategory}">
+                            <span th:case="'0'" class="badge badge-notice">공지</span>
+                            <span th:case="'1'" class="badge badge-update">업데이트</span>
+                            <span th:case="'2'" class="badge badge-event">이벤트</span>
+                        </th:block>
+                    </div>
+                    <button type="button" class="btn" onclick="location.href='/notice/list'">목록</button>
+                </div>
+                <h1 class="detail-title" th:text="${detail.noticeTitle}"></h1>
+                <div class="detail-meta">
+                    <span class="meta-item">
+                        <span class="meta-label">작성일</span>
+                        <span class="meta-value" th:text="${#temporals.format(detail.noticeCreated, 'yyyy.MM.dd')}"></span>
+                    </span>
+                    <span class="meta-divider"></span>
+                    <span class="meta-item">
+                        <span class="meta-label">조회수</span>
+                        <span class="meta-value" th:text="${#numbers.formatInteger(detail.noticeHit, 0, 'COMMA')}"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="detail-body">
+                <div class="detail-content ql-editor" th:utext="${detail.noticeContent}"></div>
+            </div>
+            <div class="detail-attachments" th:if="${!#lists.isEmpty(detail.files)}">
+                <div class="attachments-label">첨부파일</div>
+                <ul class="attachment-list">
+                    <li class="attachment-item" th:each="file : ${detail.files}">
+                        <span class="attachment-icon">
+                            <th:block th:replace="~{fragments/common/icons :: file}" />
+                        </span>
+                        <span class="attachment-name" th:text="${file.noticeFileOriginalName}"></span>
+                        <span class="attachment-size" th:text="${file.noticeFileSize}"></span>
+                        <a th:href="${file.noticeFilePath}" class="attachment-down" download>
+                            <th:block th:replace="~{fragments/common/icons :: download}" />
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="detail-nav">
+                <a th:if="${detail.prevNotice != null}"
+                   th:href="@{/notice/detail/{noticeNo}(noticeNo=${detail.prevNotice.noticeNo})}"
+                   class="nav-item">
+                    <span class="nav-direction">
+                        <th:block th:replace="~{fragments/common/icons :: chevron-left}" />
+                        이전글
+                    </span>
+                    <span class="nav-title" th:text="${detail.prevNotice.noticeTitle}"></span>
+                    <span class="nav-date" th:text="${#temporals.format(detail.prevNotice.noticeCreated, 'yyyy.MM.dd')}"></span>
+                </a>
+                <a th:if="${detail.nextNotice != null}"
+                   th:href="@{/notice/detail/{noticeNo}(noticeNo=${detail.nextNotice.noticeNo})}"
+                   class="nav-item">
+                    <span class="nav-direction">
+                        <th:block th:replace="~{fragments/common/icons :: chevron-left}" />
+                        다음글
+                    </span>
+                    <span class="nav-title" th:text="${detail.nextNotice.noticeTitle}"></span>
+                    <span class="nav-date" th:text="${#temporals.format(detail.nextNotice.noticeCreated, 'yyyy.MM.dd')}"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/logout.js}"></script>
+</body>
+</html>
