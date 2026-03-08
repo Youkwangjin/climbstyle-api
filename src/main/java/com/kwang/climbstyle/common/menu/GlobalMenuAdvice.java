@@ -4,6 +4,7 @@ import com.kwang.climbstyle.code.menu.MenuCode;
 import com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse;
 import com.kwang.climbstyle.domain.menu.service.MenuService;
 import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
+import com.kwang.climbstyle.security.admin.CustomAdminDetails;
 import com.kwang.climbstyle.security.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -43,11 +44,22 @@ public class GlobalMenuAdvice {
             return null;
         }
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Object principal = authentication.getPrincipal();
 
-        return UserProfileResponse.builder()
-                .userNickName(userDetails.getUserNickname())
-                .userImgUrl(userDetails.getUserImageUrl())
-                .build();
+        if (principal instanceof CustomUserDetails userDetails) {
+            return UserProfileResponse.builder()
+                    .userNickName(userDetails.getUserNickname())
+                    .userImgUrl(userDetails.getUserImageUrl())
+                    .build();
+        }
+
+        if (principal instanceof CustomAdminDetails adminDetails) {
+            return UserProfileResponse.builder()
+                    .userNickName(adminDetails.adminNickname())
+                    .userImgUrl(adminDetails.adminImageUrl())
+                    .build();
+        }
+
+        return null;
     }
 }

@@ -1,25 +1,36 @@
 package com.kwang.climbstyle.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kwang.climbstyle.security.admin.CustomAdminDetailsService;
+import com.kwang.climbstyle.security.filter.CustomAdminJsonAuthenticationFilter;
 import com.kwang.climbstyle.security.filter.CustomUserJsonAuthenticationFilter;
 import com.kwang.climbstyle.security.handler.CustomAuthenticationEntryPoint;
-import com.kwang.climbstyle.security.handler.CustomLoginSuccessHandler;
-import com.kwang.climbstyle.security.handler.CustomLogoutHandler;
-import com.kwang.climbstyle.security.handler.CustomUserLoginFailureHandler;
+import com.kwang.climbstyle.security.handler.admin.CustomAdminLoginFailureHandler;
+import com.kwang.climbstyle.security.handler.admin.CustomAdminLoginSuccessHandler;
+import com.kwang.climbstyle.security.handler.user.CustomUserLoginSuccessHandler;
+import com.kwang.climbstyle.security.handler.user.CustomUserLogoutHandler;
+import com.kwang.climbstyle.security.handler.user.CustomUserLoginFailureHandler;
+import com.kwang.climbstyle.security.user.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -27,29 +38,38 @@ public class SpringSecurityConfig {
 
     private final ObjectMapper objectMapper;
 
-    private final CustomLoginSuccessHandler customLoginSuccessHandler;
+    private final CustomUserLoginSuccessHandler customUserLoginSuccessHandler;
 
     private final CustomUserLoginFailureHandler customUserLoginFailureHandler;
 
+    private final CustomAdminLoginSuccessHandler customAdminLoginSuccessHandler;
+
+    private final CustomAdminLoginFailureHandler customAdminLoginFailureHandler;
+
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    private final CustomLogoutHandler customLogoutHandler;
+    private final CustomUserLogoutHandler customUserLogoutHandler;
 
     public SpringSecurityConfig(ObjectMapper objectMapper,
-                                CustomLoginSuccessHandler customLoginSuccessHandler,
+                                CustomUserLoginSuccessHandler customUserLoginSuccessHandler,
                                 CustomUserLoginFailureHandler customUserLoginFailureHandler,
+                                CustomAdminLoginSuccessHandler customAdminLoginSuccessHandler,
+                                CustomAdminLoginFailureHandler customAdminLoginFailureHandler,
                                 CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-                                CustomLogoutHandler customLogoutHandler) {
+                                CustomUserLogoutHandler customUserLogoutHandler) {
         this.objectMapper = objectMapper;
-        this.customLoginSuccessHandler = customLoginSuccessHandler;
+        this.customUserLoginSuccessHandler = customUserLoginSuccessHandler;
         this.customUserLoginFailureHandler = customUserLoginFailureHandler;
+        this.customAdminLoginSuccessHandler = customAdminLoginSuccessHandler;
+        this.customAdminLoginFailureHandler = customAdminLoginFailureHandler;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
-        this.customLogoutHandler = customLogoutHandler;
+        this.customUserLogoutHandler = customUserLogoutHandler;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   CustomUserJsonAuthenticationFilter customUserJsonAuthenticationFilter)
+                                                   CustomUserJsonAuthenticationFilter customUserJsonAuthenticationFilter,
+                                                   CustomAdminJsonAuthenticationFilter customAdminJsonAuthenticationFilter)
             throws Exception {
 
         http
@@ -91,6 +111,7 @@ public class SpringSecurityConfig {
                                         "/auth/session-expired",
                                         "/logout",
                                         "/auth/login",
+                                        "/admin/auth/login",
                                         "/auth/register",
                                         "/feed",
                                         "/rankings/realtime/*",
@@ -105,7 +126,8 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/users/id/availability",
                                          "/api/v1/users/email/availability",
                                          "/api/v1/users/nickname/availability",
-                                         "/api/v1/login").permitAll()
+                                         "/api/v1/login",
+                                         "/api/v1/admin/login").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
 
@@ -130,7 +152,7 @@ public class SpringSecurityConfig {
         http
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .addLogoutHandler(customLogoutHandler)
+                        .addLogoutHandler(customUserLogoutHandler)
                         .logoutSuccessHandler((request, response,
                                                authentication) ->
                                 response.setStatus(HttpServletResponse.SC_OK))
@@ -140,24 +162,55 @@ public class SpringSecurityConfig {
 
         http.addFilterAt(customUserJsonAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+        http.addFilterAt(customAdminJsonAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
+    @Primary
+    @Bean("userAuthenticationManager")
+    public AuthenticationManager userAuthenticationManager(
+            CustomUserDetailsService customUserDetailsService,
+            BCryptPasswordEncoder bCryptPasswordEncoder) {
+        DaoAuthenticationProvider userProvider = new DaoAuthenticationProvider();
 
-        return authenticationConfiguration.getAuthenticationManager();
+        userProvider.setUserDetailsService(customUserDetailsService);
+        userProvider.setPasswordEncoder(bCryptPasswordEncoder);
+
+        return new ProviderManager(List.of(userProvider));
+    }
+
+    @Bean("adminAuthenticationManager")
+    public AuthenticationManager adminAuthenticationManager(
+            CustomAdminDetailsService customAdminDetailsService,
+            BCryptPasswordEncoder bCryptPasswordEncoder) {
+        DaoAuthenticationProvider adminProvider = new DaoAuthenticationProvider();
+
+        adminProvider.setUserDetailsService(customAdminDetailsService);
+        adminProvider.setPasswordEncoder(bCryptPasswordEncoder);
+
+        return new ProviderManager(List.of(adminProvider));
     }
 
     @Bean
     public CustomUserJsonAuthenticationFilter customUserJsonAuthenticationFilter(
-            AuthenticationManager authenticationManager
-    ) {
+            @Qualifier("userAuthenticationManager") AuthenticationManager userAuthenticationManager) {
         CustomUserJsonAuthenticationFilter filter =
-                new CustomUserJsonAuthenticationFilter(authenticationManager, objectMapper, customLoginSuccessHandler);
+                new CustomUserJsonAuthenticationFilter(userAuthenticationManager, objectMapper, customUserLoginSuccessHandler);
 
         filter.setAuthenticationFailureHandler(customUserLoginFailureHandler);
+
+        return filter;
+    }
+
+    @Bean
+    public CustomAdminJsonAuthenticationFilter customAdminJsonAuthenticationFilter(
+            @Qualifier("adminAuthenticationManager") AuthenticationManager adminAuthenticationManager) {
+        CustomAdminJsonAuthenticationFilter filter =
+                new CustomAdminJsonAuthenticationFilter(adminAuthenticationManager, objectMapper, customAdminLoginSuccessHandler);
+
+        filter.setAuthenticationFailureHandler(customAdminLoginFailureHandler);
+
         return filter;
     }
 }

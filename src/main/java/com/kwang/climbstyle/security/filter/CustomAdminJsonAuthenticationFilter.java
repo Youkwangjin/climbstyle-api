@@ -60,6 +60,8 @@ public class CustomAdminJsonAuthenticationFilter extends AbstractAuthenticationP
         String username = loginRequest.getAdminId();
         String password = loginRequest.getAdminPassword();
 
+        request.setAttribute("attemptedAdminId", username);
+
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             throw new AuthenticationServiceException("Missing required fields");
         }
