@@ -1,11 +1,9 @@
 package com.kwang.climbstyle.domain.user.dto.response;
 
-import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder
@@ -30,6 +28,4 @@ public class UserProfileResponse {
     private LocalDateTime userUpdated;
 
     private LocalDateTime userDeleted;
-
-    private List<OrderRecentResponse> userOrders;
 }

@@ -4,9 +4,6 @@ import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.user.UserDeleteStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.domain.file.service.FileService;
-import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
-import com.kwang.climbstyle.domain.order.entity.OrderEntity;
-import com.kwang.climbstyle.domain.order.repository.OrderRepository;
 import com.kwang.climbstyle.domain.user.dto.request.*;
 import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
@@ -21,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,8 +27,6 @@ public class UserService {
     private final FileService fileService;
 
     private final UserRepository userRepository;
-
-    private final OrderRepository orderRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -122,17 +116,6 @@ public class UserService {
         final LocalDateTime userUpdated = data.getUserUpdated();
         final LocalDateTime userDeleted = data.getUserDeleted();
 
-        List<OrderEntity> dataOrder = orderRepository.selectRecentOrdersByUserNo(userNo);
-
-        List<OrderRecentResponse> orderResponses = dataOrder.stream()
-                .map(order -> OrderRecentResponse.builder()
-                        .orderNo(order.getOrderNo())
-                        .orderTitle(order.getOrderTitle())
-                        .orderStatus(order.getOrderStatus())
-                        .orderCreated(order.getOrderCreated())
-                        .build()
-                ).toList();
-
         return UserProfileResponse.builder()
                 .userNo(userNo)
                 .userNm(userNm)
@@ -144,7 +127,6 @@ public class UserService {
                 .userCreated(userCreated)
                 .userUpdated(userUpdated)
                 .userDeleted(userDeleted)
-                .userOrders(orderResponses)
                 .build();
     }
 
@@ -170,11 +152,6 @@ public class UserService {
             if (now.isBefore(availableAt)) {
                 throw new ClimbStyleException(UserErrorCode.USER_DORMANCY_COOLDOWN);
             }
-        }
-
-        Boolean existOrderData = orderRepository.existsOrdersByUserNo(userNo);
-        if (existOrderData) {
-            throw new ClimbStyleException(UserErrorCode.USER_ORDER_EXISTS);
         }
 
         UserEntity userEntity = UserEntity.builder()
