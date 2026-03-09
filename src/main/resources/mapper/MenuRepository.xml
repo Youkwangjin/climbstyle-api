@@ -38,4 +38,32 @@
             m.menu_level,
             m.menu_sort_order
     </select>
+
+    <select id="selectMenuByAdminNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.menu.dto.response.AdminMenuListResponse">
+        SELECT DISTINCT
+            m.menu_no,
+            m.menu_code,
+            m.menu_name,
+            m.menu_url,
+            m.menu_parent_no,
+            m.menu_level,
+            m.menu_sort_order,
+            m.menu_icon
+        FROM
+            tb_menu m
+        INNER JOIN
+            tb_role_menu rm
+            ON rm.menu_no = m.menu_no
+        INNER JOIN
+            tb_admin_role ar
+            ON ar.role_no = rm.role_no
+        WHERE
+            ar.admin_no = #{adminNo}
+        AND
+            m.menu_use_yn = 'Y'
+        ORDER BY
+            m.menu_level,
+            m.menu_sort_order
+    </select>
 </mapper>
