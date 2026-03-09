@@ -224,6 +224,15 @@
             feed_no = #{feedNo}
     </update>
 
+    <update id="updateFeedVisibleYnByUserNo">
+        UPDATE
+            tb_feed
+        SET
+            feed_visible_yn = #{feedVisibleYn}
+        WHERE
+            user_no = #{userNo}
+    </update>
+
     <delete id="delete" parameterType="Integer">
         DELETE
         FROM

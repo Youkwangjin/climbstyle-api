@@ -169,7 +169,7 @@
                     </div>
                 </div>
                 <div class="my-form-footer my-dormant-footer" th:if="${profile.userDeleteYn == 'N'}">
-                    <button type="button" class="btn btn-danger-outline">계정 휴면 처리</button>
+                    <button type="button" class="btn btn-danger-outline" onclick="deactivateAccount()">계정 휴면 처리</button>
                 </div>
             </section>
         </section>
@@ -308,6 +308,28 @@
             }
         };
     })();
+
+    function deactivateAccount() {
+        if (!confirm("정말 휴면 처리 하시겠습니까?")) {
+            return;
+        }
+
+        API.callJson(`/api/v1/users/${document.getElementById("userNo").value}/dormancy`, {
+            method: "PATCH",
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (response.ok) {
+                    alert(body.message);
+                    logout();
+                } else {
+                    alert(body.message);
+                }
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
 </script>
 </body>
 </html>
