@@ -1,10 +1,12 @@
 package com.kwang.climbstyle.domain.user.service;
 
+import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.code.role.RoleCode;
-import com.kwang.climbstyle.code.user.UserDeleteStatus;
+import com.kwang.climbstyle.code.user.UserStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
+import com.kwang.climbstyle.domain.feed.repository.FeedRepository;
 import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.role.entity.RoleEntity;
 import com.kwang.climbstyle.domain.role.entity.UserRoleEntity;
@@ -37,6 +39,8 @@ public class UserService {
     private final RoleRepository roleRepository;
 
     private final UserRoleRepository userRoleRepository;
+
+    private final FeedRepository feedRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -181,11 +185,14 @@ public class UserService {
 
         UserEntity userEntity = UserEntity.builder()
                 .userNo(userNo)
-                .userDeleteYn(UserDeleteStatus.INACTIVE.getCode())
+                .userDeleteYn(UserStatus.DORMANT.getCode())
                 .userDeleted(userDeleted)
                 .build();
 
         userRepository.deactivateUser(userEntity);
+
+        final String feedVisibleYn = FeedVisibleStatus.HIDDEN.getCode();
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
     }
 
     @Transactional
@@ -228,9 +235,9 @@ public class UserService {
 
         final String userDeleteYn = data.getUserDeleteYn();
         final String curentUserNickName = data.getUserNickName();
-        final String userDeleteStatus = UserDeleteStatus.INACTIVE.getCode();
+        final String userDeleteStatus = UserStatus.DORMANT.getCode();
         if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
-            throw new ClimbStyleException(UserErrorCode.USER_INACTIVE_FORBIDDEN);
+            throw new ClimbStyleException(UserErrorCode.USER_DORMANT_FORBIDDEN);
         }
 
         if (!StringUtils.equals(userNickName, curentUserNickName)) {
