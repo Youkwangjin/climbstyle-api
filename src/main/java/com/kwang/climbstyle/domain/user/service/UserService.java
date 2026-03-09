@@ -113,7 +113,7 @@ public class UserService {
         final String userNm = request.getUserNm();
         final String userEmail = request.getUserEmail();
         final String userNickName = request.getUserNickName();
-        final String userDeleteYn = UserDeleteStatus.ACTIVE.getCode();
+        final String userDeleteYn = UserStatus.ACTIVE.getCode();
         final LocalDateTime userCreated = LocalDateTime.now();
 
         Boolean existId = userRepository.existUserId(userId);
@@ -170,10 +170,10 @@ public class UserService {
         final LocalDateTime currentUserDeleted = data.getUserDeleted();
         final LocalDateTime userDeleted = LocalDateTime.now();
         final LocalDateTime now = LocalDateTime.now();
-        final String userDeleteStatus = UserDeleteStatus.INACTIVE.getCode();
+        final String userDeleteStatus = UserStatus.DORMANT.getCode();
 
         if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
-            throw new ClimbStyleException(UserErrorCode.USER_ALREADY_INACTIVE);
+            throw new ClimbStyleException(UserErrorCode.USER_ALREADY_DORMANT);
         }
 
         if (currentUserDeleted != null) {
