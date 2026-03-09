@@ -36,4 +36,6 @@ public class UserEntity {
     private LocalDateTime userUpdated;
 
     private LocalDateTime userDeleted;
+
+    private String userRole;
 }

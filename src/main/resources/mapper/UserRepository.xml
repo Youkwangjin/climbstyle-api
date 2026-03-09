@@ -16,6 +16,7 @@
         <result property="userCreated"          column="user_created"/>
         <result property="userUpdated"          column="user_updated"/>
         <result property="userDeleted"          column="user_deleted"/>
+        <result property="userRole"             column="role_name"/>
     </resultMap>
 
     <select id="existUserId" parameterType="String" resultType="Boolean">
@@ -76,22 +77,29 @@
 
     <select id="selectUserById" parameterType="String" resultMap="userResultMap">
         SELECT
-            user_no,
-            user_id,
-            user_password,
-            user_name
-            user_email,
-            user_nickname,
-            user_delete_yn,
-            user_image_url,
-            user_intro,
-            user_created,
-            user_updated,
-            user_deleted
+            u.user_no,
+            u.user_id,
+            u.user_password,
+            u.user_name,
+            u.user_email,
+            u.user_nickname,
+            u.user_delete_yn,
+            u.user_image_url,
+            u.user_intro,
+            u.user_created,
+            u.user_updated,
+            u.user_deleted,
+            r.role_name
         FROM
-            tb_user
+            tb_user u
+        LEFT JOIN
+            tb_user_role ur
+            ON ur.user_no = u.user_no
+        LEFT JOIN
+            tb_role r
+            ON r.role_no = ur.role_no
         WHERE
-            user_id = #{userId}
+            u.user_id = #{userId}
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity" useGeneratedKeys="true"

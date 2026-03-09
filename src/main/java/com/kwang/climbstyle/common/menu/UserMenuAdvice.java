@@ -43,7 +43,8 @@ public class UserMenuAdvice {
             return List.of();
         }
 
-        return menuService.getUserMenuList();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return menuService.getUserMenuList(userDetails.getUserNo());
     }
 
     @ModelAttribute("currentUser")

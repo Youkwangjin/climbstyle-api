@@ -1,9 +1,15 @@
 package com.kwang.climbstyle.domain.user.service;
 
 import com.kwang.climbstyle.code.file.FileTypeCode;
+import com.kwang.climbstyle.code.http.HttpErrorCode;
+import com.kwang.climbstyle.code.role.RoleCode;
 import com.kwang.climbstyle.code.user.UserDeleteStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.domain.file.service.FileService;
+import com.kwang.climbstyle.domain.role.entity.RoleEntity;
+import com.kwang.climbstyle.domain.role.entity.UserRoleEntity;
+import com.kwang.climbstyle.domain.role.repository.RoleRepository;
+import com.kwang.climbstyle.domain.role.repository.UserRoleRepository;
 import com.kwang.climbstyle.domain.user.dto.request.*;
 import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
@@ -27,6 +33,10 @@ public class UserService {
     private final FileService fileService;
 
     private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final UserRoleRepository userRoleRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -60,6 +70,36 @@ public class UserService {
         if (existNickName) {
             throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
         }
+    }
+
+    public UserProfileResponse selectUserByNo(Integer userNo) {
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String userNm = data.getUserNm();
+        final String userEmail = data.getUserEmail();
+        final String userNickName = data.getUserNickName();
+        final String userDeleteYn = data.getUserDeleteYn();
+        final String userImageUrl = data.getUserImageUrl();
+        final String userIntro = data.getUserIntro();
+        final LocalDateTime userCreated = data.getUserCreated();
+        final LocalDateTime userUpdated = data.getUserUpdated();
+        final LocalDateTime userDeleted = data.getUserDeleted();
+
+        return UserProfileResponse.builder()
+                .userNo(userNo)
+                .userNm(userNm)
+                .userEmail(userEmail)
+                .userNickName(userNickName)
+                .userDeleteYn(userDeleteYn)
+                .userImgUrl(userImageUrl)
+                .userIntro(userIntro)
+                .userCreated(userCreated)
+                .userUpdated(userUpdated)
+                .userDeleted(userDeleted)
+                .build();
     }
 
     @Transactional
@@ -98,36 +138,21 @@ public class UserService {
                 .build();
 
         userRepository.insert(user);
-    }
 
-    public UserProfileResponse selectUserByNo(Integer userNo) {
-        UserEntity data = userRepository.selectUserByNo(userNo);
-        if (data == null) {
-            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        RoleEntity role = roleRepository.selectRoleByRoleName(RoleCode.ROLE_USER.getCode());
+        if (role == null) {
+            throw new ClimbStyleException(HttpErrorCode.INTERNAL_SERVER_ERROR);
         }
 
-        final String userNm = data.getUserNm();
-        final String userEmail = data.getUserEmail();
-        final String userNickName = data.getUserNickName();
-        final String userDeleteYn = data.getUserDeleteYn();
-        final String userImageUrl = data.getUserImageUrl();
-        final String userIntro = data.getUserIntro();
-        final LocalDateTime userCreated = data.getUserCreated();
-        final LocalDateTime userUpdated = data.getUserUpdated();
-        final LocalDateTime userDeleted = data.getUserDeleted();
+        final Integer roleNo = role.getRoleNo();
+        final Integer userNo = user.getUserNo();
 
-        return UserProfileResponse.builder()
+        UserRoleEntity userRoleEntity = UserRoleEntity.builder()
                 .userNo(userNo)
-                .userNm(userNm)
-                .userEmail(userEmail)
-                .userNickName(userNickName)
-                .userDeleteYn(userDeleteYn)
-                .userImgUrl(userImageUrl)
-                .userIntro(userIntro)
-                .userCreated(userCreated)
-                .userUpdated(userUpdated)
-                .userDeleted(userDeleted)
+                .roleNo(roleNo)
                 .build();
+
+        userRoleRepository.insert(userRoleEntity);
     }
 
     @Transactional

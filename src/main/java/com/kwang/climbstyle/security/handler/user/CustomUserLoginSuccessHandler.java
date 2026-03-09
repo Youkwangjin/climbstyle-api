@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kwang.climbstyle.code.auth.AuthSuccessCode;
 import com.kwang.climbstyle.common.response.ApiResponseBuilder;
 import com.kwang.climbstyle.common.response.ApiSuccessResponse;
+import com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse;
+import com.kwang.climbstyle.domain.menu.service.MenuService;
+import com.kwang.climbstyle.security.user.CustomUserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -27,9 +31,15 @@ public class CustomUserLoginSuccessHandler implements AuthenticationSuccessHandl
 
     private final ObjectMapper objectMapper;
 
+    private final MenuService menuService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        List<UserMenuListResponse> menuList = menuService.getUserMenuList(userDetails.getUserNo());
+        request.getSession().setAttribute("userMenuList", menuList);
 
         RequestCache requestCache = new HttpSessionRequestCache();
         SavedRequest savedRequest = requestCache.getRequest(request, response);
