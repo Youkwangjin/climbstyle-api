@@ -5,6 +5,8 @@ import com.kwang.climbstyle.code.auth.AuthSuccessCode;
 import com.kwang.climbstyle.common.response.ApiResponseBuilder;
 import com.kwang.climbstyle.common.response.ApiSuccessResponse;
 import com.kwang.climbstyle.domain.admin.service.AdminHistoryService;
+import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuListResponse;
+import com.kwang.climbstyle.domain.menu.service.MenuService;
 import com.kwang.climbstyle.security.admin.CustomAdminDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -28,6 +31,8 @@ public class CustomAdminLoginSuccessHandler implements AuthenticationSuccessHand
 
     private final AdminHistoryService adminHistoryService;
 
+    private final MenuService menuService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -35,7 +40,10 @@ public class CustomAdminLoginSuccessHandler implements AuthenticationSuccessHand
         CustomAdminDetails customAdminDetails = (CustomAdminDetails) authentication.getPrincipal();
         adminHistoryService.saveSuccess(customAdminDetails.adminNo(), request);
 
-        final String redirectUrl = "/admin/mypage";
+        List<AdminMenuListResponse> menuList = menuService.getAdminMenuList(customAdminDetails.adminNo());
+        request.getSession().setAttribute("menuList", menuList);
+
+        final String redirectUrl = "/admin";
 
         Map<String, Object> data = new HashMap<>();
         data.put("redirectUrl", request.getContextPath() + redirectUrl);
