@@ -21,6 +21,8 @@ public interface UserRepository {
 
     void deactivateUser(UserEntity userEntity);
 
+    void reactivateUser(UserEntity userEntity);
+
     void update(UserEntity userEntity);
 
     void updatePassword(UserEntity userEntity);

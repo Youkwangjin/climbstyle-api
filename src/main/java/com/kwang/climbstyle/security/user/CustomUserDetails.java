@@ -62,10 +62,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
-    }
-
-    public boolean isInactive() {
-        return Objects.equals(userEntity.getUserDeleteYn(), UserStatus.DORMANT.getCode());
+        return !Objects.equals(userEntity.getUserDeleteYn(), UserStatus.DORMANT.getCode());
     }
 }

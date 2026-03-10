@@ -59,7 +59,14 @@ public class UserApiController {
 
         userService.deactivateUser(userNo);
 
-        return ApiResponseBuilder.ok(UserSuccessCode.USER_DELETE_SUCCESS);
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_DORMANT_SUCCESS);
+    }
+
+    @PatchMapping(value = "/api/v1/users/reactivate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> reactivateUser(@RequestBody UserReactivateRequest  request) {
+        userService.reactivateUser(request);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_REACTIVATE_SUCCESS);
     }
 
     @PatchMapping(value = "/api/v1/users/password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

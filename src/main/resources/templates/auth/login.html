@@ -68,6 +68,11 @@
         })
             .then(async response => {
                 const body = await response.json();
+                if (body.code === "0402") {
+                    location.href = "/auth/reactivate";
+                    return;
+                }
+
                 if (!response.ok) {
                     alert(body.message);
                     return;
