@@ -10,7 +10,7 @@ import com.kwang.climbstyle.security.handler.admin.CustomAdminLoginSuccessHandle
 import com.kwang.climbstyle.security.handler.user.CustomUserLoginSuccessHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLogoutHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLoginFailureHandler;
-import com.kwang.climbstyle.security.user.CustomUserDetailsService;
+import com.kwang.climbstyle.security.provider.CustomDaoAuthenticationProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -171,14 +171,8 @@ public class SpringSecurityConfig {
     @Primary
     @Bean("userAuthenticationManager")
     public AuthenticationManager userAuthenticationManager(
-            CustomUserDetailsService customUserDetailsService,
-            BCryptPasswordEncoder bCryptPasswordEncoder) {
-        DaoAuthenticationProvider userProvider = new DaoAuthenticationProvider();
-
-        userProvider.setUserDetailsService(customUserDetailsService);
-        userProvider.setPasswordEncoder(bCryptPasswordEncoder);
-
-        return new ProviderManager(List.of(userProvider));
+            CustomDaoAuthenticationProvider customDaoAuthenticationProvider) {
+        return new ProviderManager(List.of(customDaoAuthenticationProvider));
     }
 
     @Bean("adminAuthenticationManager")
