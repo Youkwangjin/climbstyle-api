@@ -38,21 +38,6 @@ public class CustomUserLoginSuccessHandler implements AuthenticationSuccessHandl
                                         Authentication authentication) throws IOException, ServletException {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        if (userDetails.isInactive()) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("redirectUrl", request.getContextPath() + "/auth/reactivate");
-
-            ApiSuccessResponse<Map<String, Object>> responseBody =
-                    ApiResponseBuilder.body(AuthSuccessCode.LOGIN_SUCCESS, data);
-
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(objectMapper.writeValueAsString(responseBody));
-
-            return;
-        }
-
         List<UserMenuListResponse> menuList = menuService.getUserMenuList(userDetails.getUserNo());
         request.getSession().setAttribute("userMenuList", menuList);
 

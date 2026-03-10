@@ -9,7 +9,7 @@
 
 .reactivate-card {
     width: 100%;
-    max-width: 480px;
+    max-width: 560px;
     background: #fff;
     border: 1px solid var(--line);
     border-radius: 16px;
@@ -100,4 +100,30 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.reactivate-actions .field {
+    width: 100%;
+    text-align: left;
+}
+
+.reactivate-actions .field label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.reactivate-actions .field input[type="password"] {
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 14px;
+}
+
+.reactivate-actions .field input[type="password"]:focus {
+    outline: none;
+    border-color: var(--brand);
 }

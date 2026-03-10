@@ -130,6 +130,7 @@ public class SpringSecurityConfig {
                                          "/api/v1/admin/login").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/reactivate").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/feeds").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/feeds/*").permitAll()

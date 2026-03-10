@@ -196,6 +196,37 @@ public class UserService {
     }
 
     @Transactional
+    public void reactivateUser(UserReactivateRequest request) {
+        final String userId = request.getUserId();
+        final String userPassword = request.getUserPassword();
+
+        UserEntity data = userRepository.selectUserById(userId);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        if (!passwordEncoder.matches(userPassword, data.getUserPassword())) {
+            throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
+        }
+
+        final Integer userNo = data.getUserNo();
+        final String userDeleteYn = data.getUserDeleteYn();
+        final String userReactivateStatus = UserStatus.ACTIVE.getCode();
+        if (StringUtils.equals(userDeleteYn, userReactivateStatus)) {
+            throw new ClimbStyleException(UserErrorCode.USER_ALREADY_REACTIVATE);
+        }
+
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userDeleteYn(userReactivateStatus)
+                .build();
+
+        userRepository.reactivateUser(userEntity);
+        final String feedVisibleYn = FeedVisibleStatus.VISIBLE.getCode();
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
+    }
+
+    @Transactional
     public void changePassword(Integer userNo, UserPasswordUpdateRequest request) {
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {

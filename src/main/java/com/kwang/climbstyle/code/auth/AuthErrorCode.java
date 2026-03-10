@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum AuthErrorCode implements ApiCode {
     LOGIN_ERROR(HttpStatus.UNAUTHORIZED, "0401", "ID/PW 로그인에 실패하였습니다."),
+    LOGIN_DISABLED(HttpStatus.FORBIDDEN, "0402", "비활성화 상태의 계정입니다."),
     ;
 
     private final HttpStatus httpStatus;

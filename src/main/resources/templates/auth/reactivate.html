@@ -12,29 +12,30 @@
 <body>
 <div class="reactivate-wrap">
     <div class="reactivate-card">
+        <input type="hidden" id="userId" th:value="${userId}" />
         <div class="reactivate-icon">
             <th:block th:replace="~{fragments/common/icons :: warning}" />
         </div>
-
         <div>
             <div class="reactivate-title">계정이 휴면 상태예요</div>
         </div>
-
         <p class="reactivate-desc">
             회원님의 계정은 현재 휴면 상태입니다.<br>
             계정을 재활성화하면 ClimbStyle의 모든 서비스를 다시 이용할 수 있어요.
         </p>
-
         <div class="reactivate-info">
             <ul>
                 <li>재활성화 후 비공개 처리된 피드가 다시 공개됩니다.</li>
                 <li>휴면 상태가 30일 이상 지속되면 계정이 자동으로 탈퇴 처리됩니다.</li>
             </ul>
         </div>
-
         <div class="reactivate-actions">
-            <button type="button" class="btn btn-primary" onclick="reactivate()">계정 재활성화</button>
-            <a href="javascript:void(0)" class="btn btn-outline" onclick="logout()">메인 패이지로 돌아가기</a>
+            <div class="field">
+                <label for="userPassword">비밀번호 확인</label>
+                <input id="userPassword" type="password" placeholder="비밀번호를 입력하세요" />
+            </div>
+            <button type="button" class="btn btn-primary auth-submit" onclick="reactivate()">계정 재활성화</button>
+            <a href="javascript:void(0)" class="btn btn-outline auth-submit" onclick="logout()">메인 페이지로 돌아가기</a>
         </div>
     </div>
 </div>
@@ -47,13 +48,17 @@
         }
 
         API.callJson("/api/v1/users/reactivate", {
-            method: "PATCH"
+            method: "PATCH",
+            body: JSON.stringify({
+                userId: document.getElementById("userId").value,
+                userPassword: document.getElementById("userPassword").value.trim()
+            })
         })
             .then(async response => {
                 const body = await response.json();
                 if (response.ok) {
                     alert(body.message);
-                    location.href = "/my/profile";
+                    location.href = "/auth/login";
                 } else {
                     alert(body.message);
                 }

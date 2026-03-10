@@ -59,6 +59,8 @@ public class CustomUserJsonAuthenticationFilter extends AbstractAuthenticationPr
         String username = loginRequest.getUserId();
         String password = loginRequest.getUserPassword();
 
+        request.setAttribute("userId", username);
+
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             throw new AuthenticationServiceException("Missing required fields");
         }
