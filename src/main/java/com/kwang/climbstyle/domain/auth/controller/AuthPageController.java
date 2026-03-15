@@ -1,4 +1,4 @@
-package com.kwang.climbstyle.domain.auth;
+package com.kwang.climbstyle.domain.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
