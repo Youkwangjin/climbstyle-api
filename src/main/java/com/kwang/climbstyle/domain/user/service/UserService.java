@@ -228,18 +228,19 @@ public class UserService {
 
     @Transactional
     public void changePassword(Integer userNo, UserPasswordUpdateRequest request) {
+        final String userPassword = request.getUserPassword();
+        final String newUserPassword = passwordEncoder.encode(request.getNewUserPassword());
+
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
 
         final String currentUserPassword = data.getUserPassword();
-        final String userPassword = request.getUserPassword();
         if (!passwordEncoder.matches(userPassword, currentUserPassword)) {
             throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
         }
 
-        final String newUserPassword = passwordEncoder.encode(request.getNewUserPassword());
         final LocalDateTime userUpdated = LocalDateTime.now();
 
         UserEntity userEntity = UserEntity.builder()
