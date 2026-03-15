@@ -1,12 +1,17 @@
 package com.kwang.climbstyle.domain.user.service;
 
+import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
-import com.kwang.climbstyle.code.user.UserDeleteStatus;
+import com.kwang.climbstyle.code.http.HttpErrorCode;
+import com.kwang.climbstyle.code.role.RoleCode;
+import com.kwang.climbstyle.code.user.UserStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
+import com.kwang.climbstyle.domain.feed.repository.FeedRepository;
 import com.kwang.climbstyle.domain.file.service.FileService;
-import com.kwang.climbstyle.domain.order.dto.response.OrderRecentResponse;
-import com.kwang.climbstyle.domain.order.entity.OrderEntity;
-import com.kwang.climbstyle.domain.order.repository.OrderRepository;
+import com.kwang.climbstyle.domain.role.entity.RoleEntity;
+import com.kwang.climbstyle.domain.role.entity.UserRoleEntity;
+import com.kwang.climbstyle.domain.role.repository.RoleRepository;
+import com.kwang.climbstyle.domain.role.repository.UserRoleRepository;
 import com.kwang.climbstyle.domain.user.dto.request.*;
 import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
@@ -21,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,7 +36,11 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final OrderRepository orderRepository;
+    private final RoleRepository roleRepository;
+
+    private final UserRoleRepository userRoleRepository;
+
+    private final FeedRepository feedRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -68,6 +76,36 @@ public class UserService {
         }
     }
 
+    public UserProfileResponse selectUserByNo(Integer userNo) {
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String userNm = data.getUserNm();
+        final String userEmail = data.getUserEmail();
+        final String userNickName = data.getUserNickName();
+        final String userDeleteYn = data.getUserDeleteYn();
+        final String userImageUrl = data.getUserImageUrl();
+        final String userIntro = data.getUserIntro();
+        final LocalDateTime userCreated = data.getUserCreated();
+        final LocalDateTime userUpdated = data.getUserUpdated();
+        final LocalDateTime userDeleted = data.getUserDeleted();
+
+        return UserProfileResponse.builder()
+                .userNo(userNo)
+                .userNm(userNm)
+                .userEmail(userEmail)
+                .userNickName(userNickName)
+                .userDeleteYn(userDeleteYn)
+                .userImgUrl(userImageUrl)
+                .userIntro(userIntro)
+                .userCreated(userCreated)
+                .userUpdated(userUpdated)
+                .userDeleted(userDeleted)
+                .build();
+    }
+
     @Transactional
     public void createUser(UserCreateRequest request) {
         final String userId = request.getUserId();
@@ -75,7 +113,7 @@ public class UserService {
         final String userNm = request.getUserNm();
         final String userEmail = request.getUserEmail();
         final String userNickName = request.getUserNickName();
-        final String userDeleteYn = UserDeleteStatus.ACTIVE.getCode();
+        final String userDeleteYn = UserStatus.ACTIVE.getCode();
         final LocalDateTime userCreated = LocalDateTime.now();
 
         Boolean existId = userRepository.existUserId(userId);
@@ -104,48 +142,21 @@ public class UserService {
                 .build();
 
         userRepository.insert(user);
-    }
 
-    public UserProfileResponse selectUserByNo(Integer userNo) {
-        UserEntity data = userRepository.selectUserByNo(userNo);
-        if (data == null) {
-            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        RoleEntity role = roleRepository.selectRoleByRoleName(RoleCode.ROLE_USER.getCode());
+        if (role == null) {
+            throw new ClimbStyleException(HttpErrorCode.INTERNAL_SERVER_ERROR);
         }
 
-        final String userNm = data.getUserNm();
-        final String userEmail = data.getUserEmail();
-        final String userNickName = data.getUserNickName();
-        final String userDeleteYn = data.getUserDeleteYn();
-        final String userImageUrl = data.getUserImageUrl();
-        final String userIntro = data.getUserIntro();
-        final LocalDateTime userCreated = data.getUserCreated();
-        final LocalDateTime userUpdated = data.getUserUpdated();
-        final LocalDateTime userDeleted = data.getUserDeleted();
+        final Integer roleNo = role.getRoleNo();
+        final Integer userNo = user.getUserNo();
 
-        List<OrderEntity> dataOrder = orderRepository.selectRecentOrdersByUserNo(userNo);
-
-        List<OrderRecentResponse> orderResponses = dataOrder.stream()
-                .map(order -> OrderRecentResponse.builder()
-                        .orderNo(order.getOrderNo())
-                        .orderTitle(order.getOrderTitle())
-                        .orderStatus(order.getOrderStatus())
-                        .orderCreated(order.getOrderCreated())
-                        .build()
-                ).toList();
-
-        return UserProfileResponse.builder()
+        UserRoleEntity userRoleEntity = UserRoleEntity.builder()
                 .userNo(userNo)
-                .userNm(userNm)
-                .userEmail(userEmail)
-                .userNickName(userNickName)
-                .userDeleteYn(userDeleteYn)
-                .userImgUrl(userImageUrl)
-                .userIntro(userIntro)
-                .userCreated(userCreated)
-                .userUpdated(userUpdated)
-                .userDeleted(userDeleted)
-                .userOrders(orderResponses)
+                .roleNo(roleNo)
                 .build();
+
+        userRoleRepository.insert(userRoleEntity);
     }
 
     @Transactional
@@ -159,10 +170,10 @@ public class UserService {
         final LocalDateTime currentUserDeleted = data.getUserDeleted();
         final LocalDateTime userDeleted = LocalDateTime.now();
         final LocalDateTime now = LocalDateTime.now();
-        final String userDeleteStatus = UserDeleteStatus.INACTIVE.getCode();
+        final String userDeleteStatus = UserStatus.DORMANT.getCode();
 
         if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
-            throw new ClimbStyleException(UserErrorCode.USER_ALREADY_INACTIVE);
+            throw new ClimbStyleException(UserErrorCode.USER_ALREADY_DORMANT);
         }
 
         if (currentUserDeleted != null) {
@@ -172,34 +183,64 @@ public class UserService {
             }
         }
 
-        Boolean existOrderData = orderRepository.existsOrdersByUserNo(userNo);
-        if (existOrderData) {
-            throw new ClimbStyleException(UserErrorCode.USER_ORDER_EXISTS);
-        }
-
         UserEntity userEntity = UserEntity.builder()
                 .userNo(userNo)
-                .userDeleteYn(UserDeleteStatus.INACTIVE.getCode())
+                .userDeleteYn(UserStatus.DORMANT.getCode())
                 .userDeleted(userDeleted)
                 .build();
 
         userRepository.deactivateUser(userEntity);
+
+        final String feedVisibleYn = FeedVisibleStatus.HIDDEN.getCode();
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
+    }
+
+    @Transactional
+    public void reactivateUser(UserReactivateRequest request) {
+        final String userId = request.getUserId();
+        final String userPassword = request.getUserPassword();
+
+        UserEntity data = userRepository.selectUserById(userId);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        if (!passwordEncoder.matches(userPassword, data.getUserPassword())) {
+            throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
+        }
+
+        final Integer userNo = data.getUserNo();
+        final String userDeleteYn = data.getUserDeleteYn();
+        final String userReactivateStatus = UserStatus.ACTIVE.getCode();
+        if (StringUtils.equals(userDeleteYn, userReactivateStatus)) {
+            throw new ClimbStyleException(UserErrorCode.USER_ALREADY_REACTIVATE);
+        }
+
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userDeleteYn(userReactivateStatus)
+                .build();
+
+        userRepository.reactivateUser(userEntity);
+        final String feedVisibleYn = FeedVisibleStatus.VISIBLE.getCode();
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
     }
 
     @Transactional
     public void changePassword(Integer userNo, UserPasswordUpdateRequest request) {
+        final String userPassword = request.getUserPassword();
+        final String newUserPassword = passwordEncoder.encode(request.getNewUserPassword());
+
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
 
         final String currentUserPassword = data.getUserPassword();
-        final String userPassword = request.getUserPassword();
         if (!passwordEncoder.matches(userPassword, currentUserPassword)) {
             throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
         }
 
-        final String newUserPassword = passwordEncoder.encode(request.getNewUserPassword());
         final LocalDateTime userUpdated = LocalDateTime.now();
 
         UserEntity userEntity = UserEntity.builder()
@@ -226,9 +267,9 @@ public class UserService {
 
         final String userDeleteYn = data.getUserDeleteYn();
         final String curentUserNickName = data.getUserNickName();
-        final String userDeleteStatus = UserDeleteStatus.INACTIVE.getCode();
+        final String userDeleteStatus = UserStatus.DORMANT.getCode();
         if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
-            throw new ClimbStyleException(UserErrorCode.USER_INACTIVE_FORBIDDEN);
+            throw new ClimbStyleException(UserErrorCode.USER_DORMANT_FORBIDDEN);
         }
 
         if (!StringUtils.equals(userNickName, curentUserNickName)) {

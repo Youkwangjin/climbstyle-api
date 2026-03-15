@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.role.repository.UserRoleRepository">
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.role.entity.UserRoleEntity">
+        INSERT INTO tb_user_role (
+            user_no,
+            role_no
+        ) VALUES (
+            #{userNo},
+            #{roleNo}
+        )
+    </insert>
+</mapper>

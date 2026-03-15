@@ -17,21 +17,52 @@
         <result property="menuUpdated"          column="menu_updated"/>
     </resultMap>
 
-    <select id="selectMenuByUserRole" parameterType="String" resultMap="menuResultMap">
-        SELECT
+    <select id="selectMenuByUserNo"
+            resultType="com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse">
+        SELECT DISTINCT
             m.menu_name,
             m.menu_url,
+            m.menu_level,
+            m.menu_sort_order,
             m.menu_icon
         FROM
             tb_menu m
         INNER JOIN
             tb_role_menu rm
-            ON m.menu_no = rm.menu_no
+            ON rm.menu_no = m.menu_no
         INNER JOIN
-            tb_role r
-            ON rm.role_no = r.role_no
+            tb_user_role ur
+            ON ur.role_no = rm.role_no
         WHERE
-            r.role_name = #{roleName}
+            ur.user_no = #{userNo}
+        AND
+            m.menu_use_yn = 'Y'
+        ORDER BY
+            m.menu_level,
+            m.menu_sort_order
+    </select>
+
+    <select id="selectMenuByAdminNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.menu.dto.response.AdminMenuListResponse">
+        SELECT DISTINCT
+            m.menu_no,
+            m.menu_code,
+            m.menu_name,
+            m.menu_url,
+            m.menu_parent_no,
+            m.menu_level,
+            m.menu_sort_order,
+            m.menu_icon
+        FROM
+            tb_menu m
+        INNER JOIN
+            tb_role_menu rm
+            ON rm.menu_no = m.menu_no
+        INNER JOIN
+            tb_admin_role ar
+            ON ar.role_no = rm.role_no
+        WHERE
+            ar.admin_no = #{adminNo}
         AND
             m.menu_use_yn = 'Y'
         ORDER BY

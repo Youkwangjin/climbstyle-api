@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum UserDeleteStatus {
+public enum UserStatus {
     ACTIVE("N", "활성화"),
-    INACTIVE("Y", "비활성화"),
+    DORMANT("Y", "비활성화"),
     ;
 
     private final String code;

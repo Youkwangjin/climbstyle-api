@@ -41,7 +41,13 @@ function openFeedDetail(feedNo) {
 
             document.getElementById("detailUsername").textContent = feed.userNickName;
             document.getElementById("detailDate").textContent = formatDate(feed.feedCreated);
-            document.getElementById("detailUserImage").src = feed.userImageUrl;
+
+            const detailAvatar = document.querySelector(".detail-avatar");
+            if (feed.userImageUrl) {
+                detailAvatar.innerHTML = `<img id="detailUserImage" src="${feed.userImageUrl}" alt="프로필" />`;
+            } else {
+                detailAvatar.innerHTML = "";
+            }
 
             document.getElementById("detailTitle").textContent = feed.feedTitle;
             document.getElementById("detailContent").textContent = feed.feedContent;
@@ -57,7 +63,6 @@ function openFeedDetail(feedNo) {
         .catch(() => {
             alert("피드를 불러오는데 실패했습니다. 지속될 경우 관리자에게 문의하세요.");
         });
-
 }
 
 function closeFeedDetail() {
@@ -174,7 +179,7 @@ function renderComments(comments) {
     container.innerHTML = parentComments.map(comment => `
         <div class="comment-item">
             <div class="comment-avatar">
-                <img src="${comment.userImageUrl || "/img/default-avatar.png"}" alt="프로필" />
+                ${comment.userImageUrl ? `<img src="${comment.userImageUrl}" alt="프로필" />` : ''}
             </div>
             <div class="comment-body">
                 <div class="comment-content">
@@ -185,13 +190,13 @@ function renderComments(comments) {
                     <span class="comment-date">${formatDate(comment.feedCommentCreated)}</span>
                     <span class="comment-reply" onclick="replyToComment(${comment.feedCommentNo}, '${comment.userNickname}')">답글 달기</span>
                 </div>
-                
+
                 ${replyMap[comment.feedCommentNo] ? `
                     <div class="comment-replies">
                         ${replyMap[comment.feedCommentNo].map(reply => `
                             <div class="comment-item reply-item">
                                 <div class="comment-avatar">
-                                    <img src="${reply.userImageUrl || "/img/default-avatar.png"}" alt="프로필" />
+                                    ${reply.userImageUrl ? `<img src="${reply.userImageUrl}" alt="프로필" />` : ''}
                                 </div>
                                 <div class="comment-body">
                                     <div class="comment-content">
@@ -255,7 +260,7 @@ function submitComment() {
 
     const feedNo = getCurrentFeedNo();
 
-    API.callJson(`/api/v1/feeds/${feedNo}/comments`,{
+    API.callJson(`/api/v1/feeds/${feedNo}/comments`, {
         method: "POST",
         body: JSON.stringify({
             feedCommentContent: document.getElementById("feedCommentContent").value.trim(),

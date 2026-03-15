@@ -31,9 +31,6 @@
                     <img th:if="${!#strings.isEmpty(currentUser?.userImgUrl)}"
                          th:src="${currentUser?.userImgUrl}"
                          alt="프로필 이미지">
-                    <span th:if="${#strings.isEmpty(currentUser?.userImgUrl)}"
-                          th:text="${#strings.substring(currentUser?.userNickName, 0, 1)}">
-                    </span>
                 </div>
                 <span class="user-name" th:text="${currentUser.userNickName}">사용자</span>
                 <span class="user-caret">▾</span>

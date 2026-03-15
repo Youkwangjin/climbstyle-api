@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>관리자 페이지 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="nav">
+            <a class="admin-logo" href="/admin">ClimbStyle<span class="admin-logo-badge">ADMIN</span></a>
+            <div class="nav-right">
+                <a href="/" class="btn btn-sm">사이트로 돌아가기</a>
+                <div class="admin-user">
+                    <span class="admin-user-avatar">A</span>
+                    <span>관리자</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="admin-wrap">
+    <aside class="sidebar">
+        <th:block th:each="menu : ${menuList}">
+            <div class="sidebar-label" th:text="${menu.menuName}"></div>
+            <ul class="sidebar-menu">
+                <li th:each="child : ${menu.children}">
+                    <a th:href="${child.menuUrl}"
+                       th:text="${child.menuName}"
+                       th:classappend="${currentUrl == child.menuUrl} ? ' is-active'">
+                    </a>
+                </li>
+            </ul>
+        </th:block>
+    </aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb">
+                    관리자 홈 / 콘텐츠 / <span>공지사항</span>
+                </div>
+                <h1>공지사항 관리</h1>
+            </div>
+            <a href="/admin/notice/new" class="btn btn-primary">공지 작성</a>
+        </div>
+        <div class="stats-row">
+            <div class="stat-chip">
+                <span class="num blue">24</span>
+                <span class="stat-label">전체 공지</span>
+            </div>
+            <div class="stat-chip">
+                <span class="num green">18</span>
+                <span class="stat-label">공개</span>
+            </div>
+            <div class="stat-chip">
+                <span class="num gray">3</span>
+                <span class="stat-label">고정</span>
+            </div>
+            <div class="stat-chip">
+                <span class="num gray">3</span>
+                <span class="stat-label">숨김</span>
+            </div>
+        </div>
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="search-wrap">
+                    <span class="search-icon">
+                        <th:block th:replace="~{fragments/common/icons :: search}" />
+                    </span>
+                    <label>
+                        <input class="search-input" type="text" placeholder="제목, 내용 검색" />
+                    </label>
+                </div>
+                <label>
+                    <select class="filter-select">
+                        <option>전체 카테고리</option>
+                        <option>공지</option>
+                        <option>이벤트</option>
+                        <option>업데이트</option>
+                    </select>
+                </label>
+                <label>
+                    <select class="filter-select">
+                        <option>전체 상태</option>
+                        <option>공개</option>
+                        <option>숨김</option>
+                        <option>고정</option>
+                    </select>
+                </label>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn btn-sm">초기화</button>
+                <button class="btn btn-sm btn-primary">검색</button>
+            </div>
+        </div>
+
+        <!-- 일괄 액션 바 -->
+        <div class="bulk-bar" id="bulkBar">
+            <span class="bulk-count" id="bulkCount">0</span>개 선택됨
+            <button class="btn btn-sm" onclick="alert('고정 처리')">고정</button>
+            <button class="btn btn-sm" onclick="alert('숨김 처리')">숨김</button>
+            <button class="btn btn-sm btn-danger" onclick="alert('삭제')">삭제</button>
+        </div>
+
+        <!-- 테이블 -->
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th class="th-check"><label for="checkAll"><input type="checkbox" id="checkAll" /></label></th>
+                    <th class="th-num">번호</th>
+                    <th class="th-category">카테고리</th>
+                    <th>제목</th>
+                    <th class="th-author">작성자</th>
+                    <th class="th-date">작성일</th>
+                    <th class="th-views">조회</th>
+                    <th class="th-file">첨부</th>
+                </tr>
+                </thead>
+                <tbody id="noticeTable">
+                <tr class="row-pinned">
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">—</td>
+                    <td class="td-category"><span class="badge badge-pinned">고정</span></td>
+                    <td class="td-title"><a href="/admin/notice/detail/1">[필독] 2025년 ClimbStyle 서비스 이용약관 개정 안내</a></td>
+                    <td class="td-author">관리자</td>
+                    <td class="td-date">2025.06.01</td>
+                    <td class="td-views">4,821</td>
+                    <td class="td-file"></td>
+                </tr>
+                <tr class="row-pinned">
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">—</td>
+                    <td class="td-category"><span class="badge badge-pinned">고정</span></td>
+                    <td class="td-title"><a href="/admin/notice/detail/2">개인정보 처리방침 변경 안내 (2025.06)</a></td>
+                    <td class="td-author">관리자</td>
+                    <td class="td-date">2025.06.01</td>
+                    <td class="td-views">3,210</td>
+                    <td class="td-file"></td>
+                </tr>
+                <tr>
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">24</td>
+                    <td class="td-category"><span class="badge badge-event">이벤트</span></td>
+                    <td class="td-title"><a href="/admin/notice/detail/24">여름 클라이밍 챌린지 이벤트 참가 방법 안내</a></td>
+                    <td class="td-author">관리자</td>
+                    <td class="td-date">2025.07.10</td>
+                    <td class="td-views">1,543</td>
+                    <td class="td-file">
+                        <th:block th:replace="~{fragments/common/icons :: file}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">23</td>
+                    <td class="td-category"><span class="badge badge-update">업데이트</span></td>
+                    <td class="td-title"><a href="/admin/notice/detail/23">앱 v2.4.0 업데이트 패치노트</a></td>
+                    <td class="td-author">개발팀</td>
+                    <td class="td-date">2025.07.08</td>
+                    <td class="td-views">892</td>
+                    <td class="td-file"></td>
+                </tr>
+                <tr>
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">22</td>
+                    <td class="td-category"><span class="badge badge-notice">공지</span></td>
+                    <td class="td-title"><a href="/admin/notice/detail/22">7월 정기 점검 안내 (07.05 02:00~04:00)</a></td>
+                    <td class="td-author">관리자</td>
+                    <td class="td-date">2025.07.03</td>
+                    <td class="td-views">2,109</td>
+                    <td class="td-file">
+                        <th:block th:replace="~{fragments/common/icons :: file}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">21</td>
+                    <td class="td-category"><span class="badge badge-event">이벤트</span></td>
+                    <td class="td-title"><a href="/admin/notice/detail/21">신규 회원 가입 혜택 안내 — 첫 구매 10% 쿠폰</a></td>
+                    <td class="td-author">마케팅팀</td>
+                    <td class="td-date">2025.06.28</td>
+                    <td class="td-views">3,402</td>
+                    <td class="td-file"></td>
+                </tr>
+                <tr>
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">20</td>
+                    <td class="td-category"><span class="badge badge-notice">공지</span></td>
+                    <td class="td-title"><a href="/admin/notice/detail/20">파트너 클라이밍 짐 제휴 확대 안내</a></td>
+                    <td class="td-author">관리자</td>
+                    <td class="td-date">2025.06.20</td>
+                    <td class="td-views">678</td>
+                    <td class="td-file"></td>
+                </tr>
+                <tr>
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">19</td>
+                    <td class="td-category"><span class="badge badge-hidden">숨김</span></td>
+                    <td class="td-title td-hidden"><a href="/admin/notice/detail/19">[임시] 내부 테스트 공지 — 비공개</a></td>
+                    <td class="td-author">개발팀</td>
+                    <td class="td-date">2025.06.15</td>
+                    <td class="td-views">12</td>
+                    <td class="td-file"></td>
+                </tr>
+                <tr>
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">18</td>
+                    <td class="td-category"><span class="badge badge-update">업데이트</span></td>
+                    <td class="td-title"><a href="/admin/notice/detail/18">랭킹 시스템 개편 안내 — 주간 집계 방식 변경</a></td>
+                    <td class="td-author">개발팀</td>
+                    <td class="td-date">2025.06.10</td>
+                    <td class="td-views">1,204</td>
+                    <td class="td-file">
+                        <th:block th:replace="~{fragments/common/icons :: file}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-check"><label><input type="checkbox" class="row-check" /></label></td>
+                    <td class="td-num">17</td>
+                    <td class="td-category"><span class="badge badge-notice">공지</span></td>
+                    <td class="td-title"><a href="/admin/notice/detail/17">해시태그 가이드라인 업데이트 안내</a></td>
+                    <td class="td-author">운영팀</td>
+                    <td class="td-date">2025.06.05</td>
+                    <td class="td-views">543</td>
+                    <td class="td-file"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <nav class="pagination" aria-label="페이지 이동">
+            <div class="pagination-inner">
+                <button class="page-btn" aria-label="첫 페이지">
+                    <th:block th:replace="~{fragments/common/icons :: chevron-double-left}" />
+                </button>
+                <button class="page-btn" aria-label="이전 페이지">
+                    <th:block th:replace="~{fragments/common/icons :: chevron-left}" />
+                </button>
+                <div class="page-list">
+                    <a href="#" class="page-num is-active">1</a>
+                    <a href="#" class="page-num">2</a>
+                    <a href="#" class="page-num">3</a>
+                </div>
+                <button class="page-btn" aria-label="다음 페이지">
+                    <th:block th:replace="~{fragments/common/icons :: chevron-right}" />
+                </button>
+                <button class="page-btn" aria-label="마지막 페이지">
+                    <th:block th:replace="~{fragments/common/icons :: chevron-double-right}" />
+                </button>
+            </div>
+        </nav>
+    </main>
+</div>
+<footer>
+    <div class="container">
+        <div class="foot">
+            <small>© 2025 ClimbStyle Admin. All rights reserved.</small>
+            <small>관리자 전용 페이지입니다.</small>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

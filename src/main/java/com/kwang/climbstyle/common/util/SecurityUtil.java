@@ -18,6 +18,15 @@ public class SecurityUtil {
         return null;
     }
 
+    public static CustomUserDetails getCurrentUserDetails() {
+        Object principal = getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            return ((CustomUserDetails) principal);
+        }
+
+        return null;
+    }
+
     private static Object getPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
