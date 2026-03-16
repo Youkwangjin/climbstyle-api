@@ -23,7 +23,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public String getUserNickname() {
-        return userEntity.getUserNickName();
+        return userEntity.getUserNickname();
     }
 
     public String getUserImageUrl() {
@@ -62,6 +62,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !Objects.equals(userEntity.getUserDeleteYn(), UserStatus.DORMANT.getCode());
+        return !Objects.equals(userEntity.getUserStatus(), UserStatus.DORMANT.getCode());
     }
 }

@@ -19,7 +19,7 @@
                     <img th:if="${profile.userImgUrl != null}" th:src="${profile.userImgUrl}" alt="프로필 이미지">
                 </div>
                 <div class="my-user-meta">
-                    <div class="my-user-name" th:text="${profile.userNickName}"></div>
+                    <div class="my-user-name" th:text="${profile.userNickname}"></div>
                     <div class="my-user-email" th:text="${profile.userEmail}"></div>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                         </div>
                         <div class="my-info-row">
                             <dt>닉네임</dt>
-                            <dd th:text="${profile.userNickName}"></dd>
+                            <dd th:text="${profile.userNickname}"></dd>
                         </div>
                         <div class="my-info-row">
                             <dt>이메일</dt>
@@ -60,7 +60,9 @@
                         </div>
                         <div class="my-info-row">
                             <dt>활성 여부</dt>
-                            <dd th:text="${profile.userDeleteYn == 'Y' ? '비활성화' : '활성화'}"></dd>
+                            <dd th:with="status=${profile.userStatus}"
+                                th:text="${status == 'ACTIVE'} ? '활성' : (${status == 'DORMANT'} ? '휴면' : (${status == 'SUSPENDED'} ? '정지' : '탈퇴'))">
+                            </dd>
                         </div>
                     </dl>
                 </section>
@@ -85,8 +87,8 @@
                         </div>
                         <div class="my-info-row">
                             <dt>최근 비활성화</dt>
-                            <dd th:text="${profile.userDeleted == null ? '비활성화 이력 없음' :
-                                         #temporals.format(profile.userDeleted, 'yyyy-MM-dd')}"></dd>
+                            <dd th:text="${profile.userDeactivated == null ? '비활성화 이력 없음' :
+                                        #temporals.format(profile.userDeactivated, 'yyyy-MM-dd')}"></dd>
                         </div>
                     </dl>
                 </section>

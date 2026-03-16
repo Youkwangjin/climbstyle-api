@@ -37,8 +37,8 @@ public class UserApiController {
     }
 
     @PostMapping(value = "/api/v1/users/nickname/availability", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiSuccessResponse<Object>> checkUserNickNameDuplicate(@Valid @RequestBody UserNickNameRequest request) {
-        userService.checkUserNickNameDuplicate(request);
+    public ResponseEntity<ApiSuccessResponse<Object>> checkUserNickNameDuplicate(@Valid @RequestBody UserNicknameRequest request) {
+        userService.checkUserNicknameDuplicate(request);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_NICKNAME_AVAILABLE);
     }

@@ -23,19 +23,25 @@ public class UserEntity {
 
     private String userEmail;
 
-    private String userNickName;
+    private String userNickname;
 
-    private String userDeleteYn;
+    private String userStatus;
+
+    private String userOauthProvider;
+
+    private String userOauthId;
 
     private String userImageUrl;
 
     private String userIntro;
 
+    private String userRole;
+
     private LocalDateTime userCreated;
 
     private LocalDateTime userUpdated;
 
-    private LocalDateTime userDeleted;
+    private LocalDateTime userDeactivated;
 
-    private String userRole;
+    private LocalDateTime userWithdrawn;
 }

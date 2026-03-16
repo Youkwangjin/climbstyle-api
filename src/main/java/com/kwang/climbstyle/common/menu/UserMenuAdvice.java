@@ -57,7 +57,7 @@ public class UserMenuAdvice {
 
         if (principal instanceof CustomUserDetails userDetails) {
             return UserProfileResponse.builder()
-                    .userNickName(userDetails.getUserNickname())
+                    .userNickname(userDetails.getUserNickname())
                     .userImgUrl(userDetails.getUserImageUrl())
                     .build();
         }
