@@ -21,7 +21,7 @@
                     <img th:if="${profile.userImgUrl != null}" th:src="${profile.userImgUrl}" alt="프로필 이미지">
                 </div>
                 <div class="my-user-meta">
-                    <div class="my-user-name" th:text="${profile.userNickName}"></div>
+                    <div class="my-user-name" th:text="${profile.userNickname}"></div>
                     <div class="my-user-email" th:text="${profile.userEmail}"></div>
                 </div>
             </div>
@@ -36,7 +36,6 @@
                     <h2>프로필 수정</h2>
                     <p>닉네임, 프로필 이미지, 소개 문구를 자유롭게 변경할 수 있어요.</p>
                 </div>
-
                 <div class="my-actions">
                     <a th:href="@{/my/profile}" class="btn">마이페이지로 돌아가기</a>
                 </div>
@@ -57,32 +56,27 @@
                                 <input id="userNm" name="userNm" type="text"
                                        class="my-input"
                                        th:value="${profile.userNm}"/>
-                                <p class="my-field-help">실명은 주문/배송에 사용돼요.</p>
                             </div>
-
                             <div class="my-field">
-                                <label for="userNickName" class="my-field-label">닉네임</label>
-                                <input id="userNickName" name="userNickName" type="text"
+                                <label for="userNickname" class="my-field-label">닉네임</label>
+                                <input id="userNickname" name="userNickname" type="text"
                                        class="my-input"
-                                       th:value="${profile.userNickName}"/>
-                                <p class="my-field-help">커뮤니티와 리뷰에 노출되는 이름이에요.</p>
+                                       th:value="${profile.userNickname}"/>
+                                <p class="my-field-help">커뮤니티에 노출되는 이름이에요.</p>
                             </div>
-
                             <div class="my-field">
                                 <label for="userEmail" class="my-field-label">이메일</label>
                                 <input id="userEmail" name="userEmail" type="email"
                                        class="my-input"
                                        th:value="${profile.userEmail}" readonly/>
-                                <p class="my-field-help">로그인 및 알림 수신에 사용돼요. 변경은 고객센터로 문의해주세요.</p>
+                                <p class="my-field-help">이메일은 로그인 및 알림 수신에 사용돼요.</p>
                             </div>
                         </div>
                     </section>
-
                     <section class="my-card">
                         <div class="my-card-header">
                             <h3>프로필 이미지 & 소개</h3>
                         </div>
-
                         <div class="my-form-body">
                             <div class="my-field">
                                 <span class="my-field-label">프로필 이미지</span>
@@ -93,7 +87,7 @@
                                     </div>
                                     <div class="my-avatar-upload-meta">
                                         <div style="display: flex; gap: 8px;">
-                                            <button type="button" class="btn btn-outline" onclick="upload()">이미지 업로드</button>
+                                            <button type="button" class="btn btn-outline" onclick="triggerImageUpload()">이미지 업로드</button>
                                             <button type="button" class="btn btn-outline btn-outline-danger"
                                                     th:if="${profile.userImgUrl != null}"
                                                     onclick="ProfileImg.delete()">이미지 삭제</button>
@@ -104,7 +98,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="my-field">
                                 <label for="userIntro" class="my-field-label">소개 문구</label>
                                 <textarea id="userIntro"
@@ -117,31 +110,26 @@
                         </div>
                     </section>
                 </div>
-
                 <div class="my-form-footer">
                     <a th:href="@{/my/profile/update}" class="btn">취소</a>
                     <button type="button" class="btn btn-primary" onclick="update()">변경 내용 저장</button>
                 </div>
             </form>
-
             <form class="my-form my-card my-card-password">
                 <div class="my-card-header">
                     <h3>비밀번호 변경</h3>
                 </div>
-
                 <div class="my-form-body">
                     <div class="my-field">
                         <label for="currentPassword" class="my-field-label">현재 비밀번호</label>
                         <input id="currentPassword" type="password"
                                class="my-input" placeholder="현재 비밀번호를 입력하세요" />
                     </div>
-
                     <div class="my-field">
                         <label for="userPassword" class="my-field-label">새 비밀번호</label>
                         <input id="userPassword" type="password"
                                class="my-input" placeholder="영문, 숫자, 특수문자 조합 8~20자" />
                     </div>
-
                     <div class="my-field">
                         <label for="newUserPassword" class="my-field-label">새 비밀번호 확인</label>
                         <input id="newUserPassword" type="password"
@@ -149,7 +137,6 @@
                         <p class="my-field-help my-password-hint">다른 사이트와 동일한 비밀번호 사용은 피해 주세요.</p>
                     </div>
                 </div>
-
                 <div class="my-form-footer my-password-footer">
                     <button type="button" class="btn btn-primary" onclick="updatePassword()">비밀번호 변경</button>
                 </div>
@@ -168,7 +155,7 @@
                         <p class="my-dormant-help">휴면 처리는 계정 삭제가 아니며, 언제든지 다시 사용할 수 있어요.</p>
                     </div>
                 </div>
-                <div class="my-form-footer my-dormant-footer" th:if="${profile.userDeleteYn == 'N'}">
+                <div class="my-form-footer my-dormant-footer" th:if="${profile.userStatus == 'ACTIVE'}">
                     <button type="button" class="btn btn-danger-outline" onclick="deactivateAccount()">계정 휴면 처리</button>
                 </div>
             </section>
@@ -189,7 +176,7 @@
 
         const formData = new FormData();
         formData.append("userNm", document.getElementById("userNm").value.trim());
-        formData.append("userNickName", document.getElementById("userNickName").value.trim());
+        formData.append("userNickname", document.getElementById("userNickname").value.trim());
         formData.append("userIntro", document.getElementById("userIntro").value.trim());
 
         if (ProfileImg.isDeleted()) {
@@ -251,7 +238,7 @@
             });
     }
 
-    function upload() {
+    function triggerImageUpload() {
         document.getElementById("userProfileImg").click();
     }
 

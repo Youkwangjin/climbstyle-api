@@ -9,9 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserNickNameRequest {
+public class UserNicknameRequest {
 
-    @NotBlank(message = "닉네임은 필수 입력값입니다.")
-    @Size(min = 2, max = 10, message = "닉네임은 2~10자 사이여야 합니다.")
-    private String userNickName;
+    @NotBlank
+    @Size(min = 2, max = 10)
+    private String userNickname;
 }

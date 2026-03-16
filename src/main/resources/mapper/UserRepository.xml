@@ -9,13 +9,16 @@
         <result property="userPassword"         column="user_password"/>
         <result property="userNm"               column="user_name"/>
         <result property="userEmail"            column="user_email"/>
-        <result property="userNickName"         column="user_nickname"/>
-        <result property="userDeleteYn"         column="user_delete_yn"/>
+        <result property="userNickname"         column="user_nickname"/>
+        <result property="userStatus"           column="user_status"/>
+        <result property="userOauthProvider"    column="user_oauth_provider"/>
+        <result property="userOauthId"          column="user_oauth_id"/>
         <result property="userImageUrl"         column="user_image_url"/>
         <result property="userIntro"            column="user_intro"/>
         <result property="userCreated"          column="user_created"/>
         <result property="userUpdated"          column="user_updated"/>
-        <result property="userDeleted"          column="user_deleted"/>
+        <result property="userDeactivated"      column="user_deactivated"/>
+        <result property="userWithdrawn"        column="user_withdrawn"/>
         <result property="userRole"             column="role_name"/>
     </resultMap>
 
@@ -27,7 +30,7 @@
             WHERE
                 user_id = #{userId}
             AND
-                user_delete_yn = 'N'
+                user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
         )
     </select>
 
@@ -38,20 +41,20 @@
                 tb_user
             WHERE
                 user_email = #{userEmail}
-              AND
-                user_delete_yn = 'N'
+            AND
+                user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
         )
     </select>
 
-    <select id="existUserNickName" parameterType="String" resultType="Boolean">
+    <select id="existUserNickname" parameterType="String" resultType="Boolean">
         SELECT EXISTS (
             SELECT 1
             FROM
                 tb_user
             WHERE
-                user_nickname = #{userNickName}
-              AND
-                user_delete_yn = 'N'
+                user_nickname = #{userNickname}
+            AND
+                user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
         )
     </select>
 
@@ -63,12 +66,15 @@
             user_name,
             user_email,
             user_nickname,
-            user_delete_yn,
+            user_status,
+            user_oauth_provider,
+            user_oauth_id,
             user_image_url,
             user_intro,
             user_created,
             user_updated,
-            user_deleted
+            user_deactivated,
+            user_withdrawn
         FROM
             tb_user
         WHERE
@@ -83,19 +89,22 @@
             u.user_name,
             u.user_email,
             u.user_nickname,
-            u.user_delete_yn,
+            u.user_status,
+            u.user_oauth_provider,
+            u.user_oauth_id,
             u.user_image_url,
             u.user_intro,
             u.user_created,
             u.user_updated,
-            u.user_deleted,
+            u.user_deactivated,
+            u.user_withdrawn,
             r.role_name
         FROM
             tb_user u
-        LEFT JOIN
+                LEFT JOIN
             tb_user_role ur
             ON ur.user_no = u.user_no
-        LEFT JOIN
+                LEFT JOIN
             tb_role r
             ON r.role_no = ur.role_no
         WHERE
@@ -110,16 +119,18 @@
             user_name,
             user_email,
             user_nickname,
-            user_delete_yn,
+            user_status,
+            user_oauth_provider,
             user_created
         ) VALUES (
-            #{userId},
-            #{userPassword},
-            #{userNm},
-            #{userEmail},
-            #{userNickName},
-            #{userDeleteYn},
-            #{userCreated}
+             #{userId},
+             #{userPassword},
+             #{userNm},
+             #{userEmail},
+             #{userNickname},
+             #{userStatus},
+             #{userOauthProvider},
+             #{userCreated}
         )
     </insert>
 
@@ -127,8 +138,8 @@
         UPDATE
             tb_user
         SET
-            user_delete_yn = #{userDeleteYn},
-            user_deleted = #{userDeleted}
+            user_status = #{userStatus},
+            user_deactivated = #{userDeactivated}
         WHERE
             user_no = #{userNo}
     </update>
@@ -137,7 +148,7 @@
         UPDATE
             tb_user
         SET
-            user_delete_yn = #{userDeleteYn}
+            user_status = #{userStatus}
         WHERE
             user_no = #{userNo}
     </update>
@@ -147,7 +158,7 @@
             tb_user
         SET
             user_name = #{userNm},
-            user_nickname = #{userNickName},
+            user_nickname = #{userNickname},
             user_image_url = #{userImageUrl},
             user_intro = #{userIntro},
             user_updated = #{userUpdated}

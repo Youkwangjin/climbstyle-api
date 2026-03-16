@@ -67,11 +67,11 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public void checkUserNickNameDuplicate(UserNickNameRequest request) {
-        final String userNickName = request.getUserNickName();
-        Boolean existNickName = userRepository.existUserNickName(userNickName);
+    public void checkUserNicknameDuplicate(UserNicknameRequest request) {
+        final String userNickName = request.getUserNickname();
+        Boolean existNickname = userRepository.existUserNickname(userNickName);
 
-        if (existNickName) {
+        if (existNickname) {
             throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
         }
     }
@@ -84,25 +84,25 @@ public class UserService {
 
         final String userNm = data.getUserNm();
         final String userEmail = data.getUserEmail();
-        final String userNickName = data.getUserNickName();
-        final String userDeleteYn = data.getUserDeleteYn();
+        final String userNickname = data.getUserNickname();
+        final String userStatus = data.getUserStatus();
         final String userImageUrl = data.getUserImageUrl();
         final String userIntro = data.getUserIntro();
         final LocalDateTime userCreated = data.getUserCreated();
         final LocalDateTime userUpdated = data.getUserUpdated();
-        final LocalDateTime userDeleted = data.getUserDeleted();
+        final LocalDateTime userDeactivated = data.getUserDeactivated();
 
         return UserProfileResponse.builder()
                 .userNo(userNo)
                 .userNm(userNm)
                 .userEmail(userEmail)
-                .userNickName(userNickName)
-                .userDeleteYn(userDeleteYn)
+                .userNickname(userNickname)
+                .userStatus(userStatus)
                 .userImgUrl(userImageUrl)
                 .userIntro(userIntro)
                 .userCreated(userCreated)
                 .userUpdated(userUpdated)
-                .userDeleted(userDeleted)
+                .userDeactivated(userDeactivated)
                 .build();
     }
 
@@ -112,8 +112,8 @@ public class UserService {
         final String userPassword = passwordEncoder.encode(request.getUserPassword());
         final String userNm = request.getUserNm();
         final String userEmail = request.getUserEmail();
-        final String userNickName = request.getUserNickName();
-        final String userDeleteYn = UserStatus.ACTIVE.getCode();
+        final String userNickname = request.getUserNickname();
+        final String userStatus = UserStatus.ACTIVE.getCode();
         final LocalDateTime userCreated = LocalDateTime.now();
 
         Boolean existId = userRepository.existUserId(userId);
@@ -126,8 +126,8 @@ public class UserService {
             throw new ClimbStyleException(UserErrorCode.USER_EMAIL_DUPLICATED);
         }
 
-        Boolean existNickName = userRepository.existUserNickName(userNickName);
-        if (existNickName) {
+        Boolean existNickname = userRepository.existUserNickname(userNickname);
+        if (existNickname) {
             throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
         }
 
@@ -136,8 +136,8 @@ public class UserService {
                 .userPassword(userPassword)
                 .userNm(userNm)
                 .userEmail(userEmail)
-                .userNickName(userNickName)
-                .userDeleteYn(userDeleteYn)
+                .userNickname(userNickname)
+                .userStatus(userStatus)
                 .userCreated(userCreated)
                 .build();
 
@@ -166,18 +166,18 @@ public class UserService {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
 
-        final String userDeleteYn = data.getUserDeleteYn();
-        final LocalDateTime currentUserDeleted = data.getUserDeleted();
-        final LocalDateTime userDeleted = LocalDateTime.now();
+        final String userStatus = data.getUserStatus();
+        final String dormantStatus = UserStatus.DORMANT.getCode();
+        final LocalDateTime currentUserDeactivated = data.getUserDeactivated();
+        final LocalDateTime userDeactivated = LocalDateTime.now();
         final LocalDateTime now = LocalDateTime.now();
-        final String userDeleteStatus = UserStatus.DORMANT.getCode();
 
-        if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
+        if (StringUtils.equals(userStatus, dormantStatus)) {
             throw new ClimbStyleException(UserErrorCode.USER_ALREADY_DORMANT);
         }
 
-        if (currentUserDeleted != null) {
-            LocalDateTime availableAt = currentUserDeleted.plusDays(3);
+        if (currentUserDeactivated != null) {
+            LocalDateTime availableAt = currentUserDeactivated.plusDays(3);
             if (now.isBefore(availableAt)) {
                 throw new ClimbStyleException(UserErrorCode.USER_DORMANCY_COOLDOWN);
             }
@@ -185,8 +185,8 @@ public class UserService {
 
         UserEntity userEntity = UserEntity.builder()
                 .userNo(userNo)
-                .userDeleteYn(UserStatus.DORMANT.getCode())
-                .userDeleted(userDeleted)
+                .userStatus(dormantStatus)
+                .userDeactivated(userDeactivated)
                 .build();
 
         userRepository.deactivateUser(userEntity);
@@ -210,18 +210,19 @@ public class UserService {
         }
 
         final Integer userNo = data.getUserNo();
-        final String userDeleteYn = data.getUserDeleteYn();
-        final String userReactivateStatus = UserStatus.ACTIVE.getCode();
-        if (StringUtils.equals(userDeleteYn, userReactivateStatus)) {
+        final String userStatus = data.getUserStatus();
+        final String reactivateStatus = UserStatus.ACTIVE.getCode();
+        if (StringUtils.equals(userStatus, reactivateStatus)) {
             throw new ClimbStyleException(UserErrorCode.USER_ALREADY_REACTIVATE);
         }
 
         UserEntity userEntity = UserEntity.builder()
                 .userNo(userNo)
-                .userDeleteYn(userReactivateStatus)
+                .userStatus(reactivateStatus)
                 .build();
 
         userRepository.reactivateUser(userEntity);
+
         final String feedVisibleYn = FeedVisibleStatus.VISIBLE.getCode();
         feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
     }
@@ -255,7 +256,7 @@ public class UserService {
     @Transactional
     public void updateUser(Integer userNo, UserUpdateRequest request) {
         final String userNm = request.getUserNm();
-        final String userNickName = request.getUserNickName();
+        final String userNickname = request.getUserNickname();
         final String userIntro = request.getUserIntro();
         final MultipartFile userProfileImg = request.getUserProfileImg();
         final String userProfileDelete = request.getUserProfileDelete();
@@ -265,16 +266,16 @@ public class UserService {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
 
-        final String userDeleteYn = data.getUserDeleteYn();
-        final String curentUserNickName = data.getUserNickName();
+        final String userStatus = data.getUserStatus();
+        final String curentUserNickname = data.getUserNickname();
         final String userDeleteStatus = UserStatus.DORMANT.getCode();
-        if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
+        if (StringUtils.equals(userStatus, userDeleteStatus)) {
             throw new ClimbStyleException(UserErrorCode.USER_DORMANT_FORBIDDEN);
         }
 
-        if (!StringUtils.equals(userNickName, curentUserNickName)) {
-            Boolean existNickName = userRepository.existUserNickName(userNickName);
-            if (existNickName) {
+        if (!StringUtils.equals(userNickname, curentUserNickname)) {
+            Boolean existNickname = userRepository.existUserNickname(userNickname);
+            if (existNickname) {
                 throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
             }
         }
@@ -304,7 +305,7 @@ public class UserService {
         UserEntity user = UserEntity.builder()
                 .userNo(userNo)
                 .userNm(userNm)
-                .userNickName(userNickName)
+                .userNickname(userNickname)
                 .userImageUrl(userImageUrl)
                 .userIntro(userIntro)
                 .userUpdated(userUpdated)

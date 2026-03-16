@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum UserStatus {
-    ACTIVE("N", "활성화"),
-    DORMANT("Y", "비활성화"),
+    ACTIVE("ACTIVE", "활성"),
+    DORMANT("DORMANT", "휴면"),
+    SUSPENDED("SUSPENDED", "정지"),
+    WITHDRAWN("WITHDRAWN", "탈퇴"),
     ;
 
     private final String code;

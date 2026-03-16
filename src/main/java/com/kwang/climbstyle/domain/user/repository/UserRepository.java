@@ -11,7 +11,7 @@ public interface UserRepository {
 
     Boolean existUserEmail(@Param("userEmail") String userEmail);
 
-    Boolean existUserNickName(@Param("userNickName") String userNickName);
+    Boolean existUserNickname(@Param("userNickname") String userNickname);
 
     UserEntity selectUserByNo(@Param("userNo") Integer userNo);
 
