@@ -111,6 +111,41 @@
             u.user_id = #{userId}
     </select>
 
+    <select id="selectUserByOAuthId" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity"
+            resultMap="userResultMap">
+        SELECT
+            u.user_no,
+            u.user_id,
+            u.user_password,
+            u.user_name,
+            u.user_email,
+            u.user_nickname,
+            u.user_status,
+            u.user_oauth_provider,
+            u.user_oauth_id,
+            u.user_image_url,
+            u.user_intro,
+            u.user_created,
+            u.user_updated,
+            u.user_deactivated,
+            u.user_withdrawn,
+            r.role_name
+        FROM
+            tb_user u
+        LEFT JOIN
+            tb_user_role ur
+            ON ur.user_no = u.user_no
+        LEFT JOIN
+            tb_role r
+            ON r.role_no  = ur.role_no
+        WHERE
+            u.user_oauth_provider = #{userOauthProvider}
+        AND
+            u.user_oauth_id = #{userOauthId}
+        AND
+            user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
+    </select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity" useGeneratedKeys="true"
             keyProperty="userNo">
         INSERT INTO tb_user (
@@ -121,6 +156,7 @@
             user_nickname,
             user_status,
             user_oauth_provider,
+            user_oauth_id,
             user_created
         ) VALUES (
              #{userId},
@@ -130,6 +166,7 @@
              #{userNickname},
              #{userStatus},
              #{userOauthProvider},
+             #{userOauthId},
              #{userCreated}
         )
     </insert>

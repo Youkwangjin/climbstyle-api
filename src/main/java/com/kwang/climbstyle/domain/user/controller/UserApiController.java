@@ -8,10 +8,12 @@ import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.user.dto.request.*;
 import com.kwang.climbstyle.domain.user.service.UserService;
 import com.kwang.climbstyle.exception.ClimbStyleException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -46,6 +48,20 @@ public class UserApiController {
     @PostMapping(value = "/api/v1/users", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> createUser(@Valid @RequestBody UserCreateRequest request) {
         userService.createUser(request);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_REGISTER_SUCCESS);
+    }
+
+    @PostMapping(value = "/api/v1/users/oauth2", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> createOAuth2User(@Valid @RequestBody UserNicknameRequest request,
+                                                                       HttpServletRequest httpServletRequest) {
+
+        OAuth2User oAuth2User = SecurityUtil.getCurrentOAuth2User();
+        if (oAuth2User == null) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        userService.createOAuth2User(request, httpServletRequest, oAuth2User);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_REGISTER_SUCCESS);
     }

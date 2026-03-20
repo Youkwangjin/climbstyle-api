@@ -7,9 +7,11 @@ import com.kwang.climbstyle.security.filter.CustomUserJsonAuthenticationFilter;
 import com.kwang.climbstyle.security.handler.CustomAuthenticationEntryPoint;
 import com.kwang.climbstyle.security.handler.admin.CustomAdminLoginFailureHandler;
 import com.kwang.climbstyle.security.handler.admin.CustomAdminLoginSuccessHandler;
+import com.kwang.climbstyle.security.handler.user.CustomOAuth2LoginSuccessHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLoginSuccessHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLogoutHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLoginFailureHandler;
+import com.kwang.climbstyle.security.oauth2.CustomOAuth2UserService;
 import com.kwang.climbstyle.security.provider.CustomDaoAuthenticationProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -50,13 +52,20 @@ public class SpringSecurityConfig {
 
     private final CustomUserLogoutHandler customUserLogoutHandler;
 
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    private final CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler;
+
+
     public SpringSecurityConfig(ObjectMapper objectMapper,
                                 CustomUserLoginSuccessHandler customUserLoginSuccessHandler,
                                 CustomUserLoginFailureHandler customUserLoginFailureHandler,
                                 CustomAdminLoginSuccessHandler customAdminLoginSuccessHandler,
                                 CustomAdminLoginFailureHandler customAdminLoginFailureHandler,
                                 CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-                                CustomUserLogoutHandler customUserLogoutHandler) {
+                                CustomUserLogoutHandler customUserLogoutHandler,
+                                CustomOAuth2UserService customOAuth2UserService,
+                                CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler) {
         this.objectMapper = objectMapper;
         this.customUserLoginSuccessHandler = customUserLoginSuccessHandler;
         this.customUserLoginFailureHandler = customUserLoginFailureHandler;
@@ -64,6 +73,8 @@ public class SpringSecurityConfig {
         this.customAdminLoginFailureHandler = customAdminLoginFailureHandler;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
         this.customUserLogoutHandler = customUserLogoutHandler;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.customOAuth2LoginSuccessHandler = customOAuth2LoginSuccessHandler;
     }
 
     @Bean
@@ -113,6 +124,8 @@ public class SpringSecurityConfig {
                                         "/auth/login",
                                         "/admin/auth/login",
                                         "/auth/register",
+                                        "/login/oauth2/code/**",
+                                        "/oauth2/authorization/**",
                                         "/feed",
                                         "/rankings/realtime/*",
                                         "/rankings/weekly/*",
@@ -128,6 +141,9 @@ public class SpringSecurityConfig {
                                          "/api/v1/users/nickname/availability",
                                          "/api/v1/login",
                                          "/api/v1/admin/login").permitAll()
+
+                        .requestMatchers("/auth/oauth2/profile").hasAuthority("ROLE_TEMP_USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/oauth2").hasAuthority("ROLE_TEMP_USER")
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/users/reactivate").permitAll()
@@ -148,6 +164,17 @@ public class SpringSecurityConfig {
         http
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
+                );
+
+        http
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(customOAuth2LoginSuccessHandler)
+                        .failureHandler((request, response, exception) ->
+                                response.sendRedirect("/auth/login?error=oauth2"))
+
                 );
 
         http

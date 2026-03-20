@@ -40,4 +40,9 @@ public class AuthPageController {
 
         return "auth/reactivate";
     }
+
+    @GetMapping("/auth/oauth2/profile")
+    public String oauth2Profile() {
+        return "auth/oauth2-profile";
+    }
 }

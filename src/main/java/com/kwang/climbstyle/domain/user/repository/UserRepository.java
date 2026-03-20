@@ -17,6 +17,9 @@ public interface UserRepository {
 
     UserEntity selectUserById(@Param("userId") String userId);
 
+    UserEntity selectUserByOAuthId(@Param("userOauthProvider") String userOauthProvider,
+                                   @Param("userOauthId") String userOauthId);
+
     void insert(UserEntity userEntity);
 
     void deactivateUser(UserEntity userEntity);

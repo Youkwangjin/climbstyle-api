@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>닉네임 설정 | ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/auth/auth.css}">
+</head>
+<body>
+<main class="auth-section">
+    <div class="container auth-wrap">
+        <section class="auth-card auth-card--wide" aria-labelledby="profile-title">
+            <h1 id="profile-title">ClimbStyle에 오신 걸 환영합니다!</h1>
+            <p class="auth-sub">서비스에서 사용할 닉네임을 설정해 주세요. 닉네임은 나중에 변경할 수 있어요.</p>
+            <div class="auth-form">
+                <div class="field">
+                    <label for="userNickname">닉네임</label>
+                    <div class="auth-row">
+                        <input id="userNickname"
+                               class="auth-input"
+                               type="text"
+                               placeholder="닉네임을 입력하세요 (2~10자)"
+                               required />
+                        <button class="btn btn-check" type="button" onclick="nicknameCheck()">중복확인</button>
+                    </div>
+                </div>
+                <p class="auth-guide">2~10자, 한글·영문·숫자만 사용 가능해요.</p>
+                <div class="field">
+                    <button class="btn btn-primary auth-submit" type="button" onclick="saveProfile()">시작하기</button>
+                </div>
+            </div>
+
+        </section>
+    </div>
+</main>
+
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
+<script>
+    function nicknameCheck() {
+        if (!Validator.checkField("userNickname", "닉네임")) {
+            return;
+        }
+
+        if (!confirm("닉네임 중복 여부를 확인하시겠습니까?")) {
+            return;
+        }
+
+        API.callJson("/api/v1/users/nickname/availability", {
+            method: "POST",
+            body: JSON.stringify({
+                userNickname: document.getElementById("userNickname").value.trim()
+            })
+        })
+            .then(async response => {
+                const body = await response.json();
+                alert(body.message);
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+
+    function saveProfile() {
+        if (!Validator.checkField("userNickname", "닉네임")) {
+            return;
+        }
+
+        if (!confirm("닉네임을 설정하시겠습니까?")) {
+            return;
+        }
+
+        API.callJson("/api/v1/users/oauth2", {
+            method: "POST",
+            body: JSON.stringify({
+                userNickname: document.getElementById("userNickname").value.trim()
+            })
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
+                window.location.href = "/";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>
