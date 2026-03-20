@@ -17,15 +17,26 @@ import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
+import com.kwang.climbstyle.security.oauth2.OAuth2UserResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -157,6 +168,85 @@ public class UserService {
                 .build();
 
         userRoleRepository.insert(userRoleEntity);
+    }
+
+    @Transactional
+    public void createOAuth2User(UserNicknameRequest request, HttpServletRequest httpServletRequest,
+                                 OAuth2User oAuth2User) {
+
+        OAuth2UserResponse oAuth2UserResponse = oAuth2User.getAttribute("oAuth2UserResponse");
+        if (oAuth2UserResponse == null) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        final String userNickname = request.getUserNickname();
+        Boolean existNickname = userRepository.existUserNickname(userNickname);
+        if (existNickname) {
+            throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
+        }
+
+        final String userId = oAuth2UserResponse.getProvider().toLowerCase()
+                + "-"
+                + oAuth2UserResponse.getOAuthId().substring(0, 8);
+        final String userNm = oAuth2UserResponse.getUserNm();
+        final String userEmail = oAuth2UserResponse.getUserEmail();
+        final String userStatus = UserStatus.ACTIVE.getCode();
+        final String userOauthProvider = oAuth2UserResponse.getProvider();
+        final String userOauthId = oAuth2UserResponse.getOAuthId();
+        final LocalDateTime userCreated = LocalDateTime.now();
+
+        UserEntity user = UserEntity.builder()
+                .userId(userId)
+                .userNm(userNm)
+                .userEmail(userEmail)
+                .userNickname(userNickname)
+                .userStatus(userStatus)
+                .userOauthProvider(userOauthProvider)
+                .userOauthId(userOauthId)
+                .userCreated(userCreated)
+                .build();
+
+        userRepository.insert(user);
+
+        RoleEntity role = roleRepository.selectRoleByRoleName(RoleCode.ROLE_USER.getCode());
+        if (role == null) {
+            throw new ClimbStyleException(HttpErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+        UserRoleEntity userRoleEntity = UserRoleEntity.builder()
+                .userNo(user.getUserNo())
+                .roleNo(role.getRoleNo())
+                .build();
+
+        userRoleRepository.insert(userRoleEntity);
+
+        UserEntity savedUser = userRepository.selectUserByOAuthId(
+                oAuth2UserResponse.getProvider(),
+                oAuth2UserResponse.getOAuthId()
+        );
+
+        Map<String, Object> updatedAttributes = new HashMap<>(oAuth2User.getAttributes());
+        updatedAttributes.put("needNicknameSetup", false);
+        updatedAttributes.put("userNo", savedUser.getUserNo());
+
+        OAuth2User updatedOAuth2User = new DefaultOAuth2User(
+                List.of(new SimpleGrantedAuthority(savedUser.getUserRole())),
+                updatedAttributes,
+                "id"
+        );
+
+        OAuth2AuthenticationToken newAuth = new OAuth2AuthenticationToken(
+                updatedOAuth2User,
+                List.of(new SimpleGrantedAuthority(savedUser.getUserRole())),
+                oAuth2UserResponse.getProvider().toLowerCase()
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+        httpServletRequest.getSession().setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext()
+        );
     }
 
     @Transactional

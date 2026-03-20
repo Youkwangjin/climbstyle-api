@@ -52,8 +52,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuth2UserResponse oAuth2UserResponse = new OAuth2UserResponse(provider, response);
 
+        Map<String, Object> customAttributes = new HashMap<>(response);
+        customAttributes.put("oAuth2UserResponse", oAuth2UserResponse);
+
         UserEntity user = userRepository.selectUserByOAuthId(provider, oAuth2UserResponse.getOAuthId());
         if (user == null) {
+            Boolean nicknameExists = userRepository.existUserNickname(oAuth2UserResponse.getUserNickname());
+            if (nicknameExists) {
+                customAttributes.put("needNicknameSetup", true);
+
+                return new DefaultOAuth2User(
+                        List.of(new SimpleGrantedAuthority(RoleCode.ROLE_TEMP_USER.getCode())),
+                        customAttributes,
+                        "id"
+                );
+            }
+
             final String userId = oAuth2UserResponse.getProvider().toLowerCase()
                                 + "-"
                                 + oAuth2UserResponse.getOAuthId().substring(0, 8);
@@ -93,8 +107,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user = userRepository.selectUserByOAuthId(provider, oAuth2UserResponse.getOAuthId());
         }
 
-        Map<String, Object> customAttributes = new HashMap<>(response);
-        customAttributes.put("oAuth2UserResponse", oAuth2UserResponse);
+        customAttributes.put("needNicknameSetup", false);
         customAttributes.put("userNo", user.getUserNo());
 
         return new DefaultOAuth2User(

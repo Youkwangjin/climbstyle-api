@@ -33,6 +33,15 @@ public class SecurityUtil {
         return null;
     }
 
+    public static OAuth2User getCurrentOAuth2User() {
+        Object principal = getPrincipal();
+        if (principal instanceof OAuth2User oAuth2User) {
+            return oAuth2User;
+        }
+
+        return null;
+    }
+
     private static Object getPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

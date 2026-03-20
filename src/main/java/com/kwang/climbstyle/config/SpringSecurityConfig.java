@@ -142,6 +142,9 @@ public class SpringSecurityConfig {
                                          "/api/v1/login",
                                          "/api/v1/admin/login").permitAll()
 
+                        .requestMatchers("/auth/oauth2/profile").hasAuthority("ROLE_TEMP_USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/oauth2").hasAuthority("ROLE_TEMP_USER")
+
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/users/reactivate").permitAll()
 

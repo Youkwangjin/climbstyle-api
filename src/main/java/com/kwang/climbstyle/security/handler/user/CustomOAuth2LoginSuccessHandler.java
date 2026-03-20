@@ -30,6 +30,12 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
                                         Authentication authentication) throws IOException, ServletException {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        Boolean needNicknameSetup = oAuth2User.getAttribute("needNicknameSetup");
+        if (Boolean.TRUE.equals(needNicknameSetup)) {
+            response.sendRedirect(request.getContextPath() + "/auth/oauth2/profile");
+            return;
+        }
+
         final Integer userNo = oAuth2User.getAttribute("userNo");
 
         List<UserMenuListResponse> menuList = menuService.getUserMenuList(userNo);
