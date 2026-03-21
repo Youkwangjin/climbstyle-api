@@ -1,4 +1,4 @@
-package com.kwang.climbstyle.security.handler;
+package com.kwang.climbstyle.security.handler.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kwang.climbstyle.code.http.HttpErrorCode;

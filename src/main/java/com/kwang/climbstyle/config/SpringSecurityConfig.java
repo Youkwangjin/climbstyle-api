@@ -4,10 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kwang.climbstyle.security.admin.CustomAdminDetailsService;
 import com.kwang.climbstyle.security.filter.CustomAdminJsonAuthenticationFilter;
 import com.kwang.climbstyle.security.filter.CustomUserJsonAuthenticationFilter;
-import com.kwang.climbstyle.security.handler.CustomAuthenticationEntryPoint;
+import com.kwang.climbstyle.security.handler.common.CustomAuthenticationEntryPoint;
 import com.kwang.climbstyle.security.handler.admin.CustomAdminLoginFailureHandler;
 import com.kwang.climbstyle.security.handler.admin.CustomAdminLoginSuccessHandler;
-import com.kwang.climbstyle.security.handler.user.CustomOAuth2LoginSuccessHandler;
+import com.kwang.climbstyle.security.handler.oauth2.CustomOAuth2LoginFailureHandler;
+import com.kwang.climbstyle.security.handler.oauth2.CustomOAuth2LoginSuccessHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLoginSuccessHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLogoutHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLoginFailureHandler;
@@ -56,6 +57,8 @@ public class SpringSecurityConfig {
 
     private final CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler;
 
+    private final CustomOAuth2LoginFailureHandler customOAuth2LoginFailureHandler;
+
 
     public SpringSecurityConfig(ObjectMapper objectMapper,
                                 CustomUserLoginSuccessHandler customUserLoginSuccessHandler,
@@ -65,7 +68,8 @@ public class SpringSecurityConfig {
                                 CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
                                 CustomUserLogoutHandler customUserLogoutHandler,
                                 CustomOAuth2UserService customOAuth2UserService,
-                                CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler) {
+                                CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler,
+                                CustomOAuth2LoginFailureHandler customOAuth2LoginFailureHandler) {
         this.objectMapper = objectMapper;
         this.customUserLoginSuccessHandler = customUserLoginSuccessHandler;
         this.customUserLoginFailureHandler = customUserLoginFailureHandler;
@@ -75,6 +79,7 @@ public class SpringSecurityConfig {
         this.customUserLogoutHandler = customUserLogoutHandler;
         this.customOAuth2UserService = customOAuth2UserService;
         this.customOAuth2LoginSuccessHandler = customOAuth2LoginSuccessHandler;
+        this.customOAuth2LoginFailureHandler = customOAuth2LoginFailureHandler;
     }
 
     @Bean
@@ -172,8 +177,7 @@ public class SpringSecurityConfig {
                                 .userService(customOAuth2UserService)
                         )
                         .successHandler(customOAuth2LoginSuccessHandler)
-                        .failureHandler((request, response, exception) ->
-                                response.sendRedirect("/auth/login?error=oauth2"))
+                        .failureHandler(customOAuth2LoginFailureHandler)
 
                 );
 
