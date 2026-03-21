@@ -1,7 +1,8 @@
 package com.kwang.climbstyle.security.oauth2;
 
-import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.code.role.RoleCode;
+import com.kwang.climbstyle.code.role.RoleErrorCode;
+import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.code.user.UserStatus;
 import com.kwang.climbstyle.domain.role.entity.RoleEntity;
 import com.kwang.climbstyle.domain.role.entity.UserRoleEntity;
@@ -12,10 +13,12 @@ import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -94,7 +97,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             RoleEntity role = roleRepository.selectRoleByRoleName(RoleCode.ROLE_USER.getCode());
             if (role == null) {
-                throw new ClimbStyleException(HttpErrorCode.INTERNAL_SERVER_ERROR);
+                throw new ClimbStyleException(RoleErrorCode.ROLE_NOT_FOUND);
             }
 
             UserRoleEntity userRoleEntity = UserRoleEntity.builder()
@@ -105,6 +108,30 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userRoleRepository.insert(userRoleEntity);
 
             user = userRepository.selectUserByOAuthId(provider, oAuth2UserResponse.getOAuthId());
+        }
+
+        final String userStatus = user.getUserStatus();
+        final String userRole = user.getUserRole();
+
+        if (StringUtils.equals(userStatus, UserStatus.DORMANT.getCode())) {
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error(UserErrorCode.USER_ALREADY_DORMANT.getCode()),
+                    new ClimbStyleException(UserErrorCode.USER_ALREADY_DORMANT)
+            );
+        }
+
+        if (StringUtils.equals(userStatus, UserStatus.SUSPENDED.getCode())) {
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error(UserErrorCode.USER_ALREADY_SUSPENDED.getCode()),
+                    new ClimbStyleException(UserErrorCode.USER_ALREADY_SUSPENDED)
+            );
+        }
+
+        if (userRole == null) {
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error(RoleErrorCode.ROLE_NOT_FOUND.getCode()),
+                    new ClimbStyleException(RoleErrorCode.ROLE_NOT_FOUND)
+            );
         }
 
         customAttributes.put("needNicknameSetup", false);
