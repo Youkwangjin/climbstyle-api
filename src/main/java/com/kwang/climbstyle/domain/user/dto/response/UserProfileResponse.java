@@ -13,11 +13,11 @@ public class UserProfileResponse {
 
     private String userNm;
 
-    private String userNickName;
+    private String userNickname;
 
     private String userEmail;
 
-    private String userDeleteYn;
+    private String userStatus;
 
     private String userImgUrl;
 
@@ -27,5 +27,5 @@ public class UserProfileResponse {
 
     private LocalDateTime userUpdated;
 
-    private LocalDateTime userDeleted;
+    private LocalDateTime userDeactivated;
 }

@@ -5,14 +5,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Slf4j
 public class SecurityUtil {
+
     public static Integer getCurrentUserNo() {
         Object principal = getPrincipal();
 
-        if (principal instanceof CustomUserDetails) {
-            return ((CustomUserDetails) principal).getUserNo();
+        if (principal instanceof CustomUserDetails userDetails) {
+            return userDetails.getUserNo();
+        }
+
+        if (principal instanceof OAuth2User oAuth2User) {
+            return oAuth2User.getAttribute("userNo");
         }
 
         return null;
@@ -22,6 +28,15 @@ public class SecurityUtil {
         Object principal = getPrincipal();
         if (principal instanceof CustomUserDetails) {
             return ((CustomUserDetails) principal);
+        }
+
+        return null;
+    }
+
+    public static OAuth2User getCurrentOAuth2User() {
+        Object principal = getPrincipal();
+        if (principal instanceof OAuth2User oAuth2User) {
+            return oAuth2User;
         }
 
         return null;

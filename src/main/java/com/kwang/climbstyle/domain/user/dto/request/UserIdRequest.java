@@ -12,8 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserIdRequest {
 
-    @NotBlank(message = "아이디는 필수 입력값입니다.")
-    @Size(min = 5, max = 20, message = "아이디는 5~20자 사이여야 합니다.")
-    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "아이디는 영문과 숫자만 사용할 수 있습니다.")
+    @NotBlank
+    @Size(min = 5, max = 20)
+    @Pattern(regexp = "^[A-Za-z0-9]+$")
     private String userId;
 }

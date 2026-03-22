@@ -17,15 +17,26 @@ import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
+import com.kwang.climbstyle.security.oauth2.OAuth2UserResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -67,11 +78,11 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public void checkUserNickNameDuplicate(UserNickNameRequest request) {
-        final String userNickName = request.getUserNickName();
-        Boolean existNickName = userRepository.existUserNickName(userNickName);
+    public void checkUserNicknameDuplicate(UserNicknameRequest request) {
+        final String userNickName = request.getUserNickname();
+        Boolean existNickname = userRepository.existUserNickname(userNickName);
 
-        if (existNickName) {
+        if (existNickname) {
             throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
         }
     }
@@ -84,25 +95,25 @@ public class UserService {
 
         final String userNm = data.getUserNm();
         final String userEmail = data.getUserEmail();
-        final String userNickName = data.getUserNickName();
-        final String userDeleteYn = data.getUserDeleteYn();
+        final String userNickname = data.getUserNickname();
+        final String userStatus = data.getUserStatus();
         final String userImageUrl = data.getUserImageUrl();
         final String userIntro = data.getUserIntro();
         final LocalDateTime userCreated = data.getUserCreated();
         final LocalDateTime userUpdated = data.getUserUpdated();
-        final LocalDateTime userDeleted = data.getUserDeleted();
+        final LocalDateTime userDeactivated = data.getUserDeactivated();
 
         return UserProfileResponse.builder()
                 .userNo(userNo)
                 .userNm(userNm)
                 .userEmail(userEmail)
-                .userNickName(userNickName)
-                .userDeleteYn(userDeleteYn)
+                .userNickname(userNickname)
+                .userStatus(userStatus)
                 .userImgUrl(userImageUrl)
                 .userIntro(userIntro)
                 .userCreated(userCreated)
                 .userUpdated(userUpdated)
-                .userDeleted(userDeleted)
+                .userDeactivated(userDeactivated)
                 .build();
     }
 
@@ -112,8 +123,8 @@ public class UserService {
         final String userPassword = passwordEncoder.encode(request.getUserPassword());
         final String userNm = request.getUserNm();
         final String userEmail = request.getUserEmail();
-        final String userNickName = request.getUserNickName();
-        final String userDeleteYn = UserStatus.ACTIVE.getCode();
+        final String userNickname = request.getUserNickname();
+        final String userStatus = UserStatus.ACTIVE.getCode();
         final LocalDateTime userCreated = LocalDateTime.now();
 
         Boolean existId = userRepository.existUserId(userId);
@@ -126,8 +137,8 @@ public class UserService {
             throw new ClimbStyleException(UserErrorCode.USER_EMAIL_DUPLICATED);
         }
 
-        Boolean existNickName = userRepository.existUserNickName(userNickName);
-        if (existNickName) {
+        Boolean existNickname = userRepository.existUserNickname(userNickname);
+        if (existNickname) {
             throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
         }
 
@@ -136,8 +147,8 @@ public class UserService {
                 .userPassword(userPassword)
                 .userNm(userNm)
                 .userEmail(userEmail)
-                .userNickName(userNickName)
-                .userDeleteYn(userDeleteYn)
+                .userNickname(userNickname)
+                .userStatus(userStatus)
                 .userCreated(userCreated)
                 .build();
 
@@ -160,24 +171,103 @@ public class UserService {
     }
 
     @Transactional
+    public void createOAuth2User(UserNicknameRequest request, HttpServletRequest httpServletRequest,
+                                 OAuth2User oAuth2User) {
+
+        OAuth2UserResponse oAuth2UserResponse = oAuth2User.getAttribute("oAuth2UserResponse");
+        if (oAuth2UserResponse == null) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        final String userNickname = request.getUserNickname();
+        Boolean existNickname = userRepository.existUserNickname(userNickname);
+        if (existNickname) {
+            throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
+        }
+
+        final String userId = oAuth2UserResponse.getProvider().toLowerCase()
+                + "-"
+                + oAuth2UserResponse.getOAuthId().substring(0, 8);
+        final String userNm = oAuth2UserResponse.getUserNm();
+        final String userEmail = oAuth2UserResponse.getUserEmail();
+        final String userStatus = UserStatus.ACTIVE.getCode();
+        final String userOauthProvider = oAuth2UserResponse.getProvider();
+        final String userOauthId = oAuth2UserResponse.getOAuthId();
+        final LocalDateTime userCreated = LocalDateTime.now();
+
+        UserEntity user = UserEntity.builder()
+                .userId(userId)
+                .userNm(userNm)
+                .userEmail(userEmail)
+                .userNickname(userNickname)
+                .userStatus(userStatus)
+                .userOauthProvider(userOauthProvider)
+                .userOauthId(userOauthId)
+                .userCreated(userCreated)
+                .build();
+
+        userRepository.insert(user);
+
+        RoleEntity role = roleRepository.selectRoleByRoleName(RoleCode.ROLE_USER.getCode());
+        if (role == null) {
+            throw new ClimbStyleException(HttpErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+        UserRoleEntity userRoleEntity = UserRoleEntity.builder()
+                .userNo(user.getUserNo())
+                .roleNo(role.getRoleNo())
+                .build();
+
+        userRoleRepository.insert(userRoleEntity);
+
+        UserEntity savedUser = userRepository.selectUserByOAuthId(
+                oAuth2UserResponse.getProvider(),
+                oAuth2UserResponse.getOAuthId()
+        );
+
+        Map<String, Object> updatedAttributes = new HashMap<>(oAuth2User.getAttributes());
+        updatedAttributes.put("needNicknameSetup", false);
+        updatedAttributes.put("userNo", savedUser.getUserNo());
+
+        OAuth2User updatedOAuth2User = new DefaultOAuth2User(
+                List.of(new SimpleGrantedAuthority(savedUser.getUserRole())),
+                updatedAttributes,
+                "id"
+        );
+
+        OAuth2AuthenticationToken newAuth = new OAuth2AuthenticationToken(
+                updatedOAuth2User,
+                List.of(new SimpleGrantedAuthority(savedUser.getUserRole())),
+                oAuth2UserResponse.getProvider().toLowerCase()
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+        httpServletRequest.getSession().setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext()
+        );
+    }
+
+    @Transactional
     public void deactivateUser(Integer userNo) {
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
 
-        final String userDeleteYn = data.getUserDeleteYn();
-        final LocalDateTime currentUserDeleted = data.getUserDeleted();
-        final LocalDateTime userDeleted = LocalDateTime.now();
+        final String userStatus = data.getUserStatus();
+        final String dormantStatus = UserStatus.DORMANT.getCode();
+        final LocalDateTime currentUserDeactivated = data.getUserDeactivated();
+        final LocalDateTime userDeactivated = LocalDateTime.now();
         final LocalDateTime now = LocalDateTime.now();
-        final String userDeleteStatus = UserStatus.DORMANT.getCode();
 
-        if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
+        if (StringUtils.equals(userStatus, dormantStatus)) {
             throw new ClimbStyleException(UserErrorCode.USER_ALREADY_DORMANT);
         }
 
-        if (currentUserDeleted != null) {
-            LocalDateTime availableAt = currentUserDeleted.plusDays(3);
+        if (currentUserDeactivated != null) {
+            LocalDateTime availableAt = currentUserDeactivated.plusDays(3);
             if (now.isBefore(availableAt)) {
                 throw new ClimbStyleException(UserErrorCode.USER_DORMANCY_COOLDOWN);
             }
@@ -185,8 +275,8 @@ public class UserService {
 
         UserEntity userEntity = UserEntity.builder()
                 .userNo(userNo)
-                .userDeleteYn(UserStatus.DORMANT.getCode())
-                .userDeleted(userDeleted)
+                .userStatus(dormantStatus)
+                .userDeactivated(userDeactivated)
                 .build();
 
         userRepository.deactivateUser(userEntity);
@@ -210,18 +300,19 @@ public class UserService {
         }
 
         final Integer userNo = data.getUserNo();
-        final String userDeleteYn = data.getUserDeleteYn();
-        final String userReactivateStatus = UserStatus.ACTIVE.getCode();
-        if (StringUtils.equals(userDeleteYn, userReactivateStatus)) {
+        final String userStatus = data.getUserStatus();
+        final String reactivateStatus = UserStatus.ACTIVE.getCode();
+        if (StringUtils.equals(userStatus, reactivateStatus)) {
             throw new ClimbStyleException(UserErrorCode.USER_ALREADY_REACTIVATE);
         }
 
         UserEntity userEntity = UserEntity.builder()
                 .userNo(userNo)
-                .userDeleteYn(userReactivateStatus)
+                .userStatus(reactivateStatus)
                 .build();
 
         userRepository.reactivateUser(userEntity);
+
         final String feedVisibleYn = FeedVisibleStatus.VISIBLE.getCode();
         feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
     }
@@ -255,7 +346,7 @@ public class UserService {
     @Transactional
     public void updateUser(Integer userNo, UserUpdateRequest request) {
         final String userNm = request.getUserNm();
-        final String userNickName = request.getUserNickName();
+        final String userNickname = request.getUserNickname();
         final String userIntro = request.getUserIntro();
         final MultipartFile userProfileImg = request.getUserProfileImg();
         final String userProfileDelete = request.getUserProfileDelete();
@@ -265,16 +356,16 @@ public class UserService {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
 
-        final String userDeleteYn = data.getUserDeleteYn();
-        final String curentUserNickName = data.getUserNickName();
+        final String userStatus = data.getUserStatus();
+        final String curentUserNickname = data.getUserNickname();
         final String userDeleteStatus = UserStatus.DORMANT.getCode();
-        if (StringUtils.equals(userDeleteYn, userDeleteStatus)) {
+        if (StringUtils.equals(userStatus, userDeleteStatus)) {
             throw new ClimbStyleException(UserErrorCode.USER_DORMANT_FORBIDDEN);
         }
 
-        if (!StringUtils.equals(userNickName, curentUserNickName)) {
-            Boolean existNickName = userRepository.existUserNickName(userNickName);
-            if (existNickName) {
+        if (!StringUtils.equals(userNickname, curentUserNickname)) {
+            Boolean existNickname = userRepository.existUserNickname(userNickname);
+            if (existNickname) {
                 throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
             }
         }
@@ -304,7 +395,7 @@ public class UserService {
         UserEntity user = UserEntity.builder()
                 .userNo(userNo)
                 .userNm(userNm)
-                .userNickName(userNickName)
+                .userNickname(userNickname)
                 .userImageUrl(userImageUrl)
                 .userIntro(userIntro)
                 .userUpdated(userUpdated)

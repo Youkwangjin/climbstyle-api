@@ -50,7 +50,6 @@ const Validator = {
             return true;
         },
 
-        // 아이디 형식 검증 (영문, 숫자만, 4~20자)
         userId(value, fieldName) {
             const userIdRegex = /^[a-zA-Z0-9]{4,20}$/;
             if (!userIdRegex.test(value)) {
@@ -127,19 +126,21 @@ const Validator = {
     register() {
         const userId = document.getElementById("userId").value.trim();
         const userPassword = document.getElementById("userPassword").value.trim();
+        const passwordConfirm = document.getElementById("passwordConfirm").value.trim();
         const userNm = document.getElementById("userNm").value.trim();
         const userEmail = document.getElementById("userEmail").value.trim();
-        const userNickName = document.getElementById("userNickName").value.trim();
+        const userNickname = document.getElementById("userNickname").value.trim();
 
         if (!this.rules.required(userId, "아이디")) return false;
         if (!this.rules.userId(userId, "아이디")) return false;
         if (!this.rules.required(userPassword, "비밀번호")) return false;
         if (!this.rules.password(userPassword, "비밀번호")) return false;
+        if (!this.rules.match(userPassword, passwordConfirm, "비밀번호")) return false;
         if (!this.rules.required(userNm, "이름")) return false;
         if (!this.rules.required(userEmail, "이메일")) return false;
         if (!this.rules.email(userEmail, "이메일")) return false;
-        if (!this.rules.required(userNickName, "닉네임")) return false;
-        return this.rules.nickname(userNickName, "닉네임");
+        if (!this.rules.required(userNickname, "닉네임")) return false;
+        return this.rules.nickname(userNickname, "닉네임");
     },
 
     login() {
@@ -152,12 +153,12 @@ const Validator = {
 
     profile() {
         const userName = document.getElementById("userNm").value.trim();
-        const userNickName = document.getElementById("userNickName").value.trim();
+        const userNickname = document.getElementById("userNickname").value.trim();
         const userProfileImg = document.getElementById("userProfileImg").files[0];
 
         if (!this.rules.required(userName, "이름")) return false;
-        if (!this.rules.required(userNickName, "닉네임")) return false;
-        if (!this.rules.range(userNickName, "닉네임", 2, 20)) return false;
+        if (!this.rules.required(userNickname, "닉네임")) return false;
+        if (!this.rules.range(userNickname, "닉네임", 2, 20)) return false;
         return this.rules.fileSize(userProfileImg, "프로필 이미지", 5 * 1024 * 1024);
     },
 

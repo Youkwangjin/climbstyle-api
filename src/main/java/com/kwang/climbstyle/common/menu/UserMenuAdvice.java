@@ -5,10 +5,12 @@ import com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse;
 import com.kwang.climbstyle.domain.menu.service.MenuService;
 import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.security.admin.CustomAdminDetails;
+import com.kwang.climbstyle.security.oauth2.OAuth2UserResponse;
 import com.kwang.climbstyle.security.user.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -39,12 +41,22 @@ public class UserMenuAdvice {
             return List.of();
         }
 
-        if (authentication.getPrincipal() instanceof CustomAdminDetails) {
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof CustomAdminDetails) {
             return List.of();
         }
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return menuService.getUserMenuList(userDetails.getUserNo());
+        if (principal instanceof CustomUserDetails userDetails) {
+            return menuService.getUserMenuList(userDetails.getUserNo());
+        }
+
+        if (principal instanceof OAuth2User oAuth2User) {
+            Integer userNo = oAuth2User.getAttribute("userNo");
+            return menuService.getUserMenuList(userNo);
+        }
+
+        return List.of();
     }
 
     @ModelAttribute("currentUser")
@@ -57,8 +69,20 @@ public class UserMenuAdvice {
 
         if (principal instanceof CustomUserDetails userDetails) {
             return UserProfileResponse.builder()
-                    .userNickName(userDetails.getUserNickname())
+                    .userNickname(userDetails.getUserNickname())
                     .userImgUrl(userDetails.getUserImageUrl())
+                    .build();
+        }
+
+        if (principal instanceof OAuth2User oAuth2User) {
+            OAuth2UserResponse oAuth2UserResponse = oAuth2User.getAttribute("oAuth2UserResponse");
+            if (oAuth2UserResponse == null) {
+                return null;
+            }
+
+            return UserProfileResponse.builder()
+                    .userNickname(oAuth2UserResponse.getUserNickname())
+                    .userImgUrl(null)
                     .build();
         }
 

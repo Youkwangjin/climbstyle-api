@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-    <title>ClimbStyle</title>
+    <title>로그인 | ClimbStyle</title>
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/auth/auth.css}">
 </head>
@@ -13,13 +13,11 @@
 <header>
     <div th:replace="~{fragments/common/header:: header}"></div>
 </header>
-
 <main class="auth-section">
     <div class="container auth-wrap">
         <section class="auth-card" aria-labelledby="login-title">
             <h1 id="login-title">로그인</h1>
-            <p class="auth-sub">클라이밍 패션 피드와 쇼핑을 한 번에, ClimbStyle에 로그인하세요.</p>
-
+            <p class="auth-sub">클라이밍 패션을 발견하고 공유해보세요, ClimbStyle에 로그인하세요.</p>
             <form class="auth-form" onsubmit="login(); return false;">
                 <div class="field">
                     <label for="userId">아이디</label>
@@ -28,7 +26,6 @@
                            placeholder="아이디를 입력하세요"
                            required />
                 </div>
-
                 <div class="field">
                     <label for="userPassword">비밀번호</label>
                     <input id="userPassword"
@@ -36,20 +33,32 @@
                            placeholder="비밀번호를 입력하세요"
                            required />
                 </div>
-
                 <div class="field field-row">
                     <a class="link-muted" th:href="@{/auth/forgot/password}">비밀번호 찾기</a>
                 </div>
-
                 <div class="field">
                     <button class="btn btn-primary auth-submit" type="submit">로그인</button>
                 </div>
+                <div class="social-divider">
+                    <span>또는</span>
+                </div>
+                <div class="social-btn-group">
+                    <a th:href="@{/oauth2/authorization/naver}" class="btn btn-social btn-naver">
+                        <th:block th:replace="~{fragments/common/icons :: naver}" />
+                        네이버로 계속하기
+                    </a>
+                    <a th:href="@{/oauth2/authorization/google}" class="btn btn-social btn-google">
+                        <th:block th:replace="~{fragments/common/icons :: google}" />
+                        구글로 계속하기
+                    </a>
+                </div>
 
-                <p class="auth-footer">아직 계정이 없나요?<a th:href="@{/auth/register}">회원가입</a></p>
+                <p class="auth-footer">아직 계정이 없나요? <a th:href="@{/auth/register}">회원가입</a></p>
             </form>
         </section>
     </div>
 </main>
+
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/api.js}"></script>
 <script th:src="@{/js/common/validator.js}"></script>
@@ -84,6 +93,19 @@
                 alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자한테 문의하세요.")
             })
     }
+
+    (function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get("error");
+
+        if (error === "dormant") {
+            alert("휴면 계정이에요. 관리자에게 문의해 주세요.");
+        } else if (error === "suspended") {
+            alert("정지된 계정이에요. 관리자에게 문의해 주세요.");
+        } else if (error === "oauth2") {
+            alert("소셜 로그인 중 문제가 발생했습니다. 다시 시도해 주세요.");
+        }
+    })();
 </script>
 </body>
 </html>

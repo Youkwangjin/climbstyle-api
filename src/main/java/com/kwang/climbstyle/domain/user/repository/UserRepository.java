@@ -11,11 +11,14 @@ public interface UserRepository {
 
     Boolean existUserEmail(@Param("userEmail") String userEmail);
 
-    Boolean existUserNickName(@Param("userNickName") String userNickName);
+    Boolean existUserNickname(@Param("userNickname") String userNickname);
 
     UserEntity selectUserByNo(@Param("userNo") Integer userNo);
 
     UserEntity selectUserById(@Param("userId") String userId);
+
+    UserEntity selectUserByOAuthId(@Param("userOauthProvider") String userOauthProvider,
+                                   @Param("userOauthId") String userOauthId);
 
     void insert(UserEntity userEntity);
 
