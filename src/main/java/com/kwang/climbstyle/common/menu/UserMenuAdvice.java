@@ -4,8 +4,8 @@ import com.kwang.climbstyle.code.menu.MenuCode;
 import com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse;
 import com.kwang.climbstyle.domain.menu.service.MenuService;
 import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
+import com.kwang.climbstyle.domain.user.service.UserService;
 import com.kwang.climbstyle.security.admin.CustomAdminDetails;
-import com.kwang.climbstyle.security.oauth2.OAuth2UserResponse;
 import com.kwang.climbstyle.security.user.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,8 @@ import java.util.List;
 public class UserMenuAdvice {
 
     private final MenuService menuService;
+
+    private final UserService userService;
 
     @ModelAttribute("navMenus")
     public List<MenuCode> navMenus() {
@@ -68,22 +70,15 @@ public class UserMenuAdvice {
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof CustomUserDetails userDetails) {
-            return UserProfileResponse.builder()
-                    .userNickname(userDetails.getUserNickname())
-                    .userImgUrl(userDetails.getUserImageUrl())
-                    .build();
+            return userService.selectUserByNo(userDetails.getUserNo());
         }
 
         if (principal instanceof OAuth2User oAuth2User) {
-            OAuth2UserResponse oAuth2UserResponse = oAuth2User.getAttribute("oAuth2UserResponse");
-            if (oAuth2UserResponse == null) {
+            Integer userNo = oAuth2User.getAttribute("userNo");
+            if (userNo == null) {
                 return null;
             }
-
-            return UserProfileResponse.builder()
-                    .userNickname(oAuth2UserResponse.getUserNickname())
-                    .userImgUrl(null)
-                    .build();
+            return userService.selectUserByNo(userNo);
         }
 
         return null;
