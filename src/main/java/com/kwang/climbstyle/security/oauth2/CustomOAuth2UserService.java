@@ -10,6 +10,7 @@ import com.kwang.climbstyle.domain.role.repository.RoleRepository;
 import com.kwang.climbstyle.domain.role.repository.UserRoleRepository;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
+import com.kwang.climbstyle.domain.user.service.UserService;
 import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,8 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+
+    private final UserService userService;
 
     private final UserRepository userRepository;
 
@@ -110,24 +113,23 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user = userRepository.selectUserByOAuthId(provider, oAuth2UserResponse.getOAuthId());
         }
 
-        final String userStatus = user.getUserStatus();
-        final String userRole = user.getUserRole();
+        if (StringUtils.equals(user.getUserStatus(), UserStatus.DORMANT.getCode())) {
+            userService.reactivateOAuth2User(user.getUserNo());
 
-        if (StringUtils.equals(userStatus, UserStatus.DORMANT.getCode())) {
-            throw new OAuth2AuthenticationException(
-                    new OAuth2Error(UserErrorCode.USER_ALREADY_DORMANT.getCode()),
-                    new ClimbStyleException(UserErrorCode.USER_ALREADY_DORMANT)
+            user = userRepository.selectUserByOAuthId(
+                    oAuth2UserResponse.getProvider(),
+                    oAuth2UserResponse.getOAuthId()
             );
         }
 
-        if (StringUtils.equals(userStatus, UserStatus.SUSPENDED.getCode())) {
+        if (StringUtils.equals(user.getUserStatus(), UserStatus.SUSPENDED.getCode())) {
             throw new OAuth2AuthenticationException(
                     new OAuth2Error(UserErrorCode.USER_ALREADY_SUSPENDED.getCode()),
                     new ClimbStyleException(UserErrorCode.USER_ALREADY_SUSPENDED)
             );
         }
 
-        if (userRole == null) {
+        if (user.getUserRole() == null) {
             throw new OAuth2AuthenticationException(
                     new OAuth2Error(RoleErrorCode.ROLE_NOT_FOUND.getCode()),
                     new ClimbStyleException(RoleErrorCode.ROLE_NOT_FOUND)

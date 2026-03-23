@@ -1,13 +1,11 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div th:fragment="header">
     <div class="container nav">
-
         <div class="logo" aria-label="Site logo">
             <a th:href="@{/}" class="logo">
                 <span>ClimbStyle</span>
             </a>
         </div>
-
         <nav aria-label="Primary">
             <ul>
                 <li th:each="menu : ${navMenus}">
@@ -15,33 +13,21 @@
                 </li>
             </ul>
         </nav>
-
         <div class="cta" sec:authorize="isAnonymous()">
-            <a th:each="menu : ${ctaMenus}"
-               th:text="${menu.menuName}"
-               th:href="@{${menu.menuUrl}}"
-               class="btn"
+            <a th:each="menu : ${ctaMenus}" th:text="${menu.menuName}" th:href="@{${menu.menuUrl}}" class="btn"
                th:classappend="${menu.name() == 'REGISTER'} ? ' btn-primary' : ''">
             </a>
         </div>
-
         <div class="user-menu" sec:authorize="isAuthenticated()">
             <button type="button" class="user-trigger">
                 <div class="user-profile">
-                    <img th:if="${!#strings.isEmpty(currentUser?.userImgUrl)}"
-                         th:src="${currentUser?.userImgUrl}"
-                         alt="프로필 이미지">
+                    <img th:if="${!#strings.isEmpty(currentUser?.userImgUrl)}" th:src="${currentUser?.userImgUrl}" alt="프로필 이미지">
                 </div>
-                <span class="user-name" th:text="${currentUser.userNickname}">사용자</span>
+                <span class="user-name" th:text="${currentUser?.userNickname}">사용자</span>
                 <span class="user-caret">▾</span>
             </button>
-
             <div class="user-dropdown">
-                <a class="user-dropdown-item"
-                   th:each="menu : ${userMenus}"
-                   th:href="${menu.menuUrl}"
-                   th:text="${menu.menuName}">
-                </a>
+                <a class="user-dropdown-item" th:each="menu : ${userMenus}" th:href="${menu.menuUrl}" th:text="${menu.menuName}"></a>
                 <div class="user-dropdown-divider"></div>
                 <button type="button" class="user-dropdown-item logout-btn" onclick="logout()">로그아웃</button>
             </div>
