@@ -318,6 +318,19 @@ public class UserService {
     }
 
     @Transactional
+    public void reactivateOAuth2User(Integer userNo) {
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userStatus(UserStatus.ACTIVE.getCode())
+                .userUpdated(LocalDateTime.now())
+                .build();
+
+        userRepository.reactivateUser(userEntity);
+
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, FeedVisibleStatus.VISIBLE.getCode());
+    }
+
+    @Transactional
     public void changePassword(Integer userNo, UserPasswordUpdateRequest request) {
         final String userPassword = request.getUserPassword();
         final String newUserPassword = passwordEncoder.encode(request.getNewUserPassword());
