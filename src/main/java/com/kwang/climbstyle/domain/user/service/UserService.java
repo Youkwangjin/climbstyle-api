@@ -340,7 +340,13 @@ public class UserService {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
 
+        final String userOauthProvider =  data.getUserOauthProvider();
         final String currentUserPassword = data.getUserPassword();
+
+        if (userOauthProvider != null) {
+            throw new ClimbStyleException(UserErrorCode.USER_OAUTH_NO_PASSWORD);
+        }
+
         if (!passwordEncoder.matches(userPassword, currentUserPassword)) {
             throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
         }

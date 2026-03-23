@@ -22,8 +22,9 @@ public enum UserErrorCode implements ApiCode {
     USER_ALREADY_SUSPENDED(HttpStatus.BAD_REQUEST,          "4008", "이미 정지 처리된 사용자 입니다."),
     USER_DORMANCY_COOLDOWN(HttpStatus.BAD_REQUEST,          "4009", "휴면 처리 후 3일이 지나야 비활성화할 수 있습니다."),
     USER_ORDER_EXISTS(HttpStatus.BAD_REQUEST,               "4010", "주문 내역이 존재하여 비활성화할 수 없습니다."),
+    USER_OAUTH_NO_PASSWORD(HttpStatus.BAD_REQUEST,          "4011", "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다."),
 
-    USER_PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED,         "4009", "현재 비밀번호가 일치하지 않습니다."),
+    USER_PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED,         "4012", "현재 비밀번호가 일치하지 않습니다."),
 
     USER_DORMANT_FORBIDDEN(HttpStatus.FORBIDDEN,            "4031", "비활성화된 사용자는 회원정보를 수정할 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,                    "4041", "존재하지 않는 사용자입니다."),
