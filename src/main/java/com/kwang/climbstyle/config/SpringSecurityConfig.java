@@ -12,7 +12,7 @@ import com.kwang.climbstyle.security.handler.oauth2.CustomOAuth2LoginSuccessHand
 import com.kwang.climbstyle.security.handler.user.CustomUserLoginSuccessHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLogoutHandler;
 import com.kwang.climbstyle.security.handler.user.CustomUserLoginFailureHandler;
-import com.kwang.climbstyle.security.oauth2.CustomOAuth2UserService;
+import com.kwang.climbstyle.security.oauth2.service.CustomOAuth2UserService;
 import com.kwang.climbstyle.security.provider.CustomDaoAuthenticationProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;

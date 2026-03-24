@@ -1,8 +1,8 @@
-package com.kwang.climbstyle.security.oauth2;
+package com.kwang.climbstyle.security.oauth2.response;
 
 import java.util.Map;
 
-public class NaverOAuth2UserResponse {
+public class NaverOAuth2UserResponse implements OAuth2UserResponse {
 
     private final String provider;
 
@@ -13,23 +13,33 @@ public class NaverOAuth2UserResponse {
         this.attributes = attributes;
     }
 
+    @Override
     public String getProvider() {
         return provider;
     }
 
+    @Override
     public String getOAuthId() {
         return (String) attributes.get("id");
     }
 
+    @Override
     public String getUserNm() {
         return (String) attributes.get("name");
     }
 
+    @Override
     public String getUserEmail() {
         return (String) attributes.get("email");
     }
 
+    @Override
     public String getUserNickname() {
         return (String) attributes.get("nickname");
+    }
+
+    @Override
+    public String getNameAttributeKey() {
+        return "id";
     }
 }

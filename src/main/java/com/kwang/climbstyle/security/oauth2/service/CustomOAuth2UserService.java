@@ -1,4 +1,4 @@
-package com.kwang.climbstyle.security.oauth2;
+package com.kwang.climbstyle.security.oauth2.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
