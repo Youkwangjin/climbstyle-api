@@ -1,148 +1,49 @@
 package com.kwang.climbstyle.security.oauth2;
 
-import com.kwang.climbstyle.code.role.RoleCode;
-import com.kwang.climbstyle.code.role.RoleErrorCode;
-import com.kwang.climbstyle.code.user.UserErrorCode;
-import com.kwang.climbstyle.code.user.UserStatus;
-import com.kwang.climbstyle.domain.role.entity.RoleEntity;
-import com.kwang.climbstyle.domain.role.entity.UserRoleEntity;
-import com.kwang.climbstyle.domain.role.repository.RoleRepository;
-import com.kwang.climbstyle.domain.role.repository.UserRoleRepository;
-import com.kwang.climbstyle.domain.user.entity.UserEntity;
-import com.kwang.climbstyle.domain.user.repository.UserRepository;
-import com.kwang.climbstyle.domain.user.service.UserService;
-import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserService userService;
+    private static final String PROVIDER_NAVER = "NAVER";
 
-    private final UserRepository userRepository;
+    private static final String PROVIDER_GOOGLE = "GOOGLE";
 
-    private final UserRoleRepository userRoleRepository;
+    private final NaverOAuth2UserService naverOAuth2UserService;
 
-    private final RoleRepository roleRepository;
+    private final GoogleOAuth2UserService googleOAuth2UserService;
 
     @Override
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
-        OAuth2User oAuth2User = super.loadUser(userRequest);
-
         String provider = userRequest.getClientRegistration()
                                      .getRegistrationId()
                                      .toUpperCase();
 
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+        log.info("소셜 로그인 시도 - provider: {}", provider);
 
-        OAuth2UserResponse oAuth2UserResponse = new OAuth2UserResponse(provider, response);
-
-        Map<String, Object> customAttributes = new HashMap<>(response);
-        customAttributes.put("oAuth2UserResponse", oAuth2UserResponse);
-
-        UserEntity user = userRepository.selectUserByOAuthId(provider, oAuth2UserResponse.getOAuthId());
-        if (user == null) {
-            Boolean nicknameExists = userRepository.existUserNickname(oAuth2UserResponse.getUserNickname());
-            if (nicknameExists) {
-                customAttributes.put("needNicknameSetup", true);
-
-                return new DefaultOAuth2User(
-                        List.of(new SimpleGrantedAuthority(RoleCode.ROLE_TEMP_USER.getCode())),
-                        customAttributes,
-                        "id"
-                );
-            }
-
-            final String userId = oAuth2UserResponse.getProvider().toLowerCase()
-                                + "-"
-                                + oAuth2UserResponse.getOAuthId().substring(0, 8);
-            final String userNm = oAuth2UserResponse.getUserNm();
-            final String userEmail = oAuth2UserResponse.getUserEmail();
-            final String userNickname = oAuth2UserResponse.getUserNickname();
-            final String userStatus = UserStatus.ACTIVE.getCode();
-            final String userOauthProvider =  oAuth2UserResponse.getProvider();
-            final String userOauthId =  oAuth2UserResponse.getOAuthId();
-            final LocalDateTime userCreated =  LocalDateTime.now();
-
-            user = UserEntity.builder()
-                    .userId(userId)
-                    .userNm(userNm)
-                    .userEmail(userEmail)
-                    .userNickname(userNickname)
-                    .userStatus(userStatus)
-                    .userOauthProvider(userOauthProvider)
-                    .userOauthId(userOauthId)
-                    .userCreated(userCreated)
-                    .build();
-
-            userRepository.insert(user);
-
-            RoleEntity role = roleRepository.selectRoleByRoleName(RoleCode.ROLE_USER.getCode());
-            if (role == null) {
-                throw new ClimbStyleException(RoleErrorCode.ROLE_NOT_FOUND);
-            }
-
-            UserRoleEntity userRoleEntity = UserRoleEntity.builder()
-                    .userNo(user.getUserNo())
-                    .roleNo(role.getRoleNo())
-                    .build();
-
-            userRoleRepository.insert(userRoleEntity);
-
-            user = userRepository.selectUserByOAuthId(provider, oAuth2UserResponse.getOAuthId());
+        if (StringUtils.equals(provider, PROVIDER_NAVER)) {
+            return naverOAuth2UserService.loadUser(userRequest);
         }
 
-        if (StringUtils.equals(user.getUserStatus(), UserStatus.DORMANT.getCode())) {
-            userService.reactivateOAuth2User(user.getUserNo());
-
-            user = userRepository.selectUserByOAuthId(
-                    oAuth2UserResponse.getProvider(),
-                    oAuth2UserResponse.getOAuthId()
-            );
+        if (StringUtils.equals(provider, PROVIDER_GOOGLE)) {
+            return googleOAuth2UserService.loadUser(userRequest);
         }
 
-        if (StringUtils.equals(user.getUserStatus(), UserStatus.SUSPENDED.getCode())) {
-            throw new OAuth2AuthenticationException(
-                    new OAuth2Error(UserErrorCode.USER_ALREADY_SUSPENDED.getCode()),
-                    new ClimbStyleException(UserErrorCode.USER_ALREADY_SUSPENDED)
-            );
-        }
-
-        if (user.getUserRole() == null) {
-            throw new OAuth2AuthenticationException(
-                    new OAuth2Error(RoleErrorCode.ROLE_NOT_FOUND.getCode()),
-                    new ClimbStyleException(RoleErrorCode.ROLE_NOT_FOUND)
-            );
-        }
-
-        customAttributes.put("needNicknameSetup", false);
-        customAttributes.put("userNo", user.getUserNo());
-
-        return new DefaultOAuth2User(
-                List.of(new SimpleGrantedAuthority(user.getUserRole())),
-                customAttributes,
-                "id"
+        log.warn("지원하지 않는 소셜 로그인 시도 - provider: {}", provider);
+        throw new OAuth2AuthenticationException(new OAuth2Error("unsupported_provider"),
+                                                                          "지원하지 않는 소셜 로그인입니다: " + provider
         );
     }
 }

@@ -17,7 +17,7 @@ import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
-import com.kwang.climbstyle.security.oauth2.OAuth2UserResponse;
+import com.kwang.climbstyle.security.oauth2.NaverOAuth2UserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
@@ -174,8 +174,8 @@ public class UserService {
     public void createOAuth2User(UserNicknameRequest request, HttpServletRequest httpServletRequest,
                                  OAuth2User oAuth2User) {
 
-        OAuth2UserResponse oAuth2UserResponse = oAuth2User.getAttribute("oAuth2UserResponse");
-        if (oAuth2UserResponse == null) {
+        NaverOAuth2UserResponse naverOAuth2UserResponse = oAuth2User.getAttribute("oAuth2UserResponse");
+        if (naverOAuth2UserResponse == null) {
             throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
         }
 
@@ -185,14 +185,14 @@ public class UserService {
             throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
         }
 
-        final String userId = oAuth2UserResponse.getProvider().toLowerCase()
+        final String userId = naverOAuth2UserResponse.getProvider().toLowerCase()
                 + "-"
-                + oAuth2UserResponse.getOAuthId().substring(0, 8);
-        final String userNm = oAuth2UserResponse.getUserNm();
-        final String userEmail = oAuth2UserResponse.getUserEmail();
+                + naverOAuth2UserResponse.getOAuthId().substring(0, 8);
+        final String userNm = naverOAuth2UserResponse.getUserNm();
+        final String userEmail = naverOAuth2UserResponse.getUserEmail();
         final String userStatus = UserStatus.ACTIVE.getCode();
-        final String userOauthProvider = oAuth2UserResponse.getProvider();
-        final String userOauthId = oAuth2UserResponse.getOAuthId();
+        final String userOauthProvider = naverOAuth2UserResponse.getProvider();
+        final String userOauthId = naverOAuth2UserResponse.getOAuthId();
         final LocalDateTime userCreated = LocalDateTime.now();
 
         UserEntity user = UserEntity.builder()
@@ -221,8 +221,8 @@ public class UserService {
         userRoleRepository.insert(userRoleEntity);
 
         UserEntity savedUser = userRepository.selectUserByOAuthId(
-                oAuth2UserResponse.getProvider(),
-                oAuth2UserResponse.getOAuthId()
+                naverOAuth2UserResponse.getProvider(),
+                naverOAuth2UserResponse.getOAuthId()
         );
 
         Map<String, Object> updatedAttributes = new HashMap<>(oAuth2User.getAttributes());
@@ -238,7 +238,7 @@ public class UserService {
         OAuth2AuthenticationToken newAuth = new OAuth2AuthenticationToken(
                 updatedOAuth2User,
                 List.of(new SimpleGrantedAuthority(savedUser.getUserRole())),
-                oAuth2UserResponse.getProvider().toLowerCase()
+                naverOAuth2UserResponse.getProvider().toLowerCase()
         );
 
         SecurityContextHolder.getContext().setAuthentication(newAuth);

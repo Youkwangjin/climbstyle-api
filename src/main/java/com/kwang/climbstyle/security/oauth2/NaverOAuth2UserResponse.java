@@ -2,13 +2,13 @@ package com.kwang.climbstyle.security.oauth2;
 
 import java.util.Map;
 
-public class OAuth2UserResponse {
+public class NaverOAuth2UserResponse {
 
     private final String provider;
 
     private final Map<String, Object> attributes;
 
-    public OAuth2UserResponse(String provider, Map<String, Object> attributes) {
+    public NaverOAuth2UserResponse(String provider, Map<String, Object> attributes) {
         this.provider = provider;
         this.attributes = attributes;
     }
