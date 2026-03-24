@@ -1,4 +1,4 @@
-package com.kwang.climbstyle.security.oauth2;
+package com.kwang.climbstyle.security.oauth2.service;
 
 import com.kwang.climbstyle.code.role.RoleCode;
 import com.kwang.climbstyle.code.role.RoleErrorCode;
@@ -12,6 +12,7 @@ import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.domain.user.service.UserService;
 import com.kwang.climbstyle.exception.ClimbStyleException;
+import com.kwang.climbstyle.security.oauth2.response.GoogleOAuth2UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,20 +34,18 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-
-    private final UserService userService;
+public class GoogleOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
 
-    private final UserRoleRepository userRoleRepository;
-
     private final RoleRepository roleRepository;
 
-    @Override
+    private final UserRoleRepository userRoleRepository;
+
+    private final UserService userService;
+
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         String provider = userRequest.getClientRegistration()
@@ -54,36 +53,49 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                      .toUpperCase();
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
-        OAuth2UserResponse oAuth2UserResponse = new OAuth2UserResponse(provider, response);
+        GoogleOAuth2UserResponse googleOAuth2UserResponse = new GoogleOAuth2UserResponse(provider, attributes);
 
-        Map<String, Object> customAttributes = new HashMap<>(response);
-        customAttributes.put("oAuth2UserResponse", oAuth2UserResponse);
+        Map<String, Object> customAttributes = new HashMap<>(attributes);
+        customAttributes.put("oAuth2UserResponse", googleOAuth2UserResponse);
 
-        UserEntity user = userRepository.selectUserByOAuthId(provider, oAuth2UserResponse.getOAuthId());
+        UserEntity user = userRepository.selectUserByOAuthId(googleOAuth2UserResponse.getProvider(),
+                                                             googleOAuth2UserResponse.getOAuthId());
+
         if (user == null) {
-            Boolean nicknameExists = userRepository.existUserNickname(oAuth2UserResponse.getUserNickname());
+            Boolean emailExists = userRepository.existUserEmail(googleOAuth2UserResponse.getUserEmail());
+            if (emailExists) {
+                log.warn("소셜 로그인 이메일 중복 - provider: {}", googleOAuth2UserResponse.getProvider());
+
+                throw new OAuth2AuthenticationException(
+                        new OAuth2Error(UserErrorCode.USER_EMAIL_DUPLICATED.getCode()),
+                        new ClimbStyleException(UserErrorCode.USER_EMAIL_DUPLICATED)
+                );
+            }
+
+            Boolean nicknameExists = userRepository.existUserNickname(googleOAuth2UserResponse.getUserNickname());
             if (nicknameExists) {
+                log.info("소셜 로그인 닉네임 중복 - provider: {}", googleOAuth2UserResponse.getProvider());
+
                 customAttributes.put("needNicknameSetup", true);
 
                 return new DefaultOAuth2User(
                         List.of(new SimpleGrantedAuthority(RoleCode.ROLE_TEMP_USER.getCode())),
                         customAttributes,
-                        "id"
+                        "sub"
                 );
             }
 
-            final String userId = oAuth2UserResponse.getProvider().toLowerCase()
+            final String userId = googleOAuth2UserResponse.getProvider().toLowerCase()
                                 + "-"
-                                + oAuth2UserResponse.getOAuthId().substring(0, 8);
-            final String userNm = oAuth2UserResponse.getUserNm();
-            final String userEmail = oAuth2UserResponse.getUserEmail();
-            final String userNickname = oAuth2UserResponse.getUserNickname();
+                                + googleOAuth2UserResponse.getOAuthId().substring(0, 8);
+            final String userNm = googleOAuth2UserResponse.getUserNm();
+            final String userEmail = googleOAuth2UserResponse.getUserEmail();
+            final String userNickname = googleOAuth2UserResponse.getUserNickname();
             final String userStatus = UserStatus.ACTIVE.getCode();
-            final String userOauthProvider =  oAuth2UserResponse.getProvider();
-            final String userOauthId =  oAuth2UserResponse.getOAuthId();
-            final LocalDateTime userCreated =  LocalDateTime.now();
+            final String userOauthProvider = googleOAuth2UserResponse.getProvider();
+            final String userOauthId = googleOAuth2UserResponse.getOAuthId();
+            final LocalDateTime userCreated = LocalDateTime.now();
 
             user = UserEntity.builder()
                     .userId(userId)
@@ -110,19 +122,27 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             userRoleRepository.insert(userRoleEntity);
 
-            user = userRepository.selectUserByOAuthId(provider, oAuth2UserResponse.getOAuthId());
+            log.info("소셜 로그인 신규 회원 가입 - provider: {}", googleOAuth2UserResponse.getProvider());
+
+            user = userRepository.selectUserByOAuthId(
+                    googleOAuth2UserResponse.getProvider(),
+                    googleOAuth2UserResponse.getOAuthId()
+            );
         }
 
         if (StringUtils.equals(user.getUserStatus(), UserStatus.DORMANT.getCode())) {
-            userService.reactivateOAuth2User(user.getUserNo());
+            log.info("소셜 로그인 휴면 계정 자동 활성화 - userNo: {}", user.getUserNo());
 
+            userService.reactivateOAuth2User(user.getUserNo());
             user = userRepository.selectUserByOAuthId(
-                    oAuth2UserResponse.getProvider(),
-                    oAuth2UserResponse.getOAuthId()
+                    googleOAuth2UserResponse.getProvider(),
+                    googleOAuth2UserResponse.getOAuthId()
             );
         }
 
         if (StringUtils.equals(user.getUserStatus(), UserStatus.SUSPENDED.getCode())) {
+            log.warn("소셜 로그인 정지 계정 접근 시도 - userNo: {}", user.getUserNo());
+
             throw new OAuth2AuthenticationException(
                     new OAuth2Error(UserErrorCode.USER_ALREADY_SUSPENDED.getCode()),
                     new ClimbStyleException(UserErrorCode.USER_ALREADY_SUSPENDED)
@@ -130,6 +150,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         if (user.getUserRole() == null) {
+            log.error("소셜 로그인 권한 없음 - userNo: {}", user.getUserNo());
+
             throw new OAuth2AuthenticationException(
                     new OAuth2Error(RoleErrorCode.ROLE_NOT_FOUND.getCode()),
                     new ClimbStyleException(RoleErrorCode.ROLE_NOT_FOUND)
@@ -139,10 +161,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         customAttributes.put("needNicknameSetup", false);
         customAttributes.put("userNo", user.getUserNo());
 
+        log.info("소셜 로그인 성공 - provider: {}, userNo: {}", googleOAuth2UserResponse.getProvider(), user.getUserNo());
+
         return new DefaultOAuth2User(
                 List.of(new SimpleGrantedAuthority(user.getUserRole())),
                 customAttributes,
-                "id"
+                googleOAuth2UserResponse.getNameAttributeKey()
         );
     }
 }

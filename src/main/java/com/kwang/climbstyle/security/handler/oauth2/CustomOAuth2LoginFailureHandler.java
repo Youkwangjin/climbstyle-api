@@ -31,6 +31,11 @@ public class CustomOAuth2LoginFailureHandler implements AuthenticationFailureHan
                 response.sendRedirect("/auth/login?error=suspended");
                 return;
             }
+
+            if (StringUtils.equals(code, UserErrorCode.USER_EMAIL_DUPLICATED.getCode())) {
+                response.sendRedirect("/auth/login?error=email_duplicated");
+                return;
+            }
         }
 
         response.sendRedirect("/auth/login?error=oauth2");

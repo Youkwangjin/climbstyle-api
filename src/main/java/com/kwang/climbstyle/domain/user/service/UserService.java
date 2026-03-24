@@ -17,7 +17,7 @@ import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
-import com.kwang.climbstyle.security.oauth2.OAuth2UserResponse;
+import com.kwang.climbstyle.security.oauth2.response.OAuth2UserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
@@ -232,7 +232,7 @@ public class UserService {
         OAuth2User updatedOAuth2User = new DefaultOAuth2User(
                 List.of(new SimpleGrantedAuthority(savedUser.getUserRole())),
                 updatedAttributes,
-                "id"
+                oAuth2UserResponse.getNameAttributeKey()
         );
 
         OAuth2AuthenticationToken newAuth = new OAuth2AuthenticationToken(
