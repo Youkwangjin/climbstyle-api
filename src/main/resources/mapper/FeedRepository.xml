@@ -189,7 +189,7 @@
         WHERE
             f.feed_no = #{feedNo}
         AND
-            u.user_delete_yn = 'N'
+            u.user_status = 'ACTIVE'
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedEntity" useGeneratedKeys="true"
