@@ -2,16 +2,14 @@ package com.kwang.climbstyle.domain.file.service;
 
 import com.kwang.climbstyle.code.file.FileErrorCode;
 import com.kwang.climbstyle.code.file.FileTypeCode;
-import com.kwang.climbstyle.common.util.FileUtil;
+import com.kwang.climbstyle.common.file.FileStorage;
 import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -19,22 +17,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class FileService {
 
-    @Value("${spring.profiles.active}")
-    private String profile;
-
-    @Value("${profiles.name.local}")
-    private String LOCAL;
-
-    @Value("${profiles.name.prod}")
-    private String PROD;
-
-    @Value("${file.upload.base-path:}")
-    private String baseUploadPath;
-
-    @Value("${file.access.base-url:}")
-    private String baseAccessUrl;
-
-    private final FileUtil fileUtil;
+    private final FileStorage fileStorage;
 
     public String fileUpload(MultipartFile file, FileTypeCode fileTypeCode, String storedFilename) {
         if (file.isEmpty()) {
@@ -58,47 +41,18 @@ public class FileService {
         String datePath = this.generateDatePath();
         String subPath = fileTypeCode.getSubPath() + datePath + "/";
 
-        final String uploadPath = baseUploadPath + subPath;
-
-        File directory = new File(uploadPath);
-        if (!directory.exists() && !directory.mkdirs()) {
-            throw new ClimbStyleException(FileErrorCode.FILE_UPLOAD_ERROR);
-        }
-
         try {
-            if (StringUtils.equals(profile, LOCAL)) {
-                fileUtil.upload(uploadPath, storedFilename, file);
-
-            } else {
-                throw new ClimbStyleException(FileErrorCode.PROFILE_NOT_FOUND);
-            }
-
+            return fileStorage.upload(subPath, storedFilename, file);
         } catch (IOException e) {
             throw new ClimbStyleException(FileErrorCode.FILE_UPLOAD_ERROR);
         }
-
-        return baseAccessUrl + subPath + storedFilename;
     }
 
     public void fileDelete(String fileUrl) {
         if (fileUrl == null || fileUrl.isEmpty()) {
             return;
         }
-
-        if (StringUtils.equals(profile, LOCAL)) {
-            try {
-                String relativePath = fileUrl.replace(baseAccessUrl, "");
-                int lastSlashIndex = relativePath.lastIndexOf("/");
-                String storedFilename = relativePath.substring(lastSlashIndex + 1);
-                String subPath = relativePath.substring(0, lastSlashIndex + 1);
-                String directory = baseUploadPath + subPath;
-                fileUtil.delete(directory, storedFilename);
-
-            } catch (ClimbStyleException ignored) {}
-
-        } else {
-            throw new ClimbStyleException(FileErrorCode.PROFILE_NOT_FOUND);
-        }
+        fileStorage.delete(fileUrl);
     }
 
     private String generateDatePath() {
