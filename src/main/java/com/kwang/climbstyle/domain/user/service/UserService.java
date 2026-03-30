@@ -17,7 +17,7 @@ import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
-import com.kwang.climbstyle.security.oauth2.OAuth2UserResponse;
+import com.kwang.climbstyle.security.oauth2.response.OAuth2UserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
@@ -232,7 +232,7 @@ public class UserService {
         OAuth2User updatedOAuth2User = new DefaultOAuth2User(
                 List.of(new SimpleGrantedAuthority(savedUser.getUserRole())),
                 updatedAttributes,
-                "id"
+                oAuth2UserResponse.getNameAttributeKey()
         );
 
         OAuth2AuthenticationToken newAuth = new OAuth2AuthenticationToken(
@@ -318,6 +318,19 @@ public class UserService {
     }
 
     @Transactional
+    public void reactivateOAuth2User(Integer userNo) {
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userStatus(UserStatus.ACTIVE.getCode())
+                .userUpdated(LocalDateTime.now())
+                .build();
+
+        userRepository.reactivateUser(userEntity);
+
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, FeedVisibleStatus.VISIBLE.getCode());
+    }
+
+    @Transactional
     public void changePassword(Integer userNo, UserPasswordUpdateRequest request) {
         final String userPassword = request.getUserPassword();
         final String newUserPassword = passwordEncoder.encode(request.getNewUserPassword());
@@ -327,7 +340,13 @@ public class UserService {
             throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
         }
 
+        final String userOauthProvider =  data.getUserOauthProvider();
         final String currentUserPassword = data.getUserPassword();
+
+        if (userOauthProvider != null) {
+            throw new ClimbStyleException(UserErrorCode.USER_OAUTH_NO_PASSWORD);
+        }
+
         if (!passwordEncoder.matches(userPassword, currentUserPassword)) {
             throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
         }

@@ -44,12 +44,12 @@
 .feed-grid{
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 14px;
+    gap: 6px;
 }
 
 .f-card{
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 0;
     background: #fff;
     overflow: hidden;
     display: flex;

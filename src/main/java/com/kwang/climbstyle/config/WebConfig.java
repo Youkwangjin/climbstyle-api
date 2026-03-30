@@ -1,18 +1,15 @@
 package com.kwang.climbstyle.config;
 
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@Profile("local")
 public class WebConfig implements WebMvcConfigurer {
-
-    @Value("${spring.profiles.active}")
-    private String profile;
-
-    @Value("${profiles.name.local}")
-    private String LOCAL;
 
     @Value("${file.upload.base-path:}")
     private String baseUploadPath;
@@ -21,12 +18,10 @@ public class WebConfig implements WebMvcConfigurer {
     private String baseAccessUrl;
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        if (LOCAL.equals(profile)) {
-            registry.addResourceHandler(baseAccessUrl + "**")
-                    .addResourceLocations("file:" + baseUploadPath)
-                    .setCachePeriod(3600)
-                    .resourceChain(true);
-        }
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(baseAccessUrl + "**")
+                .addResourceLocations("file:" + baseUploadPath)
+                .setCachePeriod(3600)
+                .resourceChain(true);
     }
 }
