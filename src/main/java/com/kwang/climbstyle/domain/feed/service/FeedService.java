@@ -151,7 +151,10 @@ public class FeedService {
                     .feedLikeCreated(LocalDateTime.now())
                     .build();
 
-            feedLikeRepository.insert(feedLikeEntity);
+            Integer inserted = feedLikeRepository.insert(feedLikeEntity);
+            if (inserted == null || inserted == 0) {
+                isLike = true;
+            }
         }
 
         final Integer feedLikeCount = feedLikeRepository.selectFeedLikeCountByFeedNo(feedNo);
