@@ -17,6 +17,8 @@ public interface RankingRepository {
 
     List<RankingListResponse> selectRankingList(PaginationRequest request, @Param("rankingType") String rankingType);
 
+    List<RankingListResponse> selectIndexRealtime(@Param("rankingType") String rankingType);
+
     List<RankingEntity> selectRankingByType(@Param("rankingType") String rankingType);
 
     List<RankingFeedResponse> selectRealTimeRankingFeedByLikeCount(@Param("rankingTypeLimit") Integer rankingTypeLimit);
