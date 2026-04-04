@@ -70,6 +70,43 @@
         LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
     </select>
 
+    <select id="selectIndexRealtime" resultType="com.kwang.climbstyle.domain.ranking.dto.response.RankingListResponse">
+        SELECT
+            r.ranking_no,
+            r.ranking_order,
+            r.ranking_like_count,
+            r.ranking_previous_order,
+            r.ranking_updated,
+            f.feed_no,
+            f.feed_title,
+            f.user_no,
+            u.user_nickname,
+            u.user_image_url,
+            ff.feed_file_no,
+            ff.feed_file_path
+        FROM
+            tb_ranking r
+        INNER JOIN
+            tb_feed f
+            ON r.feed_no = f.feed_no
+        INNER JOIN
+            tb_user u
+            ON f.user_no = u.user_no
+        INNER JOIN
+            tb_feed_file ff
+            ON f.feed_no = ff.feed_no
+        AND
+            ff.feed_file_sort_order = 1
+        WHERE
+            r.ranking_type = #{rankingType}
+        AND
+            f.feed_visible_yn = 'Y'
+        AND
+            f.feed_like_visible_yn = 'Y'
+        ORDER BY r.ranking_order ASC
+        LIMIT 3
+    </select>
+
     <select id="selectRankingByType" resultMap="rankingResultMap">
         SELECT
             ranking_no,
