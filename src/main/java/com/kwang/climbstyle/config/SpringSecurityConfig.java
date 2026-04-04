@@ -139,7 +139,8 @@ public class SpringSecurityConfig {
                                         ).permitAll()
 
                         .requestMatchers("/my/profile/**",
-                                         "/my/feed/**").hasAuthority("ROLE_USER")
+                                         "/my/feed/**",
+                                         "/feed/new").hasAuthority("ROLE_USER")
 
                         .requestMatchers("/api/v1/users/id/availability",
                                          "/api/v1/users/email/availability",
