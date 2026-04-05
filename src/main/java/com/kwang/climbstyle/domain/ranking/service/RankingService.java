@@ -22,6 +22,12 @@ public class RankingService {
         return rankingRepository.selectRankingList(request, rankingType);
     }
 
+    public List<RankingListResponse> getIndexRealtimeRankingList() {
+        final String rankingType = RankingType.REALTIME.getCode();
+
+        return rankingRepository.selectIndexRealtime(rankingType);
+    }
+
     public List<RankingListResponse> getWeeklyRankingList(CommonListRequest request) {
         final String rankingType = RankingType.WEEKLY.getCode();
         request.setTotalCount(rankingRepository.selectRankingListCountByRequest(request, rankingType));

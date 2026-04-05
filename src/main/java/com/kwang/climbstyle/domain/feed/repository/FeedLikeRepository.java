@@ -11,7 +11,7 @@ public interface FeedLikeRepository {
 
     Integer selectFeedLikeCountByFeedNo(@Param("feedNo") Integer feedNo);
 
-    void insert(FeedLikeEntity feedLikeEntity);
+    Integer insert(FeedLikeEntity feedLikeEntity);
 
     void delete(@Param("feedNo") Integer feedNo, @Param("userNo") Integer userNo);
 }

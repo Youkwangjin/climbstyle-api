@@ -43,6 +43,7 @@
             #{userNo},
             #{feedLikeCreated}
         )
+        ON CONFLICT (feed_no, user_no) DO NOTHING
     </insert>
 
     <delete id="delete" parameterType="Integer">

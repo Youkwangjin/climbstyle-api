@@ -1,14 +1,15 @@
 <nav class="pagination"
-     th:fragment="pagination(request, rankingList, currentUrl)"
+     th:fragment="pagination(request, feedList, currentUrl)"
      aria-label="랭킹 페이지 이동"
-     th:if="${!#lists.isEmpty(rankingList) && request.totalCount > 0}">
+     th:if="${!#lists.isEmpty(feedList) && request.totalCount > 0}">
     <div class="pagination-inner">
+
         <a th:if="${request.startPageNo > 1}"
            th:href="@{${currentUrl}(pageNo=${request.firstPageNo})}"
            class="page-btn"
            aria-label="첫 페이지">«</a>
 
-        <a th:if="${request.pageNoAsInt > request.startPageNo}"
+        <a th:if="${request.pageNoAsInt > 1}"
            th:href="@{${currentUrl}(pageNo=${request.prevPageNo})}"
            class="page-btn"
            aria-label="이전 페이지">‹</a>
@@ -23,7 +24,7 @@
             </th:block>
         </div>
 
-        <a th:if="${request.pageNoAsInt < request.endPageNo}"
+        <a th:if="${request.pageNoAsInt < request.finalPageNo}"
            th:href="@{${currentUrl}(pageNo=${request.nextPageNo})}"
            class="page-btn"
            aria-label="다음 페이지">›</a>
@@ -32,5 +33,6 @@
            th:href="@{${currentUrl}(pageNo=${request.finalPageNo})}"
            class="page-btn"
            aria-label="마지막 페이지">»</a>
+
     </div>
 </nav>
