@@ -16,13 +16,13 @@ public class NoticePageController {
 
     private final NoticeService noticeService;
 
-    @GetMapping(value = "/notice/list")
+    @GetMapping(value = "/notices")
     public String noticeList(NoticeListRequest request, Model model) {
         List<NoticeListResponse> responses = noticeService.getNoticeList(request);
 
         model.addAttribute("noticeList", responses);
         model.addAttribute("request", request);
-        model.addAttribute("currentUrl", "/notice/list");
+        model.addAttribute("currentUrl", "/notices");
 
         return "notice/list";
     }
