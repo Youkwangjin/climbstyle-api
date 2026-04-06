@@ -5,6 +5,7 @@ import com.kwang.climbstyle.domain.menu.service.MenuService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -36,16 +37,21 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
 
         final Integer userNo = oAuth2User.getAttribute("userNo");
 
-        List<UserMenuListResponse> menuList = menuService.getUserMenuList(userNo);
-        request.getSession().setAttribute("userMenuList", menuList);
-
         RequestCache requestCache = new HttpSessionRequestCache();
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         String redirectUrl = "/";
         if (savedRequest != null) {
             redirectUrl = savedRequest.getRedirectUrl();
-            requestCache.removeRequest(request, response);
         }
+
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
+            oldSession.invalidate();
+        }
+
+        HttpSession newSession = request.getSession(true);
+        List<UserMenuListResponse> menuList = menuService.getUserMenuList(userNo);
+        newSession.setAttribute("userMenuList", menuList);
 
         response.sendRedirect(request.getContextPath() + redirectUrl);
     }

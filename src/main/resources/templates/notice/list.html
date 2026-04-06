@@ -18,16 +18,16 @@
             <p>ClimbStyle의 새로운 소식과 업데이트를 확인하세요.</p>
         </div>
         <div class="filter-tabs">
-            <a th:href="@{/notice/list(pageNo=1, searchType=${request.searchType}, searchName=${request.searchName})}"
+            <a th:href="@{/notices(pageNo=1, searchType=${request.searchType}, searchName=${request.searchName})}"
                th:classappend="${request.noticeCategory == null or request.noticeCategory == ''}? 'is-active'"
                class="tab">전체</a>
-            <a th:href="@{/notice/list(pageNo=1, noticeCategory='0', searchType=${request.searchType}, searchName=${request.searchName})}"
+            <a th:href="@{/notices(pageNo=1, noticeCategory='0', searchType=${request.searchType}, searchName=${request.searchName})}"
                th:classappend="${request.noticeCategory == '0'} ? 'is-active'"
                class="tab">공지</a>
-            <a th:href="@{/notice/list(pageNo=1, noticeCategory='1', searchType=${request.searchType}, searchName=${request.searchName})}"
+            <a th:href="@{/notices(pageNo=1, noticeCategory='1', searchType=${request.searchType}, searchName=${request.searchName})}"
                th:classappend="${request.noticeCategory == '1'} ? 'is-active'"
                class="tab">업데이트</a>
-            <a th:href="@{/notice/list(pageNo=1, noticeCategory='2', searchType=${request.searchType}, searchName=${request.searchName})}"
+            <a th:href="@{/notices(pageNo=1, noticeCategory='2', searchType=${request.searchType}, searchName=${request.searchName})}"
                th:classappend="${request.noticeCategory == '2'} ? 'is-active'"
                class="tab">이벤트</a>
         </div>
@@ -39,7 +39,9 @@
                         <th:block th:replace="~{fragments/common/icons :: search}" />
                     </span>
                     <label>
-                        <input class="search-input" type="text" id="searchName" th:value="${request.searchName}" placeholder="검색어를 입력하세요" />
+                        <input class="search-input" type="text" id="searchName" th:value="${request.searchName}"
+                               placeholder="검색어를 입력하세요"
+                               onkeydown="if(event.key === 'Enter') searchNotice()"/>
                     </label>
                 </div>
                 <button class="search-btn" type="button" onclick="searchNotice()">검색</button>
@@ -100,7 +102,16 @@
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/logout.js}"></script>
 <script>
-    function searchNotice() {}
+    function searchNotice(pageNo) {
+        const params = new URLSearchParams({
+            pageNo: pageNo ?? 1,
+            noticeCategory: "[[${request.noticeCategory}]]",
+            searchType: "[[${request.searchType}]]",
+            searchName: document.getElementById("searchName").value.trim()
+        });
+
+        location.href = "/notices?" + params.toString();
+    }
 </script>
 </body>
 </html>
