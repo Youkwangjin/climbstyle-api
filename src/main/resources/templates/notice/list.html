@@ -39,7 +39,9 @@
                         <th:block th:replace="~{fragments/common/icons :: search}" />
                     </span>
                     <label>
-                        <input class="search-input" type="text" id="searchName" th:value="${request.searchName}" placeholder="검색어를 입력하세요" />
+                        <input class="search-input" type="text" id="searchName" th:value="${request.searchName}"
+                               placeholder="검색어를 입력하세요"
+                               onkeydown="if(event.key === 'Enter') searchNotice()"/>
                     </label>
                 </div>
                 <button class="search-btn" type="button" onclick="searchNotice()">검색</button>
@@ -100,7 +102,16 @@
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/logout.js}"></script>
 <script>
-    function searchNotice() {}
+    function searchNotice(pageNo) {
+        const params = new URLSearchParams({
+            pageNo: pageNo ?? 1,
+            noticeCategory: "[[${request.noticeCategory}]]",
+            searchType: "[[${request.searchType}]]",
+            searchName: document.getElementById("searchName").value.trim()
+        });
+
+        location.href = "/notices?" + params.toString();
+    }
 </script>
 </body>
 </html>
