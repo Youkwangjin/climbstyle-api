@@ -10,6 +10,7 @@ import com.kwang.climbstyle.security.user.CustomUserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -39,15 +40,21 @@ public class CustomUserLoginSuccessHandler implements AuthenticationSuccessHandl
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         List<UserMenuListResponse> menuList = menuService.getUserMenuList(userDetails.getUserNo());
-        request.getSession().setAttribute("userMenuList", menuList);
 
         RequestCache requestCache = new HttpSessionRequestCache();
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         String redirectUrl = "/";
         if (savedRequest != null) {
             redirectUrl = savedRequest.getRedirectUrl();
-            requestCache.removeRequest(request, response);
         }
+
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
+            oldSession.invalidate();
+        }
+
+        HttpSession newSession = request.getSession(true);
+        newSession.setAttribute("userMenuList", menuList);
 
         Map<String, Object> data = new HashMap<>();
         data.put("redirectUrl", request.getContextPath() + redirectUrl);
