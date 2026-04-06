@@ -11,6 +11,7 @@ import com.kwang.climbstyle.security.admin.CustomAdminDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -40,8 +41,14 @@ public class CustomAdminLoginSuccessHandler implements AuthenticationSuccessHand
         CustomAdminDetails customAdminDetails = (CustomAdminDetails) authentication.getPrincipal();
         adminHistoryService.saveSuccess(customAdminDetails.adminNo(), request);
 
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
+            oldSession.invalidate();
+        }
+
+        HttpSession newSession = request.getSession(true);
         List<AdminMenuListResponse> menuList = menuService.getAdminMenuList(customAdminDetails.adminNo());
-        request.getSession().setAttribute("menuList", menuList);
+        newSession.setAttribute("menuList", menuList);
 
         final String redirectUrl = "/admin";
 
