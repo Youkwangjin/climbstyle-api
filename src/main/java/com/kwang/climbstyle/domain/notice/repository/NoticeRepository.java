@@ -1,6 +1,7 @@
 package com.kwang.climbstyle.domain.notice.repository;
 
 import com.kwang.climbstyle.common.protocal.PaginationRequest;
+import com.kwang.climbstyle.domain.admin.dto.response.AdminNoticeListResponse;
 import com.kwang.climbstyle.domain.notice.dto.response.NoticeListResponse;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,4 +13,6 @@ public interface NoticeRepository {
     Integer selectNoticeListCountByRequest(PaginationRequest paginationRequest);
 
     List<NoticeListResponse> selectNoticeList(PaginationRequest paginationRequest);
+
+    List<AdminNoticeListResponse> selectRecentNoticeList();
 }

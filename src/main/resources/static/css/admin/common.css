@@ -588,3 +588,9 @@ tbody td {
 }
 
 .page-num.is-active:hover { background: var(--admin-brand-dark) }
+
+.user-profile {
+    background: var(--admin-card);
+    color: var(--admin-brand);
+    border-color: var(--admin-line);
+}

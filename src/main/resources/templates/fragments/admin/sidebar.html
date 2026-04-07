@@ -1,0 +1,15 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<aside th:fragment="sidebar" class="sidebar">
+    <th:block th:each="menu : ${menuList}">
+        <div class="sidebar-label" th:text="${menu.menuName}"></div>
+        <ul class="sidebar-menu">
+            <li th:each="child : ${menu.children}">
+                <a th:href="${child.menuUrl}"
+                   th:text="${child.menuName}"
+                   th:classappend="${currentUrl == child.menuUrl} ? ' is-active'">
+                </a>
+            </li>
+        </ul>
+    </th:block>
+</aside>
+</html>

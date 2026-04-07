@@ -50,7 +50,7 @@ public class CustomAdminLoginSuccessHandler implements AuthenticationSuccessHand
         List<AdminMenuListResponse> menuList = menuService.getAdminMenuList(customAdminDetails.adminNo());
         newSession.setAttribute("menuList", menuList);
 
-        final String redirectUrl = "/admin";
+        final String redirectUrl = "/admin/index";
 
         Map<String, Object> data = new HashMap<>();
         data.put("redirectUrl", request.getContextPath() + redirectUrl);
