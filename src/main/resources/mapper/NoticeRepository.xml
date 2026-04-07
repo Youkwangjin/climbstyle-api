@@ -48,4 +48,20 @@
             notice_created desc
         LIMIT #{pageSize} OFFSET #{startRowNum}
     </select>
+
+    <select id="selectRecentNoticeList"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminNoticeListResponse">
+        SELECT
+            n.notice_no,
+            n.notice_category,
+            n.notice_title,
+            n.notice_pin_yn,
+            n.notice_visible_yn,
+            n.notice_created
+        FROM
+            tb_notice n
+        ORDER BY
+            n.notice_created DESC
+        LIMIT 5
+    </select>
 </mapper>

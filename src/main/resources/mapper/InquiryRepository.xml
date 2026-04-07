@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.inquiry.repository.InquiryRepository">
+    <select id="selectPendingInquiryList"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminInquiryListResponse">
+        SELECT
+            i.inquiry_no,
+            i.inquiry_title,
+            i.inquiry_status,
+            i.inquiry_created,
+            u.user_no,
+            u.user_nickname
+        FROM
+            tb_inquiry i
+        INNER JOIN
+            tb_user u
+            ON i.user_no = u.user_no
+        WHERE
+            i.inquiry_status = 'PENDING'
+        ORDER BY
+            i.inquiry_created DESC
+        LIMIT 5
+    </select>
+</mapper>
