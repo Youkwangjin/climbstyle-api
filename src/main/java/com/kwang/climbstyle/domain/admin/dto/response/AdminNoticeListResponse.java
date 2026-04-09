@@ -19,9 +19,15 @@ public class AdminNoticeListResponse {
 
     private String noticeContent;
 
+    private Integer noticeHit;
+
+    private Integer noticeFileCnt;
+
     private String noticePinYn;
 
     private String noticeVisibleYn;
 
     private LocalDateTime noticeCreated;
+
+    private Boolean noticeNew;
 }

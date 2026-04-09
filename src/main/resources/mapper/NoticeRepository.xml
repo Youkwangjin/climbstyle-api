@@ -22,15 +22,34 @@
         </if>
     </select>
 
+    <select id="selectAdminNoticeListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="Integer">
+        SELECT
+            COUNT(n.notice_no)
+        FROM
+            tb_notice n
+        <where>
+            <if test="noticeCategory != null and noticeCategory != ''">
+                AND n.notice_category = #{noticeCategory}
+            </if>
+            <if test="searchType == 'noticeTitle' and searchName != null and searchName.trim() !=''">
+                AND n.notice_title LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'noticeContentText' and searchName != null and searchName.trim() !=''">
+                AND n.notice_content_text LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
     <select id="selectNoticeList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
             resultType="com.kwang.climbstyle.domain.notice.dto.response.NoticeListResponse">
         SELECT
             n.notice_no,
             n.notice_category,
             n.notice_title,
-            n.notice_created,
             n.notice_hit,
-            n.notice_file_cnt
+            n.notice_file_cnt,
+            n.notice_created
         FROM
             tb_notice n
         WHERE
@@ -45,7 +64,36 @@
             AND n.notice_content_text LIKE CONCAT('%', #{searchName}, '%')
         </if>
         ORDER BY
-            notice_created desc
+            n.notice_created desc
+        LIMIT #{pageSize} OFFSET #{startRowNum}
+    </select>
+
+    <select id="selectAdminNoticeList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminNoticeListResponse">
+        SELECT
+            n.notice_no,
+            n.notice_category,
+            n.notice_title,
+            n.notice_hit,
+            n.notice_file_cnt,
+            n.notice_pin_yn,
+            n.notice_visible_yn,
+            n.notice_created
+        FROM
+            tb_notice n
+        <where>
+            <if test="noticeCategory != null and noticeCategory != ''">
+                AND n.notice_category = #{noticeCategory}
+            </if>
+            <if test="searchType == 'noticeTitle' and searchName != null and searchName.trim() !=''">
+                AND n.notice_title LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'noticeContentText' and searchName != null and searchName.trim() !=''">
+                AND n.notice_content_text LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+        ORDER BY
+            n.notice_created desc
         LIMIT #{pageSize} OFFSET #{startRowNum}
     </select>
 
