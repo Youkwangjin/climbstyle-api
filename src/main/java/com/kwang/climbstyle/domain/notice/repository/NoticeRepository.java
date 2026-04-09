@@ -12,7 +12,11 @@ public interface NoticeRepository {
 
     Integer selectNoticeListCountByRequest(PaginationRequest paginationRequest);
 
+    Integer selectAdminNoticeListCountByRequest(PaginationRequest paginationRequest);
+
     List<NoticeListResponse> selectNoticeList(PaginationRequest paginationRequest);
+
+    List<AdminNoticeListResponse> selectAdminNoticeList(PaginationRequest paginationRequest);
 
     List<AdminNoticeListResponse> selectRecentNoticeList();
 }
