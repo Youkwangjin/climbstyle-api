@@ -247,6 +247,27 @@ const Validator = {
         return this.rules.maxLength(feedCommentContent, "댓글", 500);
     },
 
+    notice() {
+        const noticeCategory = document.getElementById("noticeCategory").value.trim();
+        const noticeTitle = document.getElementById("noticeTitle").value.trim();
+        const noticeContent = quill.getText();
+
+        if (!noticeCategory) {
+            alert("카테고리를 선택해주세요.");
+            return false;
+        }
+
+        if (!this.rules.required(noticeTitle, "제목")) return false;
+        if (!this.rules.maxLength(noticeTitle, "제목", 100)) return false;
+
+        if (!noticeContent || noticeContent === "") {
+            alert("내용을 입력해주세요.");
+            return false;
+        }
+
+        return true;
+    },
+
     checkField(fieldId, fieldName) {
         const value = document.getElementById(fieldId)?.value.trim();
 
