@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.notice.repository.NoticeFileRepository">
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.notice.entity.NoticeFileEntity" useGeneratedKeys="true">
+        INSERT INTO tb_notice_file (
+            notice_no,
+            notice_file_original_name,
+            notice_file_stored_name,
+            notice_file_path,
+            notice_file_extns_nm,
+            notice_file_size,
+            notice_file_created
+        ) VALUES (
+            #{noticeNo},
+            #{noticeFileOriginalName},
+            #{noticeFileStoredName},
+            #{noticeFilePath},
+            #{noticeFileExtnsNm},
+            #{noticeFileSize},
+            #{noticeFileCreated}
+        )
+    </insert>
+</mapper>

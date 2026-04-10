@@ -112,4 +112,26 @@
             n.notice_created DESC
         LIMIT 5
     </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.notice.entity.NoticeEntity" useGeneratedKeys="true" keyProperty="noticeNo">
+        INSERT INTO tb_notice (
+            admin_no,
+            notice_category,
+            notice_title,
+            notice_content,
+            notice_content_text,
+            notice_pin_yn,
+            notice_visible_yn,
+            notice_created
+        ) VALUES (
+            #{adminNo},
+            #{noticeCategory},
+            #{noticeTitle},
+            #{noticeContent},
+            #{noticeContentText},
+            #{noticePinYn},
+            #{noticeVisibleYn},
+            #{noticeCreated}
+        )
+    </insert>
 </mapper>
