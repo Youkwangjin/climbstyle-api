@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.common.util;
 
+import com.kwang.climbstyle.security.admin.CustomAdminDetails;
 import com.kwang.climbstyle.security.user.CustomUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -19,6 +20,16 @@ public class SecurityUtil {
 
         if (principal instanceof OAuth2User oAuth2User) {
             return oAuth2User.getAttribute("userNo");
+        }
+
+        return null;
+    }
+
+    public static Integer getCurrentAdminNo() {
+        Object principal = getPrincipal();
+
+        if (principal instanceof CustomAdminDetails adminDetails) {
+            return adminDetails.adminNo();
         }
 
         return null;

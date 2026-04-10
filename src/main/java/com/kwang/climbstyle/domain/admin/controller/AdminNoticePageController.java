@@ -28,7 +28,7 @@ public class AdminNoticePageController {
     }
 
     @GetMapping(value = "/admin/notices/new")
-    public String newNotice(Model model) {
+    public String newNotice() {
         return "admin/notice/new";
     }
 }
