@@ -3,6 +3,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.kwang.climbstyle.domain.notice.repository.NoticeRepository">
+    <resultMap id="noticeResultMap"                     type="com.kwang.climbstyle.domain.notice.dto.response.NoticeDetailResponse">
+        <id property="noticeNo"                         column="notice_no"/>
+        <result property="noticeCategory"               column="notice_category"/>
+        <result property="noticeTitle"                  column="notice_title"/>
+        <result property="noticeContent"                column="notice_content"/>
+        <result property="noticeHit"                    column="notice_hit"/>
+        <result property="noticeCreated"                column="notice_created"/>
+        <collection property="noticeFiles"              ofType="com.kwang.climbstyle.domain.notice.dto.response.NoticeFileResponse">
+            <id property="noticeFileNo"                 column="notice_file_no"/>
+            <result property="noticeFileOriginalName"   column="notice_file_original_name"/>
+            <result property="noticeFileStoredName"     column="notice_file_stored_name"/>
+            <result property="noticeFilePath"           column="notice_file_path"/>
+            <result property="noticeFileExtnsNm"        column="notice_file_extns_nm"/>
+            <result property="noticeFileSize"           column="notice_file_size"/>
+        </collection>
+    </resultMap>
+
     <select id="selectNoticeListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
             resultType="Integer">
         SELECT
@@ -113,6 +130,69 @@
         LIMIT 5
     </select>
 
+    <select id="selectNoticeByNo" parameterType="Integer" resultMap="noticeResultMap">
+        SELECT
+            n.notice_no,
+            n.notice_category,
+            n.notice_title,
+            n.notice_content,
+            n.notice_hit,
+            n.notice_created,
+            nf.notice_file_no,
+            nf.notice_file_original_name,
+            nf.notice_file_stored_name,
+            nf.notice_file_path,
+            nf.notice_file_extns_nm,
+            nf.notice_file_size
+        FROM
+            tb_notice n
+        LEFT JOIN
+            tb_notice_file nf
+            ON n.notice_no = nf.notice_no
+        WHERE
+            n.notice_no = #{noticeNo}
+        AND
+            n.notice_visible_yn = 'Y'
+    </select>
+
+    <select id="selectPrevNotice" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.notice.dto.response.NoticeNavResponse">
+        <![CDATA[
+            SELECT
+                notice_no,
+                notice_title,
+                notice_created
+            FROM
+                tb_notice
+            WHERE
+                notice_no < #{noticeNo}
+            AND
+                notice_visible_yn = 'Y'
+            ORDER BY
+                notice_no DESC
+            LIMIT 1
+        ]]>
+    </select>
+
+    <select id="selectNextNotice" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.notice.dto.response.NoticeNavResponse">
+        <![CDATA[
+            SELECT
+                notice_no,
+                notice_title,
+                notice_created
+            FROM
+                tb_notice
+            WHERE
+                notice_no > #{noticeNo}
+            AND
+                notice_visible_yn = 'Y'
+            ORDER BY
+                notice_no ASC
+            LIMIT 1
+        ]]>
+</select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.notice.entity.NoticeEntity" useGeneratedKeys="true" keyProperty="noticeNo">
         INSERT INTO tb_notice (
             admin_no,
@@ -134,4 +214,13 @@
             #{noticeCreated}
         )
     </insert>
+
+    <update id="updateNoticeHit" parameterType="Integer">
+        UPDATE
+            tb_notice
+        SET
+            notice_hit = notice_hit + 1
+        WHERE
+            notice_no = #{noticeNo}
+    </update>
 </mapper>

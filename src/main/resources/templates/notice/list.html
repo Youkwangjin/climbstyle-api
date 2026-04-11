@@ -65,9 +65,9 @@
                 </tr>
                 <tr th:each="notice, iterStat : ${noticeList}"
                     th:classappend="${notice.noticePinYn == 'Y'} ? 'row-pinned'"
-                    th:onclick="|location.href='/notice/detail/' + ${notice.noticeNo}|">
+                    th:onclick="|noticeDetail(${notice.noticeNo})|">
 
-                    <td class="td-num">
+                <td class="td-num">
                         <span th:if="${notice.noticePinYn == 'Y'}" class="badge badge-pin">고정</span>
                         <span th:unless="${notice.noticePinYn == 'Y'}"
                               th:text="${request.totalCount - request.startRowNum - iterStat.index}"></span>
@@ -80,7 +80,7 @@
                         </th:block>
                     </td>
                     <td class="td-title">
-                        <span th:if="${notice.isNew}" class="badge badge-new">NEW</span>
+                        <span th:if="${notice.noticeNew}" class="badge badge-new">NEW</span>
                         <span class="title-text" th:text="${notice.noticeTitle}"></span>
                     </td>
                     <td class="td-date" th:text="${#temporals.format(notice.noticeCreated, 'yyyy.MM.dd')}"></td>
@@ -111,6 +111,17 @@
         });
 
         location.href = "/notices?" + params.toString();
+    }
+
+    function noticeDetail(noticeNo) {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]",
+            noticeCategory: "[[${request.noticeCategory}]]",
+            searchType: "[[${request.searchType}]]",
+            searchName: "[[${request.searchName}]]"
+        });
+
+        location.href = "/notices/" + noticeNo + "?" + params.toString();
     }
 </script>
 </body>
