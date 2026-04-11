@@ -1,18 +1,20 @@
 package com.kwang.climbstyle.domain.notice.service;
 
-import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
+import com.kwang.climbstyle.code.notice.NoticeErrorCode;
 import com.kwang.climbstyle.code.notice.NoticeVisibleStatus;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.admin.dto.response.AdminNoticeListResponse;
 import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.notice.dto.request.NoticeCreateRequest;
 import com.kwang.climbstyle.domain.notice.dto.request.NoticeListRequest;
+import com.kwang.climbstyle.domain.notice.dto.response.NoticeDetailResponse;
 import com.kwang.climbstyle.domain.notice.dto.response.NoticeListResponse;
 import com.kwang.climbstyle.domain.notice.entity.NoticeEntity;
 import com.kwang.climbstyle.domain.notice.entity.NoticeFileEntity;
 import com.kwang.climbstyle.domain.notice.repository.NoticeFileRepository;
 import com.kwang.climbstyle.domain.notice.repository.NoticeRepository;
+import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.jsoup.Jsoup;
@@ -58,6 +60,20 @@ public class NoticeService {
         }
 
         return adminNoticeList;
+    }
+
+    public NoticeDetailResponse getNoticeDetail(Integer noticeNo) {
+        NoticeDetailResponse notice = noticeRepository.selectNoticeByNo(noticeNo);
+        if (notice == null) {
+            throw new ClimbStyleException(NoticeErrorCode.NOTICE_NOT_FOUND);
+        }
+
+        notice.setPrevNotice(noticeRepository.selectPrevNotice(noticeNo));
+        notice.setNextNotice(noticeRepository.selectNextNotice(noticeNo));
+
+        noticeRepository.updateNoticeHit(noticeNo);
+
+        return notice;
     }
 
     @Transactional
