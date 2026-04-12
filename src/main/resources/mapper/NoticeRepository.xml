@@ -3,12 +3,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.kwang.climbstyle.domain.notice.repository.NoticeRepository">
-    <resultMap id="noticeResultMap"                     type="com.kwang.climbstyle.domain.notice.dto.response.NoticeDetailResponse">
+    <resultMap id="noticeDetailResultMap"               type="com.kwang.climbstyle.domain.notice.dto.response.NoticeDetailResponse">
         <id property="noticeNo"                         column="notice_no"/>
         <result property="noticeCategory"               column="notice_category"/>
         <result property="noticeTitle"                  column="notice_title"/>
         <result property="noticeContent"                column="notice_content"/>
         <result property="noticeHit"                    column="notice_hit"/>
+        <result property="noticePinYn"                  column="notice_pin_yn"/>
+        <result property="noticeVisibleYn"              column="notice_visible_yn"/>
         <result property="noticeCreated"                column="notice_created"/>
         <collection property="noticeFiles"              ofType="com.kwang.climbstyle.domain.notice.dto.response.NoticeFileResponse">
             <id property="noticeFileNo"                 column="notice_file_no"/>
@@ -65,8 +67,14 @@
             n.notice_category,
             n.notice_title,
             n.notice_hit,
-            n.notice_file_cnt,
-            n.notice_created
+            n.notice_created,
+            EXISTS (
+                SELECT 1
+                FROM
+                    tb_notice_file nf
+                WHERE
+                    nf.notice_no = n.notice_no
+            ) AS has_file
         FROM
             tb_notice n
         WHERE
@@ -95,7 +103,14 @@
             n.notice_file_cnt,
             n.notice_pin_yn,
             n.notice_visible_yn,
-            n.notice_created
+            n.notice_created,
+            EXISTS (
+                SELECT 1
+                FROM
+                    tb_notice_file nf
+                WHERE
+                    nf.notice_no = n.notice_no
+            ) AS has_file
         FROM
             tb_notice n
         <where>
@@ -130,13 +145,15 @@
         LIMIT 5
     </select>
 
-    <select id="selectNoticeByNo" parameterType="Integer" resultMap="noticeResultMap">
+    <select id="selectNoticeByNo" parameterType="Integer" resultMap="noticeDetailResultMap">
         SELECT
             n.notice_no,
             n.notice_category,
             n.notice_title,
             n.notice_content,
             n.notice_hit,
+            n.notice_pin_yn,
+            n.notice_visible_yn,
             n.notice_created,
             nf.notice_file_no,
             nf.notice_file_original_name,
@@ -200,6 +217,7 @@
             notice_title,
             notice_content,
             notice_content_text,
+            notice_hit,
             notice_pin_yn,
             notice_visible_yn,
             notice_created
@@ -209,6 +227,7 @@
             #{noticeTitle},
             #{noticeContent},
             #{noticeContentText},
+            #{noticeHit},
             #{noticePinYn},
             #{noticeVisibleYn},
             #{noticeCreated}

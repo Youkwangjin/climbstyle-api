@@ -30,4 +30,6 @@ public class AdminNoticeListResponse {
     private LocalDateTime noticeCreated;
 
     private Boolean noticeNew;
+
+    private Boolean hasFile;
 }
