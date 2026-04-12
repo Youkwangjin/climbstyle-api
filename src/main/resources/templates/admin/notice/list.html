@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>공지사항 관리 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>공지사항</span></div>
+                <h1>공지사항 관리</h1>
+            </div>
+            <a href="/admin/notices/new" class="btn btn-primary">공지 작성</a>
+        </div>
+        <div class="stats-row">
+            <div class="stat-chip">
+                <span class="num blue" th:text="${#numbers.formatInteger(request.totalCount, 0, 'COMMA')}">0</span>
+                <span class="stat-label">전체 공지</span>
+            </div>
+        </div>
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="search-wrap">
+                    <span class="search-icon">
+                        <th:block th:replace="~{fragments/common/icons :: search}" />
+                    </span>
+                    <label>
+                        <input class="search-input" type="text" id="searchName"
+                               th:value="${request.searchName}"
+                               placeholder="제목, 내용 검색"
+                               onkeydown="if(event.key === 'Enter') searchNotice()"/>
+                    </label>
+                </div>
+                <label>
+                    <select class="filter-select" id="noticeCategory" onchange="searchNotice()">
+                        <option value="" th:selected="${request.noticeCategory == null or request.noticeCategory == ''}">전체 카테고리</option>
+                        <option value="0" th:selected="${request.noticeCategory == '0'}">공지</option>
+                        <option value="1" th:selected="${request.noticeCategory == '1'}">업데이트</option>
+                        <option value="2" th:selected="${request.noticeCategory == '2'}">이벤트</option>
+                    </select>
+                </label>
+                <label>
+                    <select class="filter-select" id="searchType">
+                        <option value="noticeTitle"       th:selected="${request.searchType == 'noticeTitle'}">제목</option>
+                        <option value="noticeContentText" th:selected="${request.searchType == 'noticeContentText'}">내용</option>
+                    </select>
+                </label>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn btn-sm" type="button" onclick="resetSearch()">초기화</button>
+                <button class="btn btn-sm btn-primary" type="button" onclick="searchNotice()">검색</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th class="th-num">번호</th>
+                    <th class="th-category">카테고리</th>
+                    <th>제목</th>
+                    <th class="th-date">작성일</th>
+                    <th class="th-views">조회</th>
+                    <th class="th-file">첨부</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(noticeList)}">
+                    <td colspan="6" style="text-align:center; padding:40px; color:var(--admin-muted);">
+                        등록된 공지사항이 없습니다.
+                    </td>
+                </tr>
+                <tr th:each="notice, iterStat : ${noticeList}"
+                    th:classappend="${notice.noticePinYn == 'Y'} ? 'row-pinned'"
+                    th:onclick="|noticeDetail(${notice.noticeNo})|" style="cursor:pointer;">
+                    <td class="td-num">
+                        <span th:if="${notice.noticePinYn == 'Y'}">—</span>
+                        <span th:unless="${notice.noticePinYn == 'Y'}"
+                              th:text="${request.totalCount - request.startRowNum - iterStat.index}"></span>
+                    </td>
+                    <td class="td-category">
+                        <th:block th:switch="${notice.noticeCategory}">
+                            <span th:case="'0'" class="badge badge-notice">공지</span>
+                            <span th:case="'1'" class="badge badge-update">업데이트</span>
+                            <span th:case="'2'" class="badge badge-event">이벤트</span>
+                        </th:block>
+                    </td>
+                    <td class="td-title">
+                         <span th:text="${notice.noticeTitle}"
+                               th:classappend="${notice.noticeVisibleYn == 'N'} ? 'td-hidden'">
+                         </span>
+                        <span th:if="${notice.noticeVisibleYn == 'N'}" class="badge badge-hidden">숨김</span>
+                    </td>
+                    <td class="td-date" th:text="${#temporals.format(notice.noticeCreated, 'yyyy.MM.dd')}"></td>
+                    <td class="td-views" th:text="${#numbers.formatInteger(notice.noticeHit, 0, 'COMMA')}"></td>
+                    <td class="td-file">
+                        <span th:if="${notice.hasFile}" th:insert="~{fragments/common/icons :: file}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <th:block th:replace="~{fragments/notice/pagination :: pagination(
+            ${request},
+            ${noticeList},
+            ${currentUrl}
+        )}"/>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script>
+    function searchNotice() {
+        const params = new URLSearchParams({
+            pageNo: String(1),
+            noticeCategory: document.getElementById("noticeCategory").value,
+            searchType: document.getElementById("searchType").value,
+            searchName: document.getElementById("searchName").value.trim()
+        });
+        location.href = "/admin/notices?" + params.toString();
+    }
+
+    function noticeDetail(noticeNo) {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]",
+            noticeCategory: "[[${request.noticeCategory}]]",
+            searchType: "[[${request.searchType}]]",
+            searchName: "[[${request.searchName}]]"
+        });
+
+        location.href = "/admin/notices/" + noticeNo + "?" + params.toString();
+    }
+
+    function resetSearch() {
+        location.href = "/admin/notices";
+    }
+</script>
+</body>
+</html>

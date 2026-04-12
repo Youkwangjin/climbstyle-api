@@ -13,12 +13,13 @@
                 </li>
             </ul>
         </nav>
-        <div class="cta" sec:authorize="isAnonymous()">
+        <div class="cta" sec:authorize="isAnonymous() or hasRole('ADMIN')">
             <a th:each="menu : ${ctaMenus}" th:text="${menu.menuName}" th:href="@{${menu.menuUrl}}" class="btn"
                th:classappend="${menu.name() == 'REGISTER'} ? ' btn-primary' : ''">
             </a>
         </div>
-        <div class="user-menu" sec:authorize="isAuthenticated()">
+
+        <div class="user-menu" sec:authorize="hasRole('USER')">
             <button type="button" class="user-trigger">
                 <div class="user-profile">
                     <img th:if="${!#strings.isEmpty(currentUser?.userImgUrl)}" th:src="${currentUser?.userImgUrl}" alt="프로필 이미지">

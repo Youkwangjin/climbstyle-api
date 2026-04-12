@@ -1,6 +1,7 @@
 package com.kwang.climbstyle.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kwang.climbstyle.code.role.RoleCode;
 import com.kwang.climbstyle.security.admin.CustomAdminDetailsService;
 import com.kwang.climbstyle.security.filter.CustomAdminJsonAuthenticationFilter;
 import com.kwang.climbstyle.security.filter.CustomUserJsonAuthenticationFilter;
@@ -135,12 +136,12 @@ public class SpringSecurityConfig {
                                         "/rankings/realtime/*",
                                         "/rankings/weekly/*",
                                         "/rankings/monthly/*",
-                                        "/notice/list/*"
+                                        "/notices*"
                                         ).permitAll()
 
                         .requestMatchers("/my/profile/**",
                                          "/my/feed/**",
-                                         "/feed/new").hasAuthority("ROLE_USER")
+                                         "/feed/new").hasAuthority(RoleCode.ROLE_USER.getCode())
 
                         .requestMatchers("/api/v1/users/id/availability",
                                          "/api/v1/users/email/availability",
@@ -148,21 +149,25 @@ public class SpringSecurityConfig {
                                          "/api/v1/login",
                                          "/api/v1/admin/login").permitAll()
 
-                        .requestMatchers("/auth/oauth2/profile").hasAuthority("ROLE_TEMP_USER")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users/oauth2").hasAuthority("ROLE_TEMP_USER")
+                        .requestMatchers("/auth/oauth2/profile").hasAuthority(RoleCode.ROLE_TEMP_USER.getCode())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/oauth2").hasAuthority(RoleCode.ROLE_TEMP_USER.getCode())
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/users/reactivate").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/feeds").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/feeds/*").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/feeds").hasAuthority("ROLE_USER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/feeds/*").hasAuthority("ROLE_USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/feeds/*").hasAuthority("ROLE_USER")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/feeds/*/like").hasAuthority("ROLE_USER")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/feeds/*/comments").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/feeds").hasAuthority(RoleCode.ROLE_USER.getCode())
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/feeds/*").hasAuthority(RoleCode.ROLE_USER.getCode())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/feeds/*").hasAuthority(RoleCode.ROLE_USER.getCode())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/feeds/*/like").hasAuthority(RoleCode.ROLE_USER.getCode())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/feeds/*/comments").hasAuthority(RoleCode.ROLE_USER.getCode())
 
-                        .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/v1/users/**").hasAuthority(RoleCode.ROLE_USER.getCode())
+
+                        .requestMatchers("/admin/**").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/notices").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
 
                         .anyRequest().permitAll()
                 );

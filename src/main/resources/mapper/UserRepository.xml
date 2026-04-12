@@ -146,6 +146,22 @@
             user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
     </select>
 
+    <select id="selectRecentUserList"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse">
+        SELECT
+            user_nickname,
+            user_email,
+            user_image_url,
+            user_created
+        FROM
+            tb_user
+        WHERE
+            user_status = 'ACTIVE'
+        ORDER BY
+            user_created DESC
+        LIMIT 5
+    </select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity" useGeneratedKeys="true"
             keyProperty="userNo">
         INSERT INTO tb_user (

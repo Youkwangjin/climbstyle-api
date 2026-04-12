@@ -17,6 +17,8 @@ public class NoticeEntity {
 
     private Integer adminNo;
 
+    private String noticeCategory;
+
     private String noticeTitle;
 
     private String noticeContent;

@@ -1,8 +1,11 @@
 package com.kwang.climbstyle.domain.user.repository;
 
+import com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface UserRepository {
@@ -19,6 +22,8 @@ public interface UserRepository {
 
     UserEntity selectUserByOAuthId(@Param("userOauthProvider") String userOauthProvider,
                                    @Param("userOauthId") String userOauthId);
+
+    List<AdminUserListResponse> selectRecentUserList();
 
     void insert(UserEntity userEntity);
 

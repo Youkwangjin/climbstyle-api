@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>공지사항 작성 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/notice/new.css}">
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <h1>공지사항 작성</h1>
+            </div>
+            <button type="button" class="btn btn-sm" onclick="noticeList()">목록</button>
+        </div>
+        <form class="notice-form">
+            <div class="form-row">
+                <label class="form-label" for="noticeCategory">카테고리</label>
+                <div class="select-wrap">
+                    <select class="form-select" id="noticeCategory">
+                        <option value="">선택하세요</option>
+                        <option value="0">공지</option>
+                        <option value="1">업데이트</option>
+                        <option value="2">이벤트</option>
+                    </select>
+                    <span class="select-arrow">
+                        <th:block th:replace="~{fragments/common/icons :: chevron-down}" />
+                    </span>
+                </div>
+            </div>
+            <div class="form-row">
+                <label class="form-label" for="noticeTitle">제목</label>
+                <input class="form-input" type="text" id="noticeTitle" placeholder="제목을 입력하세요" maxlength="100" />
+                <span class="form-hint">최대 100자</span>
+            </div>
+            <div class="form-row">
+                <label class="form-label">내용</label>
+                <div class="editor-wrap">
+                    <div id="quill-editor"></div>
+                </div>
+                <input type="hidden" id="noticeContent" />
+            </div>
+            <div class="form-row">
+                <label class="form-label">첨부파일</label>
+                <div class="file-wrap">
+                    <div class="file-upload-wrap">
+                        <label class="file-upload-label" onclick="file.add()">
+                            <span class="file-upload-icon">
+                                <th:block th:replace="~{fragments/common/icons :: upload}" />
+                            </span>
+                            <span>파일을 선택하거나 드래그하세요</span>
+                            <span class="file-upload-hint">최대 5개, 파일당 10MB 이하 (pdf, docx, hwp, xlsx)</span>
+                        </label>
+                    </div>
+                    <ul class="file-list" id="fileList"></ul>
+                </div>
+            </div>
+            <div class="form-row form-row-inline">
+                <label class="form-label">고정 공지</label>
+                <label class="toggle-wrap">
+                    <input type="checkbox" id="noticePinYn" value="Y" class="toggle-input" />
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                    <span class="toggle-text">목록 상단에 고정합니다</span>
+                </label>
+            </div>
+            <div class="form-footer">
+                <button type="button" class="btn" onclick="noticeReset()">취소</button>
+                <button type="button" class="btn btn-primary" onclick="register()">등록하기</button>
+            </div>
+        </form>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script th:src="@{/js/common/icons.js}"></script>
+<script th:src="@{/js/common/quillEditor.js}"></script>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
+<script th:src="@{/js/common/fileModule.js}"></script>
+<script>
+    let file = fileModule({
+        count: 5,
+        size: 10 * 1024 * 1024,
+        exts: ["pdf", "docx", "hwp", "xlsx", "xls"],
+        callback: {
+            add: function(target) {
+                let elem = document.getElementById("fileList");
+                let fragment = document.createDocumentFragment();
+
+                target.fileList.forEach(function(f) {
+                    let li = document.createElement("li");
+                    li.className = "file-item";
+
+                    let name = document.createElement("span");
+                    name.className = "file-item-name";
+                    name.textContent = f.name;
+
+                    let size = document.createElement("span");
+                    size.className = "file-item-size";
+                    size.textContent = (f.size / 1024).toFixed(0) + "KB";
+
+                    let btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "file-item-remove";
+                    btn.innerHTML = Icons.xSmall;
+                    btn.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        target.del(f);
+                        li.remove();
+                    });
+
+                    li.appendChild(name);
+                    li.appendChild(size);
+                    li.appendChild(btn);
+                    fragment.appendChild(li);
+                });
+
+                elem.innerHTML = "";
+                elem.appendChild(fragment);
+            }
+        }
+    });
+
+    function noticeList() {
+        location.href = "/admin/notices";
+    }
+
+    function noticeReset() {
+        if (!confirm("작성 중인 내용을 초기화하시겠습니까?")) return;
+
+        document.getElementById("noticeCategory").value = "";
+        document.getElementById("noticeTitle").value = "";
+        document.getElementById("noticePinYn").checked = false;
+        document.getElementById("fileList").innerHTML = "";
+        quill.setContents([]);
+    }
+
+    function register() {
+        if (!Validator.notice() || !confirm("공지사항 내용을 저장하시겠습니까?")) return;
+
+        const formData = new FormData();
+        formData.append("noticeCategory", document.getElementById("noticeCategory").value.trim());
+        formData.append("noticeTitle", document.getElementById("noticeTitle").value.trim());
+        formData.append("noticeContent", quill.root.innerHTML);
+        formData.append("noticePinYn", document.getElementById("noticePinYn").checked ? "Y" : "N");
+
+        const files = file.list();
+        for (let i = 0; i < files.length; i++) {
+            formData.append("noticeFiles", files[i].file);
+        }
+
+        API.callFormData("/api/v1/notices", {
+            method: "POST",
+            body: formData,
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
+                alert(body.message);
+                location.href = "/admin/notices";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>
