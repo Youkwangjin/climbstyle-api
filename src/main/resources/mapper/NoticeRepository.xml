@@ -67,8 +67,14 @@
             n.notice_category,
             n.notice_title,
             n.notice_hit,
-            n.notice_file_cnt,
-            n.notice_created
+            n.notice_created,
+            EXISTS (
+                SELECT 1
+                FROM
+                    tb_notice_file nf
+                WHERE
+                    nf.notice_no = n.notice_no
+            ) AS has_file
         FROM
             tb_notice n
         WHERE
@@ -97,7 +103,14 @@
             n.notice_file_cnt,
             n.notice_pin_yn,
             n.notice_visible_yn,
-            n.notice_created
+            n.notice_created,
+            EXISTS (
+                SELECT 1
+                FROM
+                    tb_notice_file nf
+                WHERE
+                    nf.notice_no = n.notice_no
+            ) AS has_file
         FROM
             tb_notice n
         <where>

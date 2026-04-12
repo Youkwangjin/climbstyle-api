@@ -100,8 +100,7 @@
                     <td class="td-date" th:text="${#temporals.format(notice.noticeCreated, 'yyyy.MM.dd')}"></td>
                     <td class="td-views" th:text="${#numbers.formatInteger(notice.noticeHit, 0, 'COMMA')}"></td>
                     <td class="td-file">
-                        <th:block th:if="${notice.noticeFileCnt > 0}"
-                                  th:replace="~{fragments/common/icons :: file}" />
+                        <span th:if="${notice.hasFile}" th:insert="~{fragments/common/icons :: file}"></span>
                     </td>
                 </tr>
                 </tbody>

@@ -13,17 +13,17 @@ public class NoticeListResponse {
 
     private Integer noticeNo;
 
-    private Integer noticeCategory;
+    private String noticeCategory;
 
     private String noticeTitle;
 
     private Integer noticeHit;
-
-    private Integer noticeFileCnt;
 
     private String noticePinYn;
 
     private LocalDateTime noticeCreated;
 
     private Boolean noticeNew;
+
+    private Boolean hasFile;
 }
