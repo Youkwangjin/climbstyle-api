@@ -200,6 +200,7 @@
             notice_title,
             notice_content,
             notice_content_text,
+            notice_hit,
             notice_pin_yn,
             notice_visible_yn,
             notice_created
@@ -209,6 +210,7 @@
             #{noticeTitle},
             #{noticeContent},
             #{noticeContentText},
+            #{noticeHit},
             #{noticePinYn},
             #{noticeVisibleYn},
             #{noticeCreated}

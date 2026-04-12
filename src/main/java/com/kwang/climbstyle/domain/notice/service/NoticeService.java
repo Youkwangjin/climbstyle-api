@@ -72,6 +72,7 @@ public class NoticeService {
         notice.setNextNotice(noticeRepository.selectNextNotice(noticeNo));
 
         noticeRepository.updateNoticeHit(noticeNo);
+        notice.setNoticeHit(notice.getNoticeHit() + 1);
 
         return notice;
     }
@@ -97,6 +98,7 @@ public class NoticeService {
                 .noticeTitle(noticeTitle)
                 .noticeContent(noticeContent)
                 .noticeContentText(noticeContentText)
+                .noticeHit(0)
                 .noticePinYn(noticePinYn)
                 .noticeVisibleYn(noticeVisibleYn)
                 .noticeCreated(noticeCreated)
