@@ -22,6 +22,10 @@ public class NoticeDetailResponse {
 
     private Integer noticeHit;
 
+    private String noticePinYn;
+
+    private String noticeVisibleYn;
+
     private LocalDateTime noticeCreated;
 
     private List<NoticeFileResponse> noticeFiles;

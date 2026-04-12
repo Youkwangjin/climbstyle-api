@@ -77,7 +77,8 @@
                     </td>
                 </tr>
                 <tr th:each="notice, iterStat : ${noticeList}"
-                    th:classappend="${notice.noticePinYn == 'Y'} ? 'row-pinned'">
+                    th:classappend="${notice.noticePinYn == 'Y'} ? 'row-pinned'"
+                    th:onclick="|noticeDetail(${notice.noticeNo})|" style="cursor:pointer;">
                     <td class="td-num">
                         <span th:if="${notice.noticePinYn == 'Y'}">—</span>
                         <span th:unless="${notice.noticePinYn == 'Y'}"
@@ -91,9 +92,9 @@
                         </th:block>
                     </td>
                     <td class="td-title">
-                        <a th:href="@{/admin/notices/{noticeNo}(noticeNo=${notice.noticeNo})}"
-                           th:text="${notice.noticeTitle}"
-                           th:classappend="${notice.noticeVisibleYn == 'N'} ? 'td-hidden'"></a>
+                         <span th:text="${notice.noticeTitle}"
+                               th:classappend="${notice.noticeVisibleYn == 'N'} ? 'td-hidden'">
+                         </span>
                         <span th:if="${notice.noticeVisibleYn == 'N'}" class="badge badge-hidden">숨김</span>
                     </td>
                     <td class="td-date" th:text="${#temporals.format(notice.noticeCreated, 'yyyy.MM.dd')}"></td>
@@ -123,6 +124,17 @@
             searchName: document.getElementById("searchName").value.trim()
         });
         location.href = "/admin/notices?" + params.toString();
+    }
+
+    function noticeDetail(noticeNo) {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]",
+            noticeCategory: "[[${request.noticeCategory}]]",
+            searchType: "[[${request.searchType}]]",
+            searchName: "[[${request.searchName}]]"
+        });
+
+        location.href = "/admin/notices/" + noticeNo + "?" + params.toString();
     }
 
     function resetSearch() {
