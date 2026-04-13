@@ -172,6 +172,31 @@
             n.notice_visible_yn = 'Y'
     </select>
 
+    <select id="selectAdminNoticeByNo" parameterType="Integer" resultMap="noticeDetailResultMap">
+        SELECT
+            n.notice_no,
+            n.notice_category,
+            n.notice_title,
+            n.notice_content,
+            n.notice_hit,
+            n.notice_pin_yn,
+            n.notice_visible_yn,
+            n.notice_created,
+            nf.notice_file_no,
+            nf.notice_file_original_name,
+            nf.notice_file_stored_name,
+            nf.notice_file_path,
+            nf.notice_file_extns_nm,
+            nf.notice_file_size
+        FROM
+            tb_notice n
+        LEFT JOIN
+            tb_notice_file nf
+            ON n.notice_no = nf.notice_no
+        WHERE
+            n.notice_no = #{noticeNo}
+    </select>
+
     <select id="selectPrevNotice" parameterType="Integer"
             resultType="com.kwang.climbstyle.domain.notice.dto.response.NoticeNavResponse">
         <![CDATA[
@@ -233,6 +258,21 @@
             #{noticeCreated}
         )
     </insert>
+
+    <update id="update" parameterType="com.kwang.climbstyle.domain.notice.entity.NoticeEntity">
+        UPDATE
+            tb_notice
+        SET
+            notice_category = #{noticeCategory},
+            notice_title = #{noticeTitle},
+            notice_content = #{noticeContent},
+            notice_content_text = #{noticeContentText},
+            notice_pin_yn = #{noticePinYn},
+            notice_visible_yn = #{noticeVisibleYn},
+            notice_updated = #{noticeUpdated}
+        WHERE
+            notice_no = #{noticeNo}
+    </update>
 
     <update id="updateNoticeHit" parameterType="Integer">
         UPDATE
