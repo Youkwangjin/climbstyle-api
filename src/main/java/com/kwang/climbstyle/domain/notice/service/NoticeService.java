@@ -80,6 +80,21 @@ public class NoticeService {
         return notice;
     }
 
+    public NoticeDetailResponse getAdminNoticeDetail(Integer noticeNo) {
+        NoticeDetailResponse notice = noticeRepository.selectAdminNoticeByNo(noticeNo);
+        if (notice == null) {
+            throw new ClimbStyleException(NoticeErrorCode.NOTICE_NOT_FOUND);
+        }
+
+        notice.setPrevNotice(noticeRepository.selectPrevNotice(noticeNo));
+        notice.setNextNotice(noticeRepository.selectNextNotice(noticeNo));
+
+        noticeRepository.updateNoticeHit(noticeNo);
+        notice.setNoticeHit(notice.getNoticeHit() + 1);
+
+        return notice;
+    }
+
     @Transactional
     public void createNotice(NoticeCreateRequest request) {
         final Integer adminNo = SecurityUtil.getCurrentAdminNo();
