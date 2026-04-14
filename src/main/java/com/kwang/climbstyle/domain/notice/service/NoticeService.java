@@ -230,4 +230,19 @@ public class NoticeService {
             }
         }
     }
+
+    @Transactional
+    public void deleteNotice(Integer noticeNo) {
+        NoticeDetailResponse notice = noticeRepository.selectAdminNoticeByNo(noticeNo);
+        if (notice == null) {
+            throw new ClimbStyleException(NoticeErrorCode.NOTICE_NOT_FOUND);
+        }
+
+        List<NoticeFileResponse> files = noticeFileRepository.selectNoticeFileByNoticeNo(noticeNo);
+        for (NoticeFileResponse noticeFile : files) {
+            fileService.fileDelete(noticeFile.getNoticeFilePath());
+        }
+
+        noticeRepository.delete(noticeNo);
+    }
 }
