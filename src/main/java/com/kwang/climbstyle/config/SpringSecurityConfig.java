@@ -155,6 +155,8 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/users/reactivate").permitAll()
 
+                        .requestMatchers("/api/v1/users/**").hasAuthority(RoleCode.ROLE_USER.getCode())
+
                         .requestMatchers(HttpMethod.GET, "/api/v1/feeds").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/feeds/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/feeds").hasAuthority(RoleCode.ROLE_USER.getCode())
@@ -163,11 +165,11 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/feeds/*/like").hasAuthority(RoleCode.ROLE_USER.getCode())
                         .requestMatchers(HttpMethod.POST, "/api/v1/feeds/*/comments").hasAuthority(RoleCode.ROLE_USER.getCode())
 
-                        .requestMatchers("/api/v1/users/**").hasAuthority(RoleCode.ROLE_USER.getCode())
-
                         .requestMatchers("/admin/**").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/notices").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/notices/*").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/notices/*").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
 
                         .anyRequest().permitAll()
                 );

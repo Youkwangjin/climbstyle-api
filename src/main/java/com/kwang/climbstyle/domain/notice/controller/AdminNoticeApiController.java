@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,5 +31,12 @@ public class AdminNoticeApiController {
         noticeService.updateNotice(request, noticeNo);
 
         return ApiResponseBuilder.ok(NoticeSuccessCode.NOTICE_UPDATE_SUCCESS);
+    }
+
+    @DeleteMapping(value = "/api/v1/notices/{noticeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> deleteNotice(@PathVariable("noticeNo") Integer noticeNo) {
+        noticeService.deleteNotice(noticeNo);
+
+        return ApiResponseBuilder.ok(NoticeSuccessCode.NOTICE_DELETE_SUCCESS);
     }
 }

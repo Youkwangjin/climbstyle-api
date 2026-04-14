@@ -37,4 +37,6 @@ public interface NoticeRepository {
     void update(NoticeEntity noticeEntity);
 
     void updateNoticeHit(@Param("noticeNo") Integer noticeNo);
+
+    void delete(@Param("noticeNo") Integer noticeNo);
 }

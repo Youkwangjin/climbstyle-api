@@ -282,4 +282,12 @@
         WHERE
             notice_no = #{noticeNo}
     </update>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE
+        FROM
+            tb_notice
+        WHERE
+            notice_no = #{noticeNo}
+    </delete>
 </mapper>

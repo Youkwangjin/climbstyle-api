@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>공지사항 상세 | ClimbStyle Admin</title>
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/admin/common.css}">
@@ -20,10 +22,14 @@
             </div>
             <div style="display:flex; gap:8px;">
                 <button type="button" class="btn btn-sm" onclick="noticeList()">목록</button>
+                <button type="button" class="btn btn-sm btn-danger" onclick="deleteNotice()">삭제</button>
                 <a th:href="@{/admin/notices/{noticeNo}/edit(noticeNo=${noticeDetail.noticeNo})}" class="btn btn-sm btn-primary">수정</a>
             </div>
         </div>
         <div class="detail-wrap">
+            <label for="noticeNo">
+                <input type="hidden" id="noticeNo" th:value="${noticeDetail.noticeNo}">
+            </label>
             <div class="detail-header">
                 <div class="detail-header-top">
                     <div class="detail-category">
@@ -93,6 +99,7 @@
     </main>
 </div>
 <div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script th:src="@{/js/common/api.js}"></script>
 <script>
     function noticeList() {
         const params = new URLSearchParams({
@@ -103,6 +110,28 @@
         });
 
         location.href = "/admin/notices?" + params.toString();
+    }
+
+    function deleteNotice() {
+        if (!confirm("공지사항을 삭제하시겠습니까?")) return;
+
+        API.callFormData(`/api/v1/notices/${document.getElementById("noticeNo").value}`, {
+            method: "DELETE"
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
+                alert(body.message);
+                location.href = "/admin/notices";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
     }
 </script>
 </body>
