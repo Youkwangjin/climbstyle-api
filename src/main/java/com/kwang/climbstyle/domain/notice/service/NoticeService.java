@@ -5,6 +5,8 @@ import com.kwang.climbstyle.code.notice.NoticeErrorCode;
 import com.kwang.climbstyle.code.notice.NoticeVisibleStatus;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.admin.dto.response.AdminNoticeListResponse;
+import com.kwang.climbstyle.domain.common.editor.dto.request.CommonEditorImageUploadRequest;
+import com.kwang.climbstyle.domain.common.editor.dto.response.CommonEditorImageUploadResponse;
 import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.notice.dto.request.NoticeCreateRequest;
 import com.kwang.climbstyle.domain.notice.dto.request.NoticeListRequest;
@@ -148,6 +150,18 @@ public class NoticeService {
                 noticeFileRepository.insert(noticeFileEntity);
             }
         }
+    }
+
+    public CommonEditorImageUploadResponse uploadNoticeImage(CommonEditorImageUploadRequest request) {
+        final String originalName = FilenameUtils.getName(request.getFile().getOriginalFilename());
+        final String extnsNm = FilenameUtils.getExtension(originalName);
+        final String storedName = String.format("editor_%s.%s",
+                UUID.randomUUID().toString().replaceAll("-", ""),
+                extnsNm);
+
+        String imageUrl = fileService.fileUpload(request.getFile(), FileTypeCode.EDITOR_IMAGE, storedName);
+
+        return new CommonEditorImageUploadResponse(imageUrl);
     }
 
     @Transactional

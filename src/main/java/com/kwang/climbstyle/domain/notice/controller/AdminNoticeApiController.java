@@ -3,6 +3,8 @@ package com.kwang.climbstyle.domain.notice.controller;
 import com.kwang.climbstyle.code.notice.NoticeSuccessCode;
 import com.kwang.climbstyle.common.response.ApiResponseBuilder;
 import com.kwang.climbstyle.common.response.ApiSuccessResponse;
+import com.kwang.climbstyle.domain.common.editor.dto.request.CommonEditorImageUploadRequest;
+import com.kwang.climbstyle.domain.common.editor.dto.response.CommonEditorImageUploadResponse;
 import com.kwang.climbstyle.domain.notice.dto.request.NoticeCreateRequest;
 import com.kwang.climbstyle.domain.notice.dto.request.NoticeUpdateRequest;
 import com.kwang.climbstyle.domain.notice.service.NoticeService;
@@ -23,6 +25,13 @@ public class AdminNoticeApiController {
         noticeService.createNotice(request);
 
         return ApiResponseBuilder.ok(NoticeSuccessCode.NOTICE_CREATE_SUCCESS);
+    }
+
+    @PostMapping(value = "/api/v1/notices/images", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> uploadNoticeImage(@Valid CommonEditorImageUploadRequest request) {
+        CommonEditorImageUploadResponse imageUrl = noticeService.uploadNoticeImage(request);
+
+        return ApiResponseBuilder.ok(NoticeSuccessCode.NOTICE_IMAGE_UPLOAD_SUCCESS, imageUrl);
     }
 
     @PatchMapping(value = "/api/v1/notices/{noticeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
