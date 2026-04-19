@@ -19,15 +19,15 @@ public class InquiryEntity {
 
     private Integer adminNo;
 
-    private String  inquiryTitle;
+    private String inquiryTitle;
 
-    private String  inquiryContent;
+    private String inquiryContent;
 
-    private String  inquiryContentText;
+    private String inquiryStatus;
 
-    private String  inquiryStatus;
+    private String inquiryAnswerContent;
 
-    private String  inquiryAnswer;
+    private String inquiryAnswerContentText;
 
     private String inquiryDeleteYn;
 

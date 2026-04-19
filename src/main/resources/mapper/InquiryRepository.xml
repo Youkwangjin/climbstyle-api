@@ -52,4 +52,23 @@
             i.inquiry_created DESC
         LIMIT 5
     </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryEntity"
+            useGeneratedKeys="true" keyProperty="inquiryNo">
+        INSERT INTO tb_inquiry (
+            user_no,
+            inquiry_title,
+            inquiry_content,
+            inquiry_status,
+            inquiry_delete_yn,
+            inquiry_created
+        ) VALUES (
+            #{userNo},
+            #{inquiryTitle},
+            #{inquiryContent},
+            #{inquiryStatus},
+            #{inquiryDeleteYn},
+            #{inquiryCreated}
+        )
+    </insert>
 </mapper>

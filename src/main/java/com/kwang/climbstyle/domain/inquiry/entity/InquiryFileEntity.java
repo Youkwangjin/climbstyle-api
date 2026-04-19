@@ -25,7 +25,7 @@ public class InquiryFileEntity {
 
     private String inquiryFileExtnsNm;
 
-    private Integer inquiryFileSize;
+    private String inquiryFileSize;
 
     private LocalDateTime inquiryFileCreated;
 
