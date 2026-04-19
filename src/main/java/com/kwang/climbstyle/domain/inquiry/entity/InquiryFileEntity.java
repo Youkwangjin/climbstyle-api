@@ -13,19 +13,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class InquiryFileEntity {
 
-    private Integer  inquiryFileNo;
+    private Integer inquiryFileNo;
 
-    private Integer  inquiryNo;
+    private Integer inquiryNo;
 
-    private String   inquiryFileOriginalName;
+    private String inquiryFileOriginalName;
 
-    private String   inquiryFileStoredName;
+    private String inquiryFileStoredName;
 
-    private String   inquiryFilePath;
+    private String inquiryFilePath;
 
-    private String   inquiryFileExtnsNm;
+    private String inquiryFileExtnsNm;
 
-    private Long     inquiryFileSize;
+    private Integer inquiryFileSize;
 
     private LocalDateTime inquiryFileCreated;
 

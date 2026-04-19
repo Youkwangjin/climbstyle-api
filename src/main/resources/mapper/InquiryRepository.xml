@@ -3,6 +3,35 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.kwang.climbstyle.domain.inquiry.repository.InquiryRepository">
+    <select id="selectInquiryListCountByRequest" resultType="Integer">
+        SELECT
+            COUNT(inquiry_no)
+        FROM
+            tb_inquiry
+        WHERE
+            user_no = #{userNo}
+        AND
+            inquiry_delete_yn = 'N'
+    </select>
+
+    <select id="selectUserInquiryList"
+            resultType="com.kwang.climbstyle.domain.inquiry.dto.response.InquiryListResponse">
+        SELECT
+            inquiry_no,
+            inquiry_title,
+            inquiry_status,
+            inquiry_created
+        FROM
+            tb_inquiry
+        WHERE
+            user_no = #{userNo}
+        AND
+            inquiry_delete_yn = 'N'
+        ORDER BY
+            inquiry_created DESC
+        LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
+    </select>
+
     <select id="selectPendingInquiryList"
             resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminInquiryListResponse">
         SELECT

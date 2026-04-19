@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>1:1 문의 | ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/inquiry/list.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header :: header}"></div>
+</header>
+<section class="section">
+    <div class="container">
+        <div class="page-title-wrap">
+            <h1>1:1 문의</h1>
+            <p>궁금한 점이 있으시면 언제든지 문의해주세요.</p>
+        </div>
+        <div class="list-toolbar">
+            <p class="total-count">총 <strong th:text="${#numbers.formatInteger(request.totalCount, 0, 'COMMA')}">0</strong>개의 문의</p>
+            <a href="/inquiries/new" class="btn btn-primary">문의하기</a>
+        </div>
+        <div class="inquiry-table-wrap">
+            <table class="inquiry-table">
+                <thead>
+                <tr>
+                    <th class="th-num">번호</th>
+                    <th class="th-title">제목</th>
+                    <th class="th-status">상태</th>
+                    <th class="th-right">등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(inquiryList)}">
+                    <td colspan="4" class="td-empty">문의 내역이 없습니다.</td>
+                </tr>
+                <tr th:each="inquiry, iterStat : ${inquiryList}"
+                    th:onclick="|inquiryDetail(${inquiry.inquiryNo})|">
+                    <td class="td-num" th:text="${request.totalCount - request.startRowNum - iterStat.index}"></td>
+                    <td class="td-title">
+                        <span class="title-text" th:text="${inquiry.inquiryTitle}"></span>
+                    </td>
+                    <td class="td-status">
+                        <th:block th:switch="${inquiry.inquiryStatus}">
+                            <span th:case="'PENDING'" class="badge badge-pending">대기</span>
+                            <span th:case="'IN_PROGRESS'" class="badge badge-progress">처리중</span>
+                            <span th:case="'COMPLETED'" class="badge badge-completed">완료</span>
+                        </th:block>
+                    </td>
+                    <td class="td-date" th:text="${#temporals.format(inquiry.inquiryCreated, 'yyyy.MM.dd')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <th:block th:replace="~{fragments/inquiry/pagination :: pagination(
+            ${request},
+            ${inquiryList},
+            ${currentUrl}
+        )}"/>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/logout.js}"></script>
+<script>
+    function inquiryDetail(inquiryNo) {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]"
+        });
+
+        location.href = "/inquiries/" + inquiryNo + "?" + params.toString();
+    }
+</script>
+</body>
+</html>

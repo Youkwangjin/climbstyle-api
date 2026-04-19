@@ -29,6 +29,8 @@ public class InquiryEntity {
 
     private String  inquiryAnswer;
 
+    private String inquiryDeleteYn;
+
     private LocalDateTime inquiryCreated;
 
     private LocalDateTime inquiryUpdated;
