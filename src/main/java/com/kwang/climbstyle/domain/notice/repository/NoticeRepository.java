@@ -26,11 +26,17 @@ public interface NoticeRepository {
 
     NoticeDetailResponse selectNoticeByNo(@Param("noticeNo") Integer noticeNo);
 
+    NoticeDetailResponse selectAdminNoticeByNo(@Param("noticeNo") Integer noticeNo);
+
     NoticeNavResponse selectPrevNotice(@Param("noticeNo") Integer noticeNo);
 
     NoticeNavResponse selectNextNotice(@Param("noticeNo") Integer noticeNo);
 
     void insert(NoticeEntity noticeEntity);
 
+    void update(NoticeEntity noticeEntity);
+
     void updateNoticeHit(@Param("noticeNo") Integer noticeNo);
+
+    void delete(@Param("noticeNo") Integer noticeNo);
 }

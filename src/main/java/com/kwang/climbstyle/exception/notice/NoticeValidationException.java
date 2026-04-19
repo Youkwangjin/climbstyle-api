@@ -44,7 +44,8 @@ public class NoticeValidationException {
         String[] fieldPriority = {"noticeCategory",
                                   "noticeTitle",
                                   "noticeContent",
-                                  "noticePinYn"};
+                                  "noticePinYn",
+                                  "noticeVisibleYn"};
 
         for (String priorityField : fieldPriority) {
             for (FieldError fieldError : fieldErrors) {
@@ -55,6 +56,7 @@ public class NoticeValidationException {
                         case "noticeTitle": return NoticeErrorCode.NOTICE_TITLE_INVALID_FORMAT;
                         case "noticeContent": return NoticeErrorCode.NOTICE_CONTENT_INVALID_FORMAT;
                         case "noticePinYn": return NoticeErrorCode.NOTICE_PIN_INVALID_FORMAT;
+                        case "noticeVisibleYn": return NoticeErrorCode.NOTICE_VISIBLE_INVALID_FORMAT;
                     }
                 }
             }

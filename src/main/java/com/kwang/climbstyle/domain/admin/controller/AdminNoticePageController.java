@@ -32,7 +32,7 @@ public class AdminNoticePageController {
 
     @GetMapping(value = "/admin/notices/{noticeNo}")
     public String noticeDetail(@PathVariable("noticeNo") Integer noticeNo, NoticeDetailRequest request, Model model) {
-        NoticeDetailResponse response = noticeService.getNoticeDetail(noticeNo);
+        NoticeDetailResponse response = noticeService.getAdminNoticeDetail(noticeNo);
 
         model.addAttribute("noticeDetail", response);
         model.addAttribute("request", request);
@@ -43,5 +43,14 @@ public class AdminNoticePageController {
     @GetMapping(value = "/admin/notices/new")
     public String newNotice() {
         return "admin/notice/new";
+    }
+
+    @GetMapping(value = "/admin/notices/{noticeNo}/edit")
+    public String editNotice(@PathVariable("noticeNo") Integer noticeNo, Model model) {
+        NoticeDetailResponse response = noticeService.getAdminNoticeDetail(noticeNo);
+
+        model.addAttribute("noticeDetail", response);
+
+        return "admin/notice/edit";
     }
 }

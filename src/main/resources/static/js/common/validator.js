@@ -268,6 +268,17 @@ const Validator = {
         return true;
     },
 
+    inquiry() {
+        const inquiryTitle = document.getElementById("inquiryTitle").value.trim();
+        const inquiryContent = document.getElementById("inquiryContent").value.trim();
+
+        if (!this.rules.required(inquiryTitle, "제목")) return false;
+        if (!this.rules.maxLength(inquiryTitle, "제목", 50)) return false;
+
+        if (!this.rules.required(inquiryContent, "내용")) return false;
+        return this.rules.maxLength(inquiryContent, "내용", 2000);
+    },
+
     checkField(fieldId, fieldName) {
         const value = document.getElementById(fieldId)?.value.trim();
 

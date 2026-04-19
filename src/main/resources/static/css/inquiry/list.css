@@ -1,0 +1,239 @@
+.page-title-wrap {
+    margin-bottom: 36px;
+}
+
+.page-title-wrap h1 {
+    margin: 0 0 6px;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.page-title-wrap p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.list-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.total-count {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.total-count strong {
+    color: var(--brand);
+    font-weight: 700;
+}
+
+.inquiry-table-wrap {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.inquiry-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inquiry-table thead {
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+}
+
+.inquiry-table thead th {
+    padding: 12px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.inquiry-table thead th.th-num {
+    text-align: center;
+    width: 60px;
+}
+
+.inquiry-table thead th.th-status {
+    width: 90px;
+}
+
+.inquiry-table thead th.th-right {
+    width: 110px;
+}
+
+.inquiry-table tbody tr {
+    border-bottom: 1px solid var(--line);
+    transition: background 0.12s;
+    cursor: pointer;
+}
+
+.inquiry-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.inquiry-table tbody tr:hover {
+    background: #fff8f3;
+}
+
+.inquiry-table td {
+    padding: 16px 20px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.td-num {
+    text-align: center;
+    width: 60px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.td-title {
+    min-width: 300px;
+}
+
+.title-text {
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 520px;
+    display: inline-block;
+}
+
+.td-status {
+    width: 90px;
+    white-space: nowrap;
+}
+
+.td-date {
+    white-space: nowrap;
+    color: var(--muted);
+    font-size: 13px;
+    width: 110px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge-pending   { background: #fff3eb; color: #c2410c; }
+.badge-progress  { background: #eff6ff; color: #1d4ed8; }
+.badge-completed { background: #f0fdf4; color: #15803d; }
+.badge-cancelled { background: #f3f4f6; color: #6b7280; }
+
+.td-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.pagination {
+    display: grid;
+    place-items: center;
+    margin-top: 36px;
+}
+
+.pagination-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+}
+
+.page-list {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+}
+
+.page-btn,
+.page-num {
+    height: 34px;
+    min-width: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fff;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.page-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.page-btn:hover,
+.page-num:hover {
+    background: #f9fafb;
+}
+
+.page-num.is-active {
+    border-color: transparent;
+    background: var(--brand);
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .list-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .title-text {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .td-date {
+        display: none;
+    }
+
+    .pagination-inner {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .page-btn,
+    .page-num {
+        height: 32px;
+        min-width: 32px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+}
