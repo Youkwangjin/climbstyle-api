@@ -25,7 +25,6 @@ public class NoticePageController {
 
         model.addAttribute("noticeList", responses);
         model.addAttribute("request", request);
-        model.addAttribute("currentUrl", "/notices");
 
         return "notice/list";
     }

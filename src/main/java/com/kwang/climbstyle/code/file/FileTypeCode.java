@@ -35,6 +35,13 @@ public enum FileTypeCode {
             10 * 1024 * 1024,
             "문서"
     ),
+
+    INQUIRY(
+            "inquiry/",
+            new String[]{"pdf", "doc", "docx", "hwp"},
+            10 * 1024 * 1024,
+            "문의 첨부파일"
+    ),
     ;
 
     private final String subPath;

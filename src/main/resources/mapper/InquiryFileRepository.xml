@@ -4,4 +4,23 @@
 
 <mapper namespace="com.kwang.climbstyle.domain.inquiry.repository.InquiryFileRepository">
 
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryFileEntity">
+        INSERT INTO tb_inquiry_file (
+            inquiry_no,
+            inquiry_file_original_name,
+            inquiry_file_stored_name,
+            inquiry_file_path,
+            inquiry_file_extns_nm,
+            inquiry_file_size,
+            inquiry_file_created
+        ) VALUES (
+            #{inquiryNo},
+            #{inquiryFileOriginalName},
+            #{inquiryFileStoredName},
+            #{inquiryFilePath},
+            #{inquiryFileExtnsNm},
+            #{inquiryFileSize},
+            #{inquiryFileCreated}
+        )
+    </insert>
 </mapper>
