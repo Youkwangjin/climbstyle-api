@@ -24,7 +24,6 @@ public class FeedPageController {
         List<FeedListResponse> feedList = feedService.getFeedList(request);
         model.addAttribute("feedList", feedList);
         model.addAttribute("request", request);
-        model.addAttribute("currentUrl", "/feed");
         return "feed/feed";
     }
 
@@ -37,7 +36,6 @@ public class FeedPageController {
         List<FeedListResponse> feedList = feedService.getMyFeedList(request, userNo);
         model.addAttribute("feedList", feedList);
         model.addAttribute("request", request);
-        model.addAttribute("currentUrl", "/my/feed");
         return "feed/feed";
     }
 
