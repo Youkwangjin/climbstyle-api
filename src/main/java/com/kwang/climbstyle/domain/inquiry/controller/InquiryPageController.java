@@ -28,7 +28,7 @@ public class InquiryPageController {
         return "inquiry/list";
     }
 
-    @GetMapping(value = "/inquiries/new")
+    @GetMapping(value = "/my/inquiries/new")
     public String newInquiry(){
         return "inquiry/new";
     }
