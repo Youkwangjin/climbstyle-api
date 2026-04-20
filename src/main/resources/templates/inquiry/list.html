@@ -19,7 +19,7 @@
         </div>
         <div class="list-toolbar">
             <p class="total-count">총 <strong th:text="${#numbers.formatInteger(request.totalCount, 0, 'COMMA')}">0</strong>개의 문의</p>
-            <a href="/inquiries/new" class="btn btn-primary">문의하기</a>
+            <a href="/my/inquiries/new" class="btn btn-primary">문의하기</a>
         </div>
         <div class="inquiry-table-wrap">
             <table class="inquiry-table">
@@ -44,7 +44,7 @@
                     <td class="td-status">
                         <th:block th:switch="${inquiry.inquiryStatus}">
                             <span th:case="'PENDING'" class="badge badge-pending">대기</span>
-                            <span th:case="'IN_PROGRESS'" class="badge badge-progress">처리중</span>
+                            <span th:case="'PROGRESS'" class="badge badge-progress">처리중</span>
                             <span th:case="'COMPLETED'" class="badge badge-completed">완료</span>
                         </th:block>
                     </td>
@@ -68,7 +68,7 @@
             pageNo: "[[${request.pageNo}]]"
         });
 
-        location.href = "/inquiries/" + inquiryNo + "?" + params.toString();
+        location.href = "/my/inquiries/" + inquiryNo + "?" + params.toString();
     }
 </script>
 </body>

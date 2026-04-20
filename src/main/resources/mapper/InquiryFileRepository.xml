@@ -4,6 +4,38 @@
 
 <mapper namespace="com.kwang.climbstyle.domain.inquiry.repository.InquiryFileRepository">
 
+    <select id="selectInquiryFileByNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.inquiry.dto.response.InquiryFileResponse">
+        SELECT
+            inquiry_file_no,
+            inquiry_no,
+            inquiry_file_original_name,
+            inquiry_file_stored_name,
+            inquiry_file_path,
+            inquiry_file_extns_nm,
+            inquiry_file_size
+        FROM
+            tb_inquiry_file
+        WHERE
+            inquiry_file_no = #{inquiryFileNo}
+    </select>
+
+    <select id="selectInquiryFileByInquiryNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.inquiry.dto.response.InquiryFileResponse">
+        SELECT
+            inquiry_file_no,
+            inquiry_no,
+            inquiry_file_original_name,
+            inquiry_file_stored_name,
+            inquiry_file_path,
+            inquiry_file_extns_nm,
+            inquiry_file_size
+        FROM
+            tb_inquiry_file
+        WHERE
+            inquiry_no = #{inquiryNo}
+    </select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryFileEntity">
         INSERT INTO tb_inquiry_file (
             inquiry_no,
@@ -23,4 +55,12 @@
             #{inquiryFileCreated}
         )
     </insert>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE
+        FROM
+            tb_inquiry_file
+        WHERE
+            inquiry_file_no = #{inquiryFileNo}
+    </delete>
 </mapper>

@@ -45,12 +45,30 @@
     <select id="selectDashboardStat"
             resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminDashboardStatResponse">
         SELECT
-            (SELECT COUNT(user_no)    FROM tb_user)                                            AS totalUserCount,
-            (SELECT COUNT(user_no)    FROM tb_user    WHERE DATE(user_created) = CURRENT_DATE) AS todayUserCount,
-            (SELECT COUNT(feed_no)    FROM tb_feed)                                            AS totalFeedCount,
-            (SELECT COUNT(feed_no)    FROM tb_feed    WHERE DATE(feed_created) = CURRENT_DATE) AS todayFeedCount,
-            (SELECT COUNT(inquiry_no) FROM tb_inquiry WHERE inquiry_status = 'PENDING')        AS pendingInquiryCount,
-            (SELECT COUNT(notice_no)  FROM tb_notice)                                          AS totalNoticeCount,
-            (SELECT COUNT(notice_no)  FROM tb_notice  WHERE notice_visible_yn = 'Y')           AS visibleNoticeCount
+            (SELECT COUNT(user_no)
+             FROM tb_user) AS totalUserCount,
+
+            (SELECT COUNT(user_no)
+             FROM tb_user
+             WHERE DATE(user_created) = CURRENT_DATE) AS todayUserCount,
+
+            (SELECT COUNT(feed_no)
+             FROM tb_feed) AS totalFeedCount,
+
+            (SELECT COUNT(feed_no)
+             FROM tb_feed
+             WHERE DATE(feed_created) = CURRENT_DATE) AS todayFeedCount,
+
+            (SELECT COUNT(inquiry_no)
+             FROM tb_inquiry
+             WHERE inquiry_status = 'PENDING'
+             AND inquiry_delete_yn = 'N') AS pendingInquiryCount,
+
+            (SELECT COUNT(notice_no)
+             FROM tb_notice) AS totalNoticeCount,
+
+            (SELECT COUNT(notice_no)
+             FROM tb_notice
+             WHERE notice_visible_yn = 'Y') AS visibleNoticeCount
     </select>
 </mapper>

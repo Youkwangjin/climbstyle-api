@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>1:1 문의 상세 | ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/inquiry/detail.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header :: header}"></div>
+</header>
+<section class="section">
+    <div class="container">
+        <div class="detail-wrap">
+            <label for="inquiryNo">
+                <input type="hidden" id="inquiryNo" th:value="${inquiryDetail.inquiryNo}">
+            </label>
+            <div class="detail-header">
+                <div class="detail-header-top">
+                    <div class="detail-status">
+                        <th:block th:switch="${inquiryDetail.inquiryStatus}">
+                            <span th:case="'PENDING'"   class="badge badge-pending">대기</span>
+                            <span th:case="'PROGRESS'"  class="badge badge-progress">처리중</span>
+                            <span th:case="'COMPLETED'" class="badge badge-completed">완료</span>
+                            <span th:case="'CANCELLED'" class="badge badge-cancelled">취소</span>
+                        </th:block>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-danger" onclick="deleteInquiry()">삭제</button>
+                        <button type="button" class="btn btn-primary" onclick="inquiryEdit()">수정</button>
+                        <button type="button" class="btn" onclick="inquiryList()">목록</button>
+                    </div>
+                </div>
+                <h1 class="detail-title" th:text="${inquiryDetail.inquiryTitle}"></h1>
+                <div class="detail-meta">
+                    <span class="meta-item">
+                        <span class="meta-label">작성일</span>
+                        <span class="meta-value" th:text="${#temporals.format(inquiryDetail.inquiryCreated, 'yyyy.MM.dd')}"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="detail-body">
+                <p class="detail-content" th:text="${inquiryDetail.inquiryContent}"></p>
+            </div>
+            <div class="detail-attachments" th:if="${!#lists.isEmpty(inquiryDetail.inquiryFiles)}">
+                <div class="attachments-label">첨부파일</div>
+                <ul class="attachment-list">
+                    <li class="attachment-item" th:each="file : ${inquiryDetail.inquiryFiles}">
+                        <span class="attachment-icon">
+                            <th:block th:replace="~{fragments/common/icons :: file}" />
+                        </span>
+                        <span class="attachment-name" th:text="${file.inquiryFileOriginalName}"></span>
+                        <span class="attachment-size" th:text="${file.inquiryFileSize}"></span>
+                        <a th:href="${file.inquiryFilePath}" class="attachment-down" download>
+                            <th:block th:replace="~{fragments/common/icons :: download}" />
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="detail-answer" th:if="${inquiryDetail.inquiryAnswerContent != null}">
+                <div class="answer-header">
+                    <span class="answer-label">답변</span>
+                </div>
+                <div class="answer-box">
+                    <div class="answer-content ql-editor" th:utext="${inquiryDetail.inquiryAnswerContent}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/icons.js}"></script>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/logout.js}"></script>
+<script>
+    function inquiryList() {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]",
+        });
+
+        location.href = "/my/inquiries?" + params.toString();
+    }
+
+    function inquiryEdit() {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]",
+        });
+
+        location.href = "/my/inquiries/[[${inquiryDetail.inquiryNo}]]/edit?" + params.toString();
+    }
+
+    function deleteInquiry() {
+        if (!confirm("문의내역을 삭제하시겠습니까?")) return;
+
+        API.callFormData(`/api/v1/inquiries/${document.getElementById("inquiryNo").value}`, {
+            method: "DELETE"
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
+                alert(body.message);
+                location.href = "/my/inquiries";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>

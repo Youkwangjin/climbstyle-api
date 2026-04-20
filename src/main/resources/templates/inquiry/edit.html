@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>1:1 문의 수정 | ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/inquiry/new.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header :: header}"></div>
+</header>
+<section class="section">
+    <div class="container">
+        <div class="form-wrap">
+            <div class="form-header">
+                <h1>1:1 문의 수정</h1>
+                <button type="button" class="btn" onclick="inquiryDetail()">이전</button>
+            </div>
+            <form class="inquiry-form">
+                <label for="inquiryNo">
+                    <input hidden="hidden" id="inquiryNo" th:value="${inquiryDetail.inquiryNo}"/>
+                </label>
+                <div class="form-row">
+                    <label class="form-label" for="inquiryTitle">제목</label>
+                    <input class="form-input" type="text" id="inquiryTitle"
+                           placeholder="제목을 입력하세요" maxlength="50"
+                           th:value="${inquiryDetail.inquiryTitle}" />
+                    <span class="form-hint">최대 50자</span>
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="inquiryContent">내용</label>
+                    <textarea class="form-textarea" id="inquiryContent"
+                              placeholder="문의 내용을 입력하세요" rows="10"
+                              th:text="${inquiryDetail.inquiryContent}"></textarea>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">첨부파일</label>
+                    <div class="file-wrap">
+                        <div class="file-upload-wrap">
+                            <label class="file-upload-label" onclick="file.add()">
+                                <span class="file-upload-icon">
+                                    <th:block th:replace="~{fragments/common/icons :: upload}" />
+                                </span>
+                                <span>파일을 선택하거나 드래그하세요</span>
+                                <span class="file-upload-hint">최대 5개, 파일당 10MB 이하 (jpg, jpeg, png, pdf)</span>
+                            </label>
+                        </div>
+                        <ul class="file-list" id="fileList">
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-footer">
+                    <button type="button" class="btn" onclick="inquiryDetail()">취소</button>
+                    <button type="button" class="btn btn-primary" onclick="update()">수정하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/icons.js}"></script>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
+<script th:src="@{/js/common/fileModule.js}"></script>
+<script th:src="@{/js/common/logout.js}"></script>
+<script th:inline="javascript">
+    let file = fileModule({
+        count: 5,
+        size: 10 * 1024 * 1024,
+        exts: ["jpg", "jpeg", "png", "pdf"],
+        callback: {
+            add: function(target) {
+                const elem = document.getElementById("fileList");
+                const existing = Array.from(elem.querySelectorAll("li[data-file-no]"));
+
+                const fragment = document.createDocumentFragment();
+                target.fileList.forEach(function(f) {
+                    const li = document.createElement("li");
+                    li.className = "file-item";
+
+                    const name = document.createElement("span");
+                    name.className = "file-item-name";
+                    name.textContent = f.name;
+
+                    const size = document.createElement("span");
+                    size.className = "file-item-size";
+                    size.textContent = (f.size / 1024).toFixed(0) + "KB";
+
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "file-item-remove";
+                    btn.innerHTML = Icons.xSmall;
+                    btn.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        target.del(f);
+                        li.remove();
+                    });
+
+                    li.appendChild(name);
+                    li.appendChild(size);
+                    li.appendChild(btn);
+                    fragment.appendChild(li);
+                });
+
+                existing.forEach(el => fragment.prepend(el));
+                elem.innerHTML = "";
+                elem.appendChild(fragment);
+            }
+        }
+    });
+
+    /*<![CDATA[*/
+    let existingFiles = /*[[${inquiryDetail.inquiryFiles}]]*/ [];
+    /*]]>*/
+
+    existingFiles.forEach(function(fileData) {
+        file.add({
+            file: null,
+            name: fileData.inquiryFileOriginalName,
+            size: fileData.inquiryFileSize,
+            fileId: fileData.inquiryFileNo
+        });
+    });
+
+    function inquiryDetail() {
+        const params = new URLSearchParams({
+            pageNo: /*[[${request.pageNo}]]*/ 1,
+        });
+        location.href = "/my/inquiries/" + document.getElementById("inquiryNo").value + "?" + params.toString();
+    }
+
+    function update() {
+        if (!Validator.inquiry() || !confirm("문의 내용을 수정하시겠습니까?")) return;
+
+        const formData = new FormData();
+        formData.append("inquiryTitle", document.getElementById("inquiryTitle").value.trim());
+        formData.append("inquiryContent", document.getElementById("inquiryContent").value);
+
+        const files = file.list();
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].file) {
+                formData.append("inquiryFiles", files[i].file);
+            } else {
+                formData.append("inquiryFileIds", files[i].fileId);
+            }
+        }
+
+        API.callFormData(`/api/v1/inquiries/${document.getElementById("inquiryNo").value}`, {
+            method: "PATCH",
+            body: formData,
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
+                alert(body.message);
+                inquiryDetail();
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>

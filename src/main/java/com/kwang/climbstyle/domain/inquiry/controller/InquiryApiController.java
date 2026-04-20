@@ -4,13 +4,13 @@ import com.kwang.climbstyle.code.inquiry.InquirySuccessCode;
 import com.kwang.climbstyle.common.response.ApiResponseBuilder;
 import com.kwang.climbstyle.common.response.ApiSuccessResponse;
 import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryCreateRequest;
+import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryUpdateRequest;
 import com.kwang.climbstyle.domain.inquiry.service.InquiryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +23,20 @@ public class InquiryApiController {
         inquiryService.createInquiry(request);
 
         return ApiResponseBuilder.ok(InquirySuccessCode.INQUIRY_CREATE_SUCCESS);
+    }
+
+    @PatchMapping(value = "/api/v1/inquiries/{inquiryNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> updateInquiry(@PathVariable("inquiryNo") Integer inquiryNo,
+                                                                    @Valid InquiryUpdateRequest request) {
+        inquiryService.updateInquiry(inquiryNo, request);
+
+        return ApiResponseBuilder.ok(InquirySuccessCode.INQUIRY_UPDATE_SUCCESS);
+    }
+
+    @DeleteMapping(value = "/api/v1/inquiries/{inquiryNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> deleteInquiry(@PathVariable("inquiryNo") Integer inquiryNo) {
+        inquiryService.deleteInquiry(inquiryNo);
+
+        return ApiResponseBuilder.ok(InquirySuccessCode.INQUIRY_DELETE_SUCCESS);
     }
 }

@@ -214,8 +214,8 @@ public class NoticeService {
 
             final String noticeFilePath = noticeFile.getNoticeFilePath();
 
-            fileService.fileDelete(noticeFilePath);
             noticeFileRepository.delete(noticeFileNo);
+            fileService.fileDelete(noticeFilePath);
         }
 
         if (noticeFiles != null && !noticeFiles.isEmpty()) {
@@ -253,10 +253,11 @@ public class NoticeService {
         }
 
         List<NoticeFileResponse> files = noticeFileRepository.selectNoticeFileByNoticeNo(noticeNo);
+
+        noticeRepository.delete(noticeNo);
+
         for (NoticeFileResponse noticeFile : files) {
             fileService.fileDelete(noticeFile.getNoticeFilePath());
         }
-
-        noticeRepository.delete(noticeNo);
     }
 }
