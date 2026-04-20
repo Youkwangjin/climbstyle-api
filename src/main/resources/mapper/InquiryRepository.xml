@@ -66,6 +66,8 @@
             ON i.user_no = u.user_no
         WHERE
             i.inquiry_status = 'PENDING'
+        AND
+            i.inquiry_delete_yn = 'N'
         ORDER BY
             i.inquiry_created DESC
         LIMIT 5
