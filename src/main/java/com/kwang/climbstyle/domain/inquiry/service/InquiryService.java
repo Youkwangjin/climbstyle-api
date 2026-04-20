@@ -185,4 +185,39 @@ public class InquiryService {
             }
         }
     }
+
+    @Transactional
+    public void deleteInquiry(Integer inquiryNo) {
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        final String inquiryStatus = InquiryStatusCode.PROGRESS.getCode();
+        final String inquiryDeleteYn = InquiryDeleteCode.DELETED.getCode();
+        final LocalDateTime inquiryUpdated = LocalDateTime.now();
+
+        InquiryDetailResponse inquiry = inquiryRepository.selectInquiryByNo(inquiryNo, userNo);
+        if (inquiry == null) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
+        }
+
+        final String currnetInquiryStatus = inquiry.getInquiryStatus();
+        if (StringUtils.equals(inquiryStatus, currnetInquiryStatus)) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_DELETABLE);
+        }
+
+        InquiryEntity inquiryEntity = InquiryEntity.builder()
+                .inquiryNo(inquiryNo)
+                .inquiryDeleteYn(inquiryDeleteYn)
+                .inquiryUpdated(inquiryUpdated)
+                .build();
+
+        inquiryRepository.delete(inquiryEntity);
+
+        List<InquiryFileResponse> files = inquiryFileRepository.selectInquiryFileByInquiryNo(inquiryNo);
+        for (InquiryFileResponse inquiryFile : files) {
+            inquiryFileRepository.delete(inquiryFile.getInquiryFileNo());
+        }
+
+        for (InquiryFileResponse inquiryFile : files) {
+            fileService.fileDelete(inquiryFile.getInquiryFilePath());
+        }
+    }
 }

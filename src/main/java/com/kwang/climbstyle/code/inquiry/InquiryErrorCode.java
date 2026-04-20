@@ -15,9 +15,10 @@ public enum InquiryErrorCode implements ApiCode {
 
     INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND,                "8404", "존재하지 않는 문의입니다."),
     INQUIRY_ALREADY_DELETED(HttpStatus.BAD_REQUEST,        "8005", "이미 삭제된 문의입니다."),
-    INQUIRY_NOT_MODIFIABLE(HttpStatus.BAD_REQUEST,         "8006", "대기 상태에서만 수정 및 삭제가 가능합니다."),
+    INQUIRY_NOT_MODIFIABLE(HttpStatus.BAD_REQUEST,         "8006", "대기 상태에서만 수정이 가능합니다."),
+    INQUIRY_NOT_DELETABLE(HttpStatus.BAD_REQUEST,          "8007", "처리중 상태에서는 삭제가 불가능합니다."),
 
-    INQUIRY_FILE_NOT_FOUND(HttpStatus.NOT_FOUND,           "8007", "해당 문의내역에 등록된 파일이 없습니다."),
+    INQUIRY_FILE_NOT_FOUND(HttpStatus.NOT_FOUND,           "8008", "해당 문의내역에 등록된 파일이 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

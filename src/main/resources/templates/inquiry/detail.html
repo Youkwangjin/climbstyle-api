@@ -16,6 +16,9 @@
 <section class="section">
     <div class="container">
         <div class="detail-wrap">
+            <label for="inquiryNo">
+                <input type="hidden" id="inquiryNo" th:value="${inquiryDetail.inquiryNo}">
+            </label>
             <div class="detail-header">
                 <div class="detail-header-top">
                     <div class="detail-status">
@@ -92,6 +95,24 @@
 
     function deleteInquiry() {
         if (!confirm("문의내역을 삭제하시겠습니까?")) return;
+
+        API.callFormData(`/api/v1/inquiries/${document.getElementById("inquiryNo").value}`, {
+            method: "DELETE"
+        })
+            .then(async response => {
+                const body = await response.json();
+
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+
+                alert(body.message);
+                location.href = "/my/inquiries";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
     }
 </script>
 </body>
