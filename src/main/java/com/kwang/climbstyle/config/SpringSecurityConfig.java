@@ -166,7 +166,6 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/feeds/*/comments").hasAuthority(RoleCode.ROLE_USER.getCode())
 
                         .requestMatchers("/my/inquiries/**").hasAuthority(RoleCode.ROLE_USER.getCode())
-                        .requestMatchers("/inquiries/**").hasAuthority(RoleCode.ROLE_USER.getCode())
                         .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").hasAuthority(RoleCode.ROLE_USER.getCode())
 
                         .requestMatchers("/admin/**").hasAuthority(RoleCode.ROLE_ADMIN.getCode())

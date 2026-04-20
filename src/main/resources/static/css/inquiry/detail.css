@@ -1,0 +1,241 @@
+.detail-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.detail-header {
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--text);
+    margin-bottom: 0;
+}
+
+.detail-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge-pending   { background: #fefce8; color: #854d0e; }
+.badge-progress  { background: #f0f9ff; color: #0369a1; }
+.badge-completed { background: #f0fdf4; color: #15803d; }
+.badge-cancelled { background: #f9fafb; color: #6b7280; }
+
+.detail-title {
+    margin: 0 0 20px;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+
+.detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.meta-label {
+    color: var(--muted);
+}
+
+.meta-value {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.meta-divider {
+    width: 1px;
+    height: 12px;
+    background: var(--line);
+}
+
+.detail-body {
+    padding: 36px 0;
+    border-bottom: 1px solid var(--line);
+    min-height: 200px;
+}
+
+.detail-content {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.detail-attachments {
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.attachments-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.attachment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.attachment-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fafafa;
+    transition: background 0.12s;
+}
+
+.attachment-item:hover {
+    background: #f3f4f6;
+}
+
+.attachment-icon {
+    display: flex;
+    align-items: center;
+    color: var(--muted);
+}
+
+.attachment-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.attachment-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.attachment-size {
+    font-size: 12px;
+    color: var(--muted);
+    flex-shrink: 0;
+}
+
+.attachment-down {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: all 0.12s;
+}
+
+.attachment-down:hover {
+    background: var(--brand);
+    border-color: transparent;
+    color: #fff;
+}
+
+.attachment-down svg {
+    width: 15px;
+    height: 15px;
+}
+
+.detail-answer {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.answer-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.answer-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.answer-date {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.answer-box {
+    background: #fff8f3;
+    border-radius: 12px;
+    padding: 20px 24px;
+    border: 1px solid #ffe4cc;
+}
+
+.answer-content {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-footer {
+    padding: 24px 0 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: #fff;
+    border-color: #ef4444;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+@media (max-width: 768px) {
+    .detail-title {
+        font-size: 20px;
+    }
+}
