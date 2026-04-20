@@ -15,9 +15,11 @@ public class AdminInquiryListResponse {
 
     private Integer userNo;
 
-    private String  inquiryTitle;
+    private String userNickname;
 
-    private String  inquiryStatus;
+    private String inquiryTitle;
+
+    private String inquiryStatus;
 
     private LocalDateTime inquiryCreated;
 }
