@@ -22,4 +22,8 @@ public interface InquiryRepository {
     InquiryDetailResponse selectInquiryByNo(@Param("inquiryNo") Integer inquiryNo, @Param("userNo") Integer userNo);
 
     void insert(InquiryEntity inquiryEntity);
+
+    void update(InquiryEntity inquiryEntity);
+
+    void delete(InquiryEntity inquiryEntity);
 }

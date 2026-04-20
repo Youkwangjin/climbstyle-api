@@ -117,4 +117,25 @@
             #{inquiryCreated}
         )
     </insert>
+
+    <update id="update" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryEntity">
+        UPDATE
+            tb_inquiry
+        SET
+            inquiry_title = #{inquiryTitle},
+            inquiry_content = #{inquiryContent},
+            inquiry_updated = #{inquiryUpdated}
+        WHERE
+            inquiry_no = #{inquiryNo}
+    </update>
+
+    <update id="delete" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryEntity">
+        UPDATE
+            tb_inquiry
+        SET
+            inquiry_delete_yn = #{inquiryDeleteYn},
+            inquiry_updated = #{inquiryUpdated}
+        WHERE
+            inquiry_no = #{inquiryNo}
+    </update>
 </mapper>
