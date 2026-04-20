@@ -44,7 +44,7 @@
                     <td class="td-status">
                         <th:block th:switch="${inquiry.inquiryStatus}">
                             <span th:case="'PENDING'" class="badge badge-pending">대기</span>
-                            <span th:case="'IN_PROGRESS'" class="badge badge-progress">처리중</span>
+                            <span th:case="'PROGRESS'" class="badge badge-progress">처리중</span>
                             <span th:case="'COMPLETED'" class="badge badge-completed">완료</span>
                         </th:block>
                     </td>
