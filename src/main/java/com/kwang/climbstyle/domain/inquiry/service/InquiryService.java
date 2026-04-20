@@ -155,8 +155,8 @@ public class InquiryService {
 
             final String inquiryFilePath = inquiryFile.getInquiryFilePath();
 
-            fileService.fileDelete(inquiryFilePath);
             inquiryFileRepository.delete(inquiryFileNo);
+            fileService.fileDelete(inquiryFilePath);
         }
 
         if (inquiryFiles != null && !inquiryFiles.isEmpty()) {
@@ -213,11 +213,12 @@ public class InquiryService {
 
         List<InquiryFileResponse> files = inquiryFileRepository.selectInquiryFileByInquiryNo(inquiryNo);
         for (InquiryFileResponse inquiryFile : files) {
-            inquiryFileRepository.delete(inquiryFile.getInquiryFileNo());
-        }
 
-        for (InquiryFileResponse inquiryFile : files) {
-            fileService.fileDelete(inquiryFile.getInquiryFilePath());
+            final Integer inquiryFileNo = inquiryFile.getInquiryFileNo();
+            final String inquiryFilePath = inquiryFile.getInquiryFilePath();
+
+            inquiryFileRepository.delete(inquiryFileNo);
+            fileService.fileDelete(inquiryFilePath);
         }
     }
 }
