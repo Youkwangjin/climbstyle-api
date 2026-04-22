@@ -32,6 +32,28 @@
             inquiry_delete_yn = 'N'
     </select>
 
+    <select id="selectAdminInquiryListCountByRequest"
+            parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest" resultType="Integer">
+        SELECT
+            COUNT(i.inquiry_no)
+        FROM
+            tb_inquiry i
+        INNER JOIN
+            tb_user u
+            ON i.user_no = u.user_no
+        <where>
+            <if test="inquiryStatus != null and inquiryStatus != ''">
+                AND i.inquiry_status = #{inquiryStatus}
+            </if>
+            <if test="searchType == 'inquiryTitle' and searchName != null and searchName.trim() != ''">
+                AND i.inquiry_title LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNickname' and searchName != null and searchName.trim() != ''">
+                AND u.user_nickname LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
     <select id="selectUserInquiryList"
             resultType="com.kwang.climbstyle.domain.inquiry.dto.response.InquiryListResponse">
         SELECT
@@ -48,6 +70,43 @@
         ORDER BY
             inquiry_created DESC
         LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
+    </select>
+
+    <select id="selectAdminInquiryList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminInquiryListResponse">
+        SELECT
+            i.inquiry_no,
+            i.inquiry_title,
+            i.inquiry_status,
+            i.inquiry_created,
+            u.user_no,
+            u.user_nickname,
+            EXISTS (
+                SELECT 1
+                FROM
+                    tb_inquiry_file inf
+                WHERE
+                    inf.inquiry_no = i.inquiry_no
+            ) AS has_file
+        FROM
+            tb_inquiry i
+        INNER JOIN
+            tb_user u
+            ON i.user_no = u.user_no
+        <where>
+            <if test="inquiryStatus != null and inquiryStatus != ''">
+                AND i.inquiry_status = #{inquiryStatus}
+            </if>
+            <if test="searchType == 'inquiryTitle' and searchName != null and searchName.trim() != ''">
+                AND i.inquiry_title LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNickname' and searchName != null and searchName.trim() != ''">
+                AND u.user_nickname LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+        ORDER BY
+            i.inquiry_created DESC
+        LIMIT #{pageSize} OFFSET #{startRowNum}
     </select>
 
     <select id="selectPendingInquiryList"

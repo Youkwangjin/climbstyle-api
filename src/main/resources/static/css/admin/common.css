@@ -379,6 +379,7 @@ tbody td {
 .badge-pinned { background: #fef9c3; color: #854d0e }
 .badge-hidden { background: var(--admin-card); color: var(--admin-muted) }
 
+
 .bulk-bar {
     display: none;
     align-items: center;

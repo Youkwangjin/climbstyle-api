@@ -15,7 +15,11 @@ public interface InquiryRepository {
 
     Integer selectInquiryListCountByRequest(@Param("request") PaginationRequest request, @Param("userNo") Integer userNo);
 
+    Integer selectAdminInquiryListCountByRequest(PaginationRequest request);
+
     List<InquiryListResponse> selectUserInquiryList(@Param("request") PaginationRequest request, @Param("userNo") Integer userNo);
+
+    List<AdminInquiryListResponse> selectAdminInquiryList(PaginationRequest request);
 
     List<AdminInquiryListResponse> selectPendingInquiryList();
 
