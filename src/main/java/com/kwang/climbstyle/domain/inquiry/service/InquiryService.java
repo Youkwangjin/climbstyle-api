@@ -6,6 +6,8 @@ import com.kwang.climbstyle.code.inquiry.InquiryErrorCode;
 import com.kwang.climbstyle.code.inquiry.InquiryStatusCode;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
+import com.kwang.climbstyle.domain.admin.dto.request.AdminInquiryListRequest;
+import com.kwang.climbstyle.domain.admin.dto.response.AdminInquiryListResponse;
 import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryCreateRequest;
 import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryUpdateRequest;
@@ -46,9 +48,24 @@ public class InquiryService {
         return inquiryRepository.selectUserInquiryList(request, userNo);
     }
 
+    public List<AdminInquiryListResponse> getAdminInquiryList(AdminInquiryListRequest request) {
+        request.setTotalCount(inquiryRepository.selectAdminInquiryListCountByRequest(request));
+
+        return inquiryRepository.selectAdminInquiryList(request);
+    }
+
     public InquiryDetailResponse getInquiryDetail(Integer inquiryNo) {
         Integer userNo = SecurityUtil.getCurrentUserNo();
         InquiryDetailResponse inquiry = inquiryRepository.selectInquiryByNo(inquiryNo, userNo);
+        if (inquiry == null) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
+        }
+
+        return inquiry;
+    }
+
+    public InquiryDetailResponse getAdminInquiryDetail(Integer inquiryNo) {
+        InquiryDetailResponse inquiry = inquiryRepository.selectAdminInquiryByNo(inquiryNo);
         if (inquiry == null) {
             throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
         }

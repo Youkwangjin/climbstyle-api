@@ -18,6 +18,8 @@ public class InquiryDetailResponse {
 
     private Integer adminNo;
 
+    private String userNickname;
+
     private String inquiryTitle;
 
     private String inquiryContent;

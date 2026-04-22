@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>1:1 문의 관리 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/inquiry/list.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>1:1 문의</span></div>
+                <h1>1:1 문의 관리</h1>
+            </div>
+        </div>
+        <div class="stats-row">
+            <div class="stat-chip">
+                <span class="num blue" th:text="${#numbers.formatInteger(request.totalCount, 0, 'COMMA')}">0</span>
+                <span class="stat-label">전체 문의</span>
+            </div>
+        </div>
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="search-wrap">
+                    <span class="search-icon">
+                        <th:block th:replace="~{fragments/common/icons :: search}" />
+                    </span>
+                    <label>
+                        <input class="search-input" type="text" id="searchName"
+                               th:value="${request.searchName}"
+                               placeholder="제목, 작성자 검색"
+                               onkeydown="if(event.key === 'Enter') searchInquiry()"/>
+                    </label>
+                </div>
+                <label>
+                    <select class="filter-select" id="inquiryStatus" onchange="searchInquiry()">
+                        <option value="" th:selected="${request.inquiryStatus == null or request.inquiryStatus == ''}">전체 상태</option>
+                        <option value="PENDING"   th:selected="${request.inquiryStatus == 'PENDING'}">대기</option>
+                        <option value="PROGRESS"  th:selected="${request.inquiryStatus == 'PROGRESS'}">처리중</option>
+                        <option value="COMPLETED" th:selected="${request.inquiryStatus == 'COMPLETED'}">완료</option>
+                        <option value="CANCELLED" th:selected="${request.inquiryStatus == 'CANCELLED'}">취소</option>
+                    </select>
+                </label>
+                <label>
+                    <select class="filter-select" id="searchType">
+                        <option value="inquiryTitle"  th:selected="${request.searchType == 'inquiryTitle'}">제목</option>
+                        <option value="userNickname"  th:selected="${request.searchType == 'userNickname'}">작성자</option>
+                    </select>
+                </label>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn btn-sm" type="button" onclick="resetSearch()">초기화</button>
+                <button class="btn btn-sm btn-primary" type="button" onclick="searchInquiry()">검색</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th class="th-num">번호</th>
+                    <th class="th-status">상태</th>
+                    <th>제목</th>
+                    <th class="th-author">작성자</th>
+                    <th class="th-date">작성일</th>
+                    <th class="th-file">첨부</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(inquiryList)}">
+                    <td colspan="6" style="text-align:center; padding:40px; color:var(--admin-muted);">
+                        등록된 문의가 없습니다.
+                    </td>
+                </tr>
+                <tr th:each="inquiry, iterStat : ${inquiryList}"
+                    th:onclick="|inquiryDetail(${inquiry.inquiryNo})|" style="cursor:pointer;">
+                    <td class="td-num"
+                        th:text="${request.totalCount - request.startRowNum - iterStat.index}"></td>
+                    <td class="td-status">
+                        <th:block th:switch="${inquiry.inquiryStatus}">
+                            <span th:case="'PENDING'"   class="badge badge-inquiry-pending">대기</span>
+                            <span th:case="'PROGRESS'"  class="badge badge-inquiry-progress">처리중</span>
+                            <span th:case="'COMPLETED'" class="badge badge-inquiry-completed">완료</span>
+                            <span th:case="'CANCELLED'" class="badge badge-inquiry-cancelled">취소</span>
+                        </th:block>
+                    </td>
+                    <td class="td-title">
+                        <span th:text="${inquiry.inquiryTitle}"></span>
+                    </td>
+                    <td class="td-author" th:text="${inquiry.userNickname}"></td>
+                    <td class="td-date" th:text="${#temporals.format(inquiry.inquiryCreated, 'yyyy.MM.dd')}"></td>
+                    <td class="td-file">
+                        <span th:if="${inquiry.hasFile}" th:insert="~{fragments/common/icons :: file}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <th:block th:replace="~{fragments/admin/inquiry/pagination :: pagination(
+            ${request},
+            ${inquiryList},
+            ${currentUrl}
+        )}"/>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script>
+    function searchInquiry() {
+        const params = new URLSearchParams({
+            pageNo: String(1),
+            inquiryStatus: document.getElementById("inquiryStatus").value,
+            searchType: document.getElementById("searchType").value,
+            searchName: document.getElementById("searchName").value.trim()
+        });
+        location.href = "/admin/inquiries?" + params.toString();
+    }
+
+    function inquiryDetail(inquiryNo) {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]",
+            inquiryStatus: "[[${request.inquiryStatus}]]",
+            searchType: "[[${request.searchType}]]",
+            searchName: "[[${request.searchName}]]"
+        });
+        location.href = "/admin/inquiries/" + inquiryNo + "?" + params.toString();
+    }
+
+    function resetSearch() {
+        location.href = "/admin/inquiries";
+    }
+</script>
+</body>
+</html>

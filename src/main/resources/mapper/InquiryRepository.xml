@@ -5,11 +5,13 @@
 <mapper namespace="com.kwang.climbstyle.domain.inquiry.repository.InquiryRepository">
     <resultMap id="inquiryDetailResultMap"              type="com.kwang.climbstyle.domain.inquiry.dto.response.InquiryDetailResponse">
         <id property="inquiryNo"                        column="inquiry_no"/>
+        <result property="userNickname"                 column="user_nickname"/>
         <result property="inquiryTitle"                 column="inquiry_title"/>
         <result property="inquiryContent"               column="inquiry_content"/>
         <result property="inquiryStatus"                column="inquiry_status"/>
         <result property="inquiryAnswerContent"         column="inquiry_answer_content"/>
         <result property="inquiryAnswerContentText"     column="inquiry_answer_content_text"/>
+        <result property="inquiryDeleteYn"              column="inquiry_delete_yn"/>
         <result property="inquiryCreated"               column="inquiry_created"/>
         <collection property="inquiryFiles"             ofType="com.kwang.climbstyle.domain.inquiry.dto.response.InquiryFileResponse">
             <id property="inquiryFileNo"                column="inquiry_file_no"/>
@@ -32,6 +34,28 @@
             inquiry_delete_yn = 'N'
     </select>
 
+    <select id="selectAdminInquiryListCountByRequest"
+            parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest" resultType="Integer">
+        SELECT
+            COUNT(i.inquiry_no)
+        FROM
+            tb_inquiry i
+        INNER JOIN
+            tb_user u
+            ON i.user_no = u.user_no
+        <where>
+            <if test="inquiryStatus != null and inquiryStatus != ''">
+                AND i.inquiry_status = #{inquiryStatus}
+            </if>
+            <if test="searchType == 'inquiryTitle' and searchName != null and searchName.trim() != ''">
+                AND i.inquiry_title LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNickname' and searchName != null and searchName.trim() != ''">
+                AND u.user_nickname LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
     <select id="selectUserInquiryList"
             resultType="com.kwang.climbstyle.domain.inquiry.dto.response.InquiryListResponse">
         SELECT
@@ -48,6 +72,43 @@
         ORDER BY
             inquiry_created DESC
         LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
+    </select>
+
+    <select id="selectAdminInquiryList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminInquiryListResponse">
+        SELECT
+            i.inquiry_no,
+            i.inquiry_title,
+            i.inquiry_status,
+            i.inquiry_created,
+            u.user_no,
+            u.user_nickname,
+            EXISTS (
+                SELECT 1
+                FROM
+                    tb_inquiry_file inf
+                WHERE
+                    inf.inquiry_no = i.inquiry_no
+            ) AS has_file
+        FROM
+            tb_inquiry i
+        INNER JOIN
+            tb_user u
+            ON i.user_no = u.user_no
+        <where>
+            <if test="inquiryStatus != null and inquiryStatus != ''">
+                AND i.inquiry_status = #{inquiryStatus}
+            </if>
+            <if test="searchType == 'inquiryTitle' and searchName != null and searchName.trim() != ''">
+                AND i.inquiry_title LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNickname' and searchName != null and searchName.trim() != ''">
+                AND u.user_nickname LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+        ORDER BY
+            i.inquiry_created DESC
+        LIMIT #{pageSize} OFFSET #{startRowNum}
     </select>
 
     <select id="selectPendingInquiryList"
@@ -99,6 +160,35 @@
             i.user_no = #{userNo}
         AND
             i.inquiry_delete_yn = 'N'
+    </select>
+
+    <select id="selectAdminInquiryByNo" parameterType="Integer" resultMap="inquiryDetailResultMap">
+        SELECT
+            i.inquiry_no,
+            i.inquiry_title,
+            i.inquiry_content,
+            i.inquiry_status,
+            i.inquiry_answer_content,
+            i.inquiry_answer_content_text,
+            i.inquiry_delete_yn,
+            i.inquiry_created,
+            u.user_nickname,
+            inf.inquiry_file_no,
+            inf.inquiry_file_original_name,
+            inf.inquiry_file_stored_name,
+            inf.inquiry_file_path,
+            inf.inquiry_file_extns_nm,
+            inf.inquiry_file_size
+        FROM
+            tb_inquiry i
+        INNER JOIN
+            tb_user u
+            ON i.user_no = u.user_no
+        LEFT JOIN
+            tb_inquiry_file inf
+            ON i.inquiry_no = inf.inquiry_no
+        WHERE
+            i.inquiry_no = #{inquiryNo}
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryEntity"
