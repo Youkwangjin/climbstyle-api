@@ -5,11 +5,13 @@
 <mapper namespace="com.kwang.climbstyle.domain.inquiry.repository.InquiryRepository">
     <resultMap id="inquiryDetailResultMap"              type="com.kwang.climbstyle.domain.inquiry.dto.response.InquiryDetailResponse">
         <id property="inquiryNo"                        column="inquiry_no"/>
+        <result property="userNickname"                 column="user_nickname"/>
         <result property="inquiryTitle"                 column="inquiry_title"/>
         <result property="inquiryContent"               column="inquiry_content"/>
         <result property="inquiryStatus"                column="inquiry_status"/>
         <result property="inquiryAnswerContent"         column="inquiry_answer_content"/>
         <result property="inquiryAnswerContentText"     column="inquiry_answer_content_text"/>
+        <result property="inquiryDeleteYn"              column="inquiry_delete_yn"/>
         <result property="inquiryCreated"               column="inquiry_created"/>
         <collection property="inquiryFiles"             ofType="com.kwang.climbstyle.domain.inquiry.dto.response.InquiryFileResponse">
             <id property="inquiryFileNo"                column="inquiry_file_no"/>
@@ -158,6 +160,35 @@
             i.user_no = #{userNo}
         AND
             i.inquiry_delete_yn = 'N'
+    </select>
+
+    <select id="selectAdminInquiryByNo" parameterType="Integer" resultMap="inquiryDetailResultMap">
+        SELECT
+            i.inquiry_no,
+            i.inquiry_title,
+            i.inquiry_content,
+            i.inquiry_status,
+            i.inquiry_answer_content,
+            i.inquiry_answer_content_text,
+            i.inquiry_delete_yn,
+            i.inquiry_created,
+            u.user_nickname,
+            inf.inquiry_file_no,
+            inf.inquiry_file_original_name,
+            inf.inquiry_file_stored_name,
+            inf.inquiry_file_path,
+            inf.inquiry_file_extns_nm,
+            inf.inquiry_file_size
+        FROM
+            tb_inquiry i
+        INNER JOIN
+            tb_user u
+            ON i.user_no = u.user_no
+        LEFT JOIN
+            tb_inquiry_file inf
+            ON i.inquiry_no = inf.inquiry_no
+        WHERE
+            i.inquiry_no = #{inquiryNo}
     </select>
 
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryEntity"

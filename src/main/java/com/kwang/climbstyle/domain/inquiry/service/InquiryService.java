@@ -64,6 +64,15 @@ public class InquiryService {
         return inquiry;
     }
 
+    public InquiryDetailResponse getAdminInquiryDetail(Integer inquiryNo) {
+        InquiryDetailResponse inquiry = inquiryRepository.selectAdminInquiryByNo(inquiryNo);
+        if (inquiry == null) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
+        }
+
+        return inquiry;
+    }
+
     @Transactional
     public void createInquiry(InquiryCreateRequest request) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();

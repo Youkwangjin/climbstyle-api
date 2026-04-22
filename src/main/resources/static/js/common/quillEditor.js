@@ -45,6 +45,9 @@ quill.getModule("toolbar").addHandler("image", function () {
     })
 });
 
-document.querySelector(".notice-form").addEventListener("submit", function () {
-    document.getElementById("content").value = quill.root.innerHTML;
-});
+const noticeForm = document.querySelector(".notice-form");
+if (noticeForm) {
+    noticeForm.addEventListener("submit", function () {
+        document.getElementById("content").value = quill.root.innerHTML;
+    });
+}

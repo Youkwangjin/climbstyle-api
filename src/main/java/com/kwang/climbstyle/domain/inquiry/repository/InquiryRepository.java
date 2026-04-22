@@ -25,6 +25,8 @@ public interface InquiryRepository {
 
     InquiryDetailResponse selectInquiryByNo(@Param("inquiryNo") Integer inquiryNo, @Param("userNo") Integer userNo);
 
+    InquiryDetailResponse selectAdminInquiryByNo(@Param("inquiryNo") Integer inquiryNo);
+
     void insert(InquiryEntity inquiryEntity);
 
     void update(InquiryEntity inquiryEntity);

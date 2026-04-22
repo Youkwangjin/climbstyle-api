@@ -1,0 +1,214 @@
+.inquiry-card,
+.answer-card {
+    border: 1px solid var(--admin-line);
+    border-radius: var(--admin-radius);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.inquiry-card-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--admin-line);
+    background: var(--admin-card);
+}
+
+.inquiry-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.inquiry-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.inquiry-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.meta-label { color: var(--admin-muted) }
+
+.meta-value {
+    color: var(--admin-text);
+    font-weight: 600;
+}
+
+.meta-divider {
+    width: 1px;
+    height: 10px;
+    background: var(--admin-line);
+}
+
+.inquiry-content {
+    padding: 28px 24px;
+    min-height: 120px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--admin-text);
+    white-space: pre-wrap;
+}
+
+.inquiry-content p { margin: 0 }
+
+.inquiry-attachments {
+    padding: 16px 24px;
+    border-top: 1px solid var(--admin-line);
+    background: var(--admin-card);
+}
+
+.attachments-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--admin-muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.attachment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.attachment-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--admin-line);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.attachment-icon {
+    display: flex;
+    align-items: center;
+    color: var(--admin-muted);
+}
+
+.attachment-icon svg { width: 16px; height: 16px }
+
+.attachment-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--admin-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.attachment-size {
+    font-size: 12px;
+    color: var(--admin-muted);
+    flex-shrink: 0;
+}
+
+.attachment-down {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1px solid var(--admin-line);
+    background: #fff;
+    color: var(--admin-muted);
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: all 0.12s;
+}
+
+.attachment-down:hover {
+    background: var(--admin-brand);
+    border-color: transparent;
+    color: #fff;
+}
+
+.attachment-down svg { width: 14px; height: 14px }
+
+/* Answer card */
+.answer-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--admin-line);
+    background: var(--admin-card);
+}
+
+.answer-card-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--admin-line);
+    background: #fff;
+}
+
+.status-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--admin-muted);
+}
+
+.answer-card .ql-toolbar.ql-snow {
+    border: none;
+    border-bottom: 1px solid var(--admin-line);
+    padding: 10px 16px;
+}
+
+.answer-card .ql-container.ql-snow {
+    border: none;
+    min-height: 240px;
+    font-size: 14px;
+}
+
+.answer-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid var(--admin-line);
+    background: var(--admin-card);
+}
+
+.deleted-notice {
+    font-size: 13px;
+    font-weight: 600;
+    color: #b91c1c;
+}
+
+#quill-editor.is-disabled .ql-toolbar { display: none }
+
+#quill-editor.is-disabled .ql-container.ql-snow {
+    border-top: 1px solid var(--admin-line);
+}
+
+#quill-editor.is-disabled .ql-editor {
+    background: var(--admin-card);
+    color: var(--admin-muted);
+    cursor: not-allowed;
+}
