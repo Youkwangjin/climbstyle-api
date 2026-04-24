@@ -9,9 +9,10 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum InquirySuccessCode implements ApiCode {
 
-    INQUIRY_CREATE_SUCCESS(HttpStatus.OK, "1000", "문의내역이 등록되었습니다."),
-    INQUIRY_UPDATE_SUCCESS(HttpStatus.OK, "1000", "문의내역이 수정되었습니다."),
-    INQUIRY_DELETE_SUCCESS(HttpStatus.OK, "1000", "문의내역이 삭제되었습니다."),
+    INQUIRY_CREATE_SUCCESS(HttpStatus.OK,        "1000", "문의내역이 등록되었습니다."),
+    INQUIRY_UPDATE_SUCCESS(HttpStatus.OK,        "1000", "문의내역이 수정되었습니다."),
+    INQUIRY_STATUS_UPDATE_SUCCESS(HttpStatus.OK, "1000", "문의 상태가 변경되었습니다."),
+    INQUIRY_DELETE_SUCCESS(HttpStatus.OK,        "1000", "문의내역이 삭제되었습니다."),
     ;
 
     private final HttpStatus httpStatus;
