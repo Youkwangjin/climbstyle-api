@@ -10,6 +10,7 @@ import com.kwang.climbstyle.domain.admin.dto.request.AdminInquiryListRequest;
 import com.kwang.climbstyle.domain.admin.dto.response.AdminInquiryListResponse;
 import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryCreateRequest;
+import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryStatusRequest;
 import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryUpdateRequest;
 import com.kwang.climbstyle.domain.inquiry.dto.response.InquiryDetailResponse;
 import com.kwang.climbstyle.domain.inquiry.dto.response.InquiryFileResponse;
@@ -201,6 +202,34 @@ public class InquiryService {
                 inquiryFileRepository.insert(inquiryFileEntity);
             }
         }
+    }
+
+    @Transactional
+    public void updateInquiryStatus(Integer inquiryNo, InquiryStatusRequest request) {
+        final String inquiryStatus = request.getInquiryStatus();
+
+        InquiryDetailResponse inquiry = inquiryRepository.selectAdminInquiryByNo(inquiryNo);
+        if (inquiry == null) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
+        }
+
+        final String currnetInquiryDeleteYn = inquiry.getInquiryDeleteYn();
+        final String currnetInquiryStatus = inquiry.getInquiryStatus();
+
+        if (StringUtils.equals(currnetInquiryDeleteYn, InquiryDeleteCode.DELETED.getCode())) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_ALREADY_DELETED);
+        }
+
+        if (StringUtils.equals(currnetInquiryStatus, InquiryStatusCode.COMPLETED.getCode())) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_STATUS_NOT_CHANGEABLE);
+        }
+
+        InquiryEntity inquiryEntity = InquiryEntity.builder()
+                .inquiryNo(inquiryNo)
+                .inquiryStatus(inquiryStatus)
+                .build();
+
+        inquiryRepository.updateStatus(inquiryEntity);
     }
 
     @Transactional

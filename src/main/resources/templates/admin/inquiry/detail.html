@@ -119,12 +119,11 @@
     function changeStatus() {
         if (!confirm("처리 상태를 변경하시겠습니까?")) return;
 
-        const formData = new FormData();
-        formData.append("inquiryStatus", document.getElementById("inquiryStatus").value);
-
-        API.callFormData(`/api/v1/admin/inquiries/${document.getElementById("inquiryNo").value}/status`, {
-            method: "PUT",
-            body: formData
+        API.callJson(`/api/v1/admin/inquiries/${document.getElementById("inquiryNo").value}/status`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                inquiryStatus: document.getElementById("inquiryStatus").value.trim()
+            })
         })
             .then(async response => {
                 const body = await response.json();
@@ -151,7 +150,7 @@
         formData.append("inquiryAnswerContent", quill.root.innerHTML);
 
         API.callFormData(`/api/v1/admin/inquiries/${document.getElementById("inquiryNo").value}/answer`, {
-            method: "PUT",
+            method: "PATCH",
             body: formData
         })
             .then(async response => {

@@ -41,7 +41,7 @@ public class InquiryValidationException {
     }
 
     private static InquiryErrorCode getInquiryErrorCode(List<FieldError> fieldErrors) {
-        String[] fieldPriority = {"inquiryTitle", "inquiryContent"};
+        String[] fieldPriority = {"inquiryTitle", "inquiryContent", "inquiryStatus"};
 
         for (String priorityField : fieldPriority) {
             for (FieldError fieldError : fieldErrors) {
@@ -49,6 +49,7 @@ public class InquiryValidationException {
                     switch (fieldError.getField()) {
                         case "inquiryTitle": return InquiryErrorCode.INQUIRY_TITLE_INVALID_FORMAT;
                         case "inquiryContent": return InquiryErrorCode.INQUIRY_CONTENT_INVALID_FORMAT;
+                        case "inquiryStatus": return InquiryErrorCode.INQUIRY_STATUS_INVALID;
                     }
                 }
             }

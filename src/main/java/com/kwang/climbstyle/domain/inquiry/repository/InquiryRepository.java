@@ -31,5 +31,7 @@ public interface InquiryRepository {
 
     void update(InquiryEntity inquiryEntity);
 
+    void updateStatus(InquiryEntity inquiryEntity);
+
     void delete(InquiryEntity inquiryEntity);
 }

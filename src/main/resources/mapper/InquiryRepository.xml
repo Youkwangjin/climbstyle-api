@@ -221,6 +221,15 @@
             inquiry_no = #{inquiryNo}
     </update>
 
+    <update id="updateStatus" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryEntity">
+        UPDATE
+            tb_inquiry
+        SET
+            inquiry_status = #{inquiryStatus}
+        WHERE
+            inquiry_no = #{inquiryNo}
+    </update>
+
     <update id="delete" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryEntity">
         UPDATE
             tb_inquiry
