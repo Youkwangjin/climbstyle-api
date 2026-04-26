@@ -1,11 +1,14 @@
 package com.kwang.climbstyle.domain.faq.service;
 
+import com.kwang.climbstyle.code.faq.FaqErrorCode;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.admin.dto.response.AdminFaqListResponse;
 import com.kwang.climbstyle.domain.faq.dto.request.FaqCreateRequest;
+import com.kwang.climbstyle.domain.faq.dto.response.FaqDetailResponse;
 import com.kwang.climbstyle.domain.faq.entity.FaqEntity;
 import com.kwang.climbstyle.domain.faq.repository.FaqRepository;
+import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,16 @@ public class FaqService {
         request.setTotalCount(faqRepository.selectAdminFaqListCountByRequest(request));
 
         return faqRepository.selectAdminFaqList(request);
+    }
+
+    @Transactional(readOnly = true)
+    public FaqDetailResponse getAdminFaqDetail(Integer faqNo) {
+        FaqDetailResponse faq = faqRepository.selectAdminFaqByNo(faqNo);
+        if (faq == null) {
+            throw new ClimbStyleException(FaqErrorCode.FAQ_NOT_FOUND);
+        }
+
+        return faq;
     }
 
     @Transactional

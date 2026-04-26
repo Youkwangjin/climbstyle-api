@@ -35,6 +35,21 @@
         LIMIT #{pageSize} OFFSET #{startRowNum}
     </select>
 
+    <select id="selectAdminFaqByNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.faq.dto.response.FaqDetailResponse">
+        SELECT
+            faq_no,
+            faq_question,
+            faq_answer,
+            faq_visible_yn,
+            faq_created,
+            faq_updated
+        FROM
+            tb_faq
+        WHERE
+            faq_no = #{faqNo}
+    </select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.faq.entity.FaqEntity" useGeneratedKeys="true" keyProperty="faqNo">
         INSERT INTO tb_faq (
             admin_no,
