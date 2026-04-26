@@ -7,6 +7,7 @@ import com.kwang.climbstyle.domain.admin.dto.response.AdminFaqListResponse;
 import com.kwang.climbstyle.domain.faq.dto.request.FaqCreateRequest;
 import com.kwang.climbstyle.domain.faq.dto.request.FaqUpdateRequest;
 import com.kwang.climbstyle.domain.faq.dto.response.FaqDetailResponse;
+import com.kwang.climbstyle.domain.faq.dto.response.FaqListResponse;
 import com.kwang.climbstyle.domain.faq.entity.FaqEntity;
 import com.kwang.climbstyle.domain.faq.repository.FaqRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
@@ -22,6 +23,13 @@ import java.util.List;
 public class FaqService {
 
     private final FaqRepository faqRepository;
+
+    @Transactional(readOnly = true)
+    public List<FaqListResponse> getFaqList(CommonListRequest request) {
+        request.setTotalCount(faqRepository.selectFaqListCountByRequest(request));
+
+        return faqRepository.selectFaqList(request);
+    }
 
     @Transactional(readOnly = true)
     public List<AdminFaqListResponse> getAdminFaqList(CommonListRequest request) {
