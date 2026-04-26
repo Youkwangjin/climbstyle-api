@@ -1,0 +1,3 @@
+.th-visible, .td-visible { width: 60px; text-align: center; white-space: nowrap }
+
+.badge-faq-hidden { background: var(--admin-card); color: var(--admin-muted) }

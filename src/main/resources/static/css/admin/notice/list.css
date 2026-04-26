@@ -1,0 +1,10 @@
+.badge-notice  { background: #fff3eb; color: #ff6b00 }
+.badge-event   { background: var(--admin-brand-light); color: var(--admin-brand) }
+.badge-update  { background: #f0fdf4; color: #16a34a }
+.badge-pinned  { background: #fef9c3; color: #854d0e }
+.badge-hidden  { background: var(--admin-card); color: var(--admin-muted) }
+
+.row-pinned       { background: #f0f7ff }
+.row-pinned:hover { background: #dbeafe !important }
+
+.td-hidden { color: var(--admin-muted) }

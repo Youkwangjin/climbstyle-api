@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.faq.repository.FaqRepository">
+    <select id="selectFaqListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="Integer">
+        SELECT
+            COUNT(faq_no)
+        FROM
+            tb_faq
+        WHERE
+            faq_visible_yn = 'Y'
+        <if test="searchName != null and searchName.trim() != ''">
+            AND faq_question LIKE CONCAT('%', #{searchName}, '%')
+        </if>
+    </select>
+
+    <select id="selectAdminFaqListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="Integer">
+        SELECT
+            COUNT(faq_no)
+        FROM
+            tb_faq
+        <where>
+            <if test="searchName != null and searchName.trim() != ''">
+                AND faq_question LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectFaqList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="com.kwang.climbstyle.domain.faq.dto.response.FaqListResponse">
+        SELECT
+            faq_no,
+            faq_question,
+            faq_answer,
+            faq_created
+        FROM
+            tb_faq
+        WHERE
+            faq_visible_yn = 'Y'
+        <if test="searchName != null and searchName.trim() != ''">
+            AND faq_question LIKE CONCAT('%', #{searchName}, '%')
+        </if>
+        ORDER BY
+            faq_created DESC
+        LIMIT #{pageSize} OFFSET #{startRowNum}
+    </select>
+
+    <select id="selectAdminFaqList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminFaqListResponse">
+        SELECT
+            faq_no,
+            faq_question,
+            faq_visible_yn,
+            faq_created
+        FROM
+            tb_faq
+        <where>
+            <if test="searchName != null and searchName.trim() != ''">
+                AND faq_question LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+        ORDER BY
+            faq_created DESC
+        LIMIT #{pageSize} OFFSET #{startRowNum}
+    </select>
+
+    <select id="selectAdminFaqByNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.faq.dto.response.FaqDetailResponse">
+        SELECT
+            faq_no,
+            faq_question,
+            faq_answer,
+            faq_visible_yn,
+            faq_created,
+            faq_updated
+        FROM
+            tb_faq
+        WHERE
+            faq_no = #{faqNo}
+    </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.faq.entity.FaqEntity" useGeneratedKeys="true" keyProperty="faqNo">
+        INSERT INTO tb_faq (
+            admin_no,
+            faq_question,
+            faq_answer,
+            faq_visible_yn,
+            faq_created
+        ) VALUES (
+            #{adminNo},
+            #{faqQuestion},
+            #{faqAnswer},
+            #{faqVisibleYn},
+            #{faqCreated}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.kwang.climbstyle.domain.faq.entity.FaqEntity">
+        UPDATE
+            tb_faq
+        SET
+            faq_question = #{faqQuestion},
+            faq_answer = #{faqAnswer},
+            faq_visible_yn = #{faqVisibleYn},
+            faq_updated = #{faqUpdated}
+        WHERE
+            faq_no = #{faqNo}
+    </update>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE
+        FROM
+            tb_faq
+        WHERE
+            faq_no = #{faqNo}
+    </delete>
+</mapper>

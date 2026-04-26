@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FAQ | ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/faq/list.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header :: header}"></div>
+</header>
+<section class="section">
+    <div class="container">
+        <div class="page-title-wrap">
+            <h1>자주 묻는 질문</h1>
+            <p>궁금한 점을 빠르게 확인하세요.</p>
+        </div>
+        <div class="list-toolbar">
+            <p class="total-count">총 <strong th:text="${#numbers.formatInteger(request.totalCount, 0, 'COMMA')}">0</strong>개의 질문</p>
+            <div class="search-form">
+                <div class="search-wrap">
+                    <span class="search-icon">
+                        <th:block th:replace="~{fragments/common/icons :: search}" />
+                    </span>
+                    <label>
+                        <input class="search-input" type="text" id="searchName" th:value="${request.searchName}"
+                               placeholder="검색어를 입력하세요"
+                               onkeydown="if(event.key === 'Enter') searchFaq()"/>
+                    </label>
+                </div>
+                <button class="search-btn" type="button" onclick="searchFaq()">검색</button>
+            </div>
+        </div>
+        <div class="faq-list">
+            <div th:if="${#lists.isEmpty(faqList)}" class="faq-empty">등록된 FAQ가 없습니다.</div>
+            <div th:each="faq : ${faqList}" class="faq-item">
+                <button type="button" class="faq-question" th:attr="data-faq-no=${faq.faqNo}">
+                    <span class="faq-q-label">Q</span>
+                    <span class="faq-q-text" th:text="${faq.faqQuestion}"></span>
+                    <span class="faq-chevron">
+                        <th:block th:replace="~{fragments/common/icons :: chevron-down}" />
+                    </span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        <span class="faq-a-label">A</span>
+                        <p class="faq-a-text" th:text="${faq.faqAnswer}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <th:block th:replace="~{fragments/faq/pagination :: pagination(
+            ${request},
+            ${faqList},
+            ${currentUrl}
+        )}"/>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/logout.js}"></script>
+<script>
+    document.querySelectorAll(".faq-question").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const item = btn.closest(".faq-item");
+            const isOpen = item.classList.contains("is-open");
+
+            document.querySelectorAll(".faq-item.is-open").forEach(el => el.classList.remove("is-open"));
+
+            if (!isOpen) item.classList.add("is-open");
+        });
+    });
+
+    function searchFaq() {
+        const params = new URLSearchParams({
+            pageNo: "1",
+            searchName: document.getElementById("searchName").value.trim()
+        });
+        location.href = "/faqs?" + params.toString();
+    }
+</script>
+</body>
+</html>
