@@ -80,6 +80,7 @@
             i.inquiry_no,
             i.inquiry_title,
             i.inquiry_status,
+            i.inquiry_delete_yn,
             i.inquiry_created,
             u.user_no,
             u.user_nickname,
@@ -226,6 +227,18 @@
             tb_inquiry
         SET
             inquiry_status = #{inquiryStatus}
+        WHERE
+            inquiry_no = #{inquiryNo}
+    </update>
+
+    <update id="saveAnswer" parameterType="com.kwang.climbstyle.domain.inquiry.entity.InquiryEntity">
+        UPDATE
+            tb_inquiry
+        SET
+            admin_no = #{adminNo},
+            inquiry_status = #{inquiryStatus},
+            inquiry_answer_content = #{inquiryAnswerContent},
+            inquiry_answer_content_text = #{inquiryAnswerContentText}
         WHERE
             inquiry_no = #{inquiryNo}
     </update>

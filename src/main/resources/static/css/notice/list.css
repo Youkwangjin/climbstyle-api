@@ -219,6 +219,8 @@
     white-space: nowrap;
 }
 
+.th-pin, .td-pin { width: 60px; text-align: center; white-space: nowrap }
+
 .badge-pin    { background: #fff3eb; color: var(--brand); }
 .badge-notice { background: #f0f9ff; color: #0369a1; }
 .badge-event  { background: #fdf4ff; color: #7e22ce; }

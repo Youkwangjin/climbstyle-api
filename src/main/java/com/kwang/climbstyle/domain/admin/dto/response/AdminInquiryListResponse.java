@@ -21,6 +21,8 @@ public class AdminInquiryListResponse {
 
     private String inquiryStatus;
 
+    private String inquiryDeleteYn;
+
     private LocalDateTime inquiryCreated;
 
     private Boolean hasFile;

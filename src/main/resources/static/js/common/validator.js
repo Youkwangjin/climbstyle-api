@@ -268,6 +268,14 @@ const Validator = {
         return true;
     },
 
+    inquiryAnswer() {
+        if (!quill.getText().trim()) {
+            alert("답변 내용을 입력해주세요.");
+            return false;
+        }
+        return true;
+    },
+
     inquiry() {
         const inquiryTitle = document.getElementById("inquiryTitle").value.trim();
         const inquiryContent = document.getElementById("inquiryContent").value.trim();
