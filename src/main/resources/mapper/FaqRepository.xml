@@ -77,4 +77,12 @@
         WHERE
             faq_no = #{faqNo}
     </update>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE
+        FROM
+            tb_faq
+        WHERE
+            faq_no = #{faqNo}
+    </delete>
 </mapper>

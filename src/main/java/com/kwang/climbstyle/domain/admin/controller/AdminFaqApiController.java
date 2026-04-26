@@ -32,4 +32,11 @@ public class AdminFaqApiController {
 
         return ApiResponseBuilder.ok(FaqSuccessCode.FAQ_UPDATE_SUCCESS, faqNo);
     }
+
+    @DeleteMapping (value = "/api/v1/faqs/{faqNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> deleteFaq(@PathVariable("faqNo") Integer faqNo) {
+        faqService.deleteFaq(faqNo);
+
+        return ApiResponseBuilder.ok(FaqSuccessCode.FAQ_DELETE_SUCCESS);
+    }
 }

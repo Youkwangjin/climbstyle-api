@@ -21,4 +21,6 @@ public interface FaqRepository {
     void insert(FaqEntity faqEntity);
 
     void update(FaqEntity faqEntity);
+
+    void delete(@Param("faqNo") Integer faqNo);
 }

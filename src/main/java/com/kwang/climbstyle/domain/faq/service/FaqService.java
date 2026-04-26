@@ -81,4 +81,14 @@ public class FaqService {
 
         faqRepository.update(faqEntity);
     }
+
+    @Transactional
+    public void deleteFaq(Integer faqNo) {
+        FaqDetailResponse faq = faqRepository.selectAdminFaqByNo(faqNo);
+        if (faq == null) {
+            throw new ClimbStyleException(FaqErrorCode.FAQ_NOT_FOUND);
+        }
+
+        faqRepository.delete(faqNo);
+    }
 }
