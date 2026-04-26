@@ -67,6 +67,7 @@
             n.notice_category,
             n.notice_title,
             n.notice_hit,
+            n.notice_pin_yn,
             n.notice_created,
             EXISTS (
                 SELECT 1
@@ -89,7 +90,8 @@
             AND n.notice_content_text LIKE CONCAT('%', #{searchName}, '%')
         </if>
         ORDER BY
-            n.notice_created desc
+            n.notice_pin_yn DESC,
+            n.notice_created DESC
         LIMIT #{pageSize} OFFSET #{startRowNum}
     </select>
 
@@ -125,7 +127,8 @@
             </if>
         </where>
         ORDER BY
-            n.notice_created desc
+            n.notice_pin_yn DESC,
+            n.notice_created DESC
         LIMIT #{pageSize} OFFSET #{startRowNum}
     </select>
 

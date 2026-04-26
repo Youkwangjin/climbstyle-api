@@ -52,6 +52,7 @@
                 <thead>
                 <tr>
                     <th>번호</th>
+                    <th class="th-pin">고정</th>
                     <th class="th-category">구분</th>
                     <th class="th-title">제목</th>
                     <th class="th-right">날짜</th>
@@ -61,16 +62,15 @@
                 </thead>
                 <tbody>
                 <tr th:if="${#lists.isEmpty(noticeList)}">
-                    <td colspan="6" class="td-empty">등록된 공지사항이 없습니다.</td>
+                    <td colspan="7" class="td-empty">등록된 공지사항이 없습니다.</td>
                 </tr>
                 <tr th:each="notice, iterStat : ${noticeList}"
                     th:classappend="${notice.noticePinYn == 'Y'} ? 'row-pinned'"
                     th:onclick="|noticeDetail(${notice.noticeNo})|">
 
-                <td class="td-num">
+                <td class="td-num" th:text="${request.totalCount - request.startRowNum - iterStat.index}"></td>
+                    <td class="td-pin">
                         <span th:if="${notice.noticePinYn == 'Y'}" class="badge badge-pin">고정</span>
-                        <span th:unless="${notice.noticePinYn == 'Y'}"
-                              th:text="${request.totalCount - request.startRowNum - iterStat.index}"></span>
                     </td>
                     <td class="td-category">
                         <th:block th:switch="${notice.noticeCategory}">
