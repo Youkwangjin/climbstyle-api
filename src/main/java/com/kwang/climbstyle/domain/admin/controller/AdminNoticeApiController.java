@@ -1,4 +1,4 @@
-package com.kwang.climbstyle.domain.notice.controller;
+package com.kwang.climbstyle.domain.admin.controller;
 
 import com.kwang.climbstyle.code.notice.NoticeSuccessCode;
 import com.kwang.climbstyle.common.response.ApiResponseBuilder;

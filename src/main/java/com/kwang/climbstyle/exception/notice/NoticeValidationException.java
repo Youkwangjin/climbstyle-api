@@ -2,7 +2,7 @@ package com.kwang.climbstyle.exception.notice;
 
 import com.kwang.climbstyle.code.notice.NoticeErrorCode;
 import com.kwang.climbstyle.common.response.ApiErrorResponse;
-import com.kwang.climbstyle.domain.notice.controller.AdminNoticeApiController;
+import com.kwang.climbstyle.domain.admin.controller.AdminNoticeApiController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
