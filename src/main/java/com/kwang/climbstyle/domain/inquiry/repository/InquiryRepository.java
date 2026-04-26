@@ -33,5 +33,7 @@ public interface InquiryRepository {
 
     void updateStatus(InquiryEntity inquiryEntity);
 
+    void saveAnswer(InquiryEntity inquiryEntity);
+
     void delete(InquiryEntity inquiryEntity);
 }
