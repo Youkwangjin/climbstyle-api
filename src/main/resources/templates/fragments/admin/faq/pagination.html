@@ -20,8 +20,7 @@
 
         <div class="page-list" aria-label="페이지 번호">
             <th:block th:each="pageNum : ${#numbers.sequence(request.startPageNo, request.endPageNo)}">
-                <a th:href="@{${currentUrl}(pageNo=${pageNum}, faqCategory=${request.faqCategory},
-                   searchName=${request.searchName})}"
+                <a th:href="@{${currentUrl}(pageNo=${pageNum}, searchName=${request.searchName})}"
                    class="page-num"
                    th:classappend="${pageNum == request.pageNoAsInt} ? 'is-active' : ''"
                    th:attr="aria-current=${pageNum == request.pageNoAsInt} ? 'page' : null"

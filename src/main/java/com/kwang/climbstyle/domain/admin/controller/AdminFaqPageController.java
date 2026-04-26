@@ -25,4 +25,9 @@ public class AdminFaqPageController {
 
         return "admin/faq/list";
     }
+
+    @GetMapping(value = "/admin/faqs/new")
+    public String adminFaqNew() {
+        return "admin/faq/new";
+    }
 }

@@ -2,6 +2,7 @@ package com.kwang.climbstyle.domain.faq.repository;
 
 import com.kwang.climbstyle.common.protocal.PaginationRequest;
 import com.kwang.climbstyle.domain.admin.dto.response.AdminFaqListResponse;
+import com.kwang.climbstyle.domain.faq.entity.FaqEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -12,4 +13,6 @@ public interface FaqRepository {
     Integer selectAdminFaqListCountByRequest(PaginationRequest paginationRequest);
 
     List<AdminFaqListResponse> selectAdminFaqList(PaginationRequest paginationRequest);
+
+    void insert(FaqEntity faqEntity);
 }
