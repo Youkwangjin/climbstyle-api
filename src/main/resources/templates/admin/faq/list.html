@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FAQ 관리 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/faq/list.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>FAQ</span></div>
+                <h1>FAQ 관리</h1>
+            </div>
+            <a href="/admin/faqs/new" class="btn btn-primary">FAQ 작성</a>
+        </div>
+        <div class="stats-row">
+            <div class="stat-chip">
+                <span class="num blue" th:text="${#numbers.formatInteger(request.totalCount, 0, 'COMMA')}">0</span>
+                <span class="stat-label">전체 FAQ</span>
+            </div>
+        </div>
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="search-wrap">
+                    <span class="search-icon">
+                        <th:block th:replace="~{fragments/common/icons :: search}" />
+                    </span>
+                    <label>
+                        <input class="search-input" type="text" id="searchName"
+                               th:value="${request.searchName}"
+                               placeholder="질문 검색"
+                               onkeydown="if(event.key === 'Enter') searchFaq()"/>
+                    </label>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn btn-sm" type="button" onclick="resetSearch()">초기화</button>
+                <button class="btn btn-sm btn-primary" type="button" onclick="searchFaq()">검색</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th class="th-num">번호</th>
+                    <th>질문</th>
+                    <th class="th-visible">공개</th>
+                    <th class="th-date">작성일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(faqList)}">
+                    <td colspan="4" style="text-align:center; padding:40px; color:var(--admin-muted);">
+                        등록된 FAQ가 없습니다.
+                    </td>
+                </tr>
+                <tr th:each="faq, iterStat : ${faqList}"
+                    th:onclick="|faqDetail(${faq.faqNo})|" style="cursor:pointer;">
+                    <td class="td-num"
+                        th:text="${request.totalCount - request.startRowNum - iterStat.index}"></td>
+                    <td class="td-title" th:text="${faq.faqQuestion}"></td>
+                    <td class="td-visible">
+                        <span th:if="${faq.faqVisibleYn == 'N'}" class="badge badge-faq-hidden">숨김</span>
+                    </td>
+                    <td class="td-date" th:text="${#temporals.format(faq.faqCreated, 'yyyy.MM.dd')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <th:block th:replace="~{fragments/admin/faq/pagination :: pagination(
+            ${request},
+            ${faqList},
+            ${currentUrl}
+        )}"/>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script>
+    function searchFaq() {
+        const params = new URLSearchParams({
+            pageNo: String(1),
+            searchName: document.getElementById("searchName").value.trim()
+        });
+        location.href = "/admin/faqs?" + params.toString();
+    }
+
+    function faqDetail(faqNo) {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]",
+            searchName: "[[${request.searchName}]]"
+        });
+        location.href = "/admin/faqs/" + faqNo + "?" + params.toString();
+    }
+
+    function resetSearch() {
+        location.href = "/admin/faqs";
+    }
+</script>
+</body>
+</html>
