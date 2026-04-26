@@ -179,6 +179,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/notices/*").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/faqs").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/faqs/*").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
 
                         .anyRequest().permitAll()
                 );

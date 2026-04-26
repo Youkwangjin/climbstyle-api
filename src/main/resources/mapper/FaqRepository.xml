@@ -65,4 +65,16 @@
             #{faqCreated}
         )
     </insert>
+
+    <update id="update" parameterType="com.kwang.climbstyle.domain.faq.entity.FaqEntity">
+        UPDATE
+            tb_faq
+        SET
+            faq_question = #{faqQuestion},
+            faq_answer = #{faqAnswer},
+            faq_visible_yn = #{faqVisibleYn},
+            faq_updated = #{faqUpdated}
+        WHERE
+            faq_no = #{faqNo}
+    </update>
 </mapper>

@@ -19,4 +19,6 @@ public interface FaqRepository {
     FaqDetailResponse selectAdminFaqByNo(@Param("faqNo") Integer faqNo);
 
     void insert(FaqEntity faqEntity);
+
+    void update(FaqEntity faqEntity);
 }

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>FAQ 수정 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/faq/new.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>FAQ</span></div>
+                <h1>FAQ 수정</h1>
+            </div>
+            <button type="button" class="btn btn-sm" onclick="faqDetail()">이전</button>
+        </div>
+        <form class="faq-form">
+            <label for="faqNo">
+                <input type="hidden" id="faqNo" th:value="${faqDetail.faqNo}" />
+            </label>
+            <div class="form-row">
+                <label class="form-label" for="faqQuestion">질문</label>
+                <input class="form-input" type="text" id="faqQuestion"
+                       th:value="${faqDetail.faqQuestion}" maxlength="200" />
+                <span class="form-hint">최대 200자</span>
+            </div>
+            <div class="form-row">
+                <label class="form-label" for="faqAnswer">답변</label>
+                <textarea class="form-textarea" id="faqAnswer"
+                          th:text="${faqDetail.faqAnswer}"></textarea>
+            </div>
+            <div class="form-row form-row-inline">
+                <label class="form-label">공개 여부</label>
+                <label class="toggle-wrap">
+                    <input type="checkbox" id="faqVisibleYn" value="Y" class="toggle-input"
+                           th:checked="${faqDetail.faqVisibleYn == 'Y'}" />
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                    <span class="toggle-text">사용자에게 공개합니다</span>
+                </label>
+            </div>
+            <div class="form-footer">
+                <button type="button" class="btn" onclick="faqDetail()">취소</button>
+                <button type="button" class="btn btn-primary" onclick="update()">수정하기</button>
+            </div>
+        </form>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
+<script>
+    function faqDetail() {
+        location.href = "/admin/faqs/" + document.getElementById("faqNo").value;
+    }
+
+    function update() {
+        if (!Validator.faq() || !confirm("FAQ를 수정하시겠습니까?")) return;
+
+        API.callJson(`/api/v1/faqs/${document.getElementById("faqNo").value}`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                faqQuestion: document.getElementById("faqQuestion").value.trim(),
+                faqAnswer: document.getElementById("faqAnswer").value.trim(),
+                faqVisibleYn: document.getElementById("faqVisibleYn").checked ? "Y" : "N"
+            })
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.href = "/admin/faqs/" + body.data;
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>

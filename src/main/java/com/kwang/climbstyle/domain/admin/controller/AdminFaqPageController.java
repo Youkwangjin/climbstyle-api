@@ -42,4 +42,14 @@ public class AdminFaqPageController {
     public String adminFaqNew() {
         return "admin/faq/new";
     }
+
+    @GetMapping(value = "/admin/faqs/{faqNo}/edit")
+    public String adminFaqEdit(@PathVariable("faqNo") Integer faqNo, CommonListRequest request, Model model) {
+        FaqDetailResponse response = faqService.getAdminFaqDetail(faqNo);
+
+        model.addAttribute("faqDetail", response);
+        model.addAttribute("request", request);
+
+        return "admin/faq/edit";
+    }
 }
