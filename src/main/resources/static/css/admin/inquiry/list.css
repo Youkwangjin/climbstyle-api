@@ -5,3 +5,6 @@
 .badge-inquiry-progress  { background: var(--admin-brand-light); color: var(--admin-brand) }
 .badge-inquiry-completed { background: #f0fdf4; color: #16a34a }
 .badge-inquiry-cancelled { background: var(--admin-card); color: var(--admin-muted) }
+.badge-inquiry-deleted   { background: #fee2e2; color: #b91c1c }
+
+.th-deleted, .td-deleted { width: 60px; text-align: center; white-space: nowrap }

@@ -69,11 +69,12 @@
                     <th class="th-author">작성자</th>
                     <th class="th-date">작성일</th>
                     <th class="th-file">첨부</th>
+                    <th class="th-deleted">삭제</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:if="${#lists.isEmpty(inquiryList)}">
-                    <td colspan="6" style="text-align:center; padding:40px; color:var(--admin-muted);">
+                    <td colspan="7" style="text-align:center; padding:40px; color:var(--admin-muted);">
                         등록된 문의가 없습니다.
                     </td>
                 </tr>
@@ -96,6 +97,9 @@
                     <td class="td-date" th:text="${#temporals.format(inquiry.inquiryCreated, 'yyyy.MM.dd')}"></td>
                     <td class="td-file">
                         <span th:if="${inquiry.hasFile}" th:insert="~{fragments/common/icons :: file}"></span>
+                    </td>
+                    <td class="td-deleted">
+                        <span th:if="${inquiry.inquiryDeleteYn == 'Y'}" class="badge badge-inquiry-deleted">삭제</span>
                     </td>
                 </tr>
                 </tbody>
