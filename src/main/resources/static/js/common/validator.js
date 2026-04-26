@@ -268,6 +268,14 @@ const Validator = {
         return true;
     },
 
+    inquiryAnswer() {
+        if (!quill.getText().trim()) {
+            alert("답변 내용을 입력해주세요.");
+            return false;
+        }
+        return true;
+    },
+
     inquiry() {
         const inquiryTitle = document.getElementById("inquiryTitle").value.trim();
         const inquiryContent = document.getElementById("inquiryContent").value.trim();
@@ -277,6 +285,15 @@ const Validator = {
 
         if (!this.rules.required(inquiryContent, "내용")) return false;
         return this.rules.maxLength(inquiryContent, "내용", 2000);
+    },
+
+    faq() {
+        const faqQuestion = document.getElementById("faqQuestion").value.trim();
+        const faqAnswer = document.getElementById("faqAnswer").value.trim();
+
+        if (!this.rules.required(faqQuestion, "질문")) return false;
+        if (!this.rules.maxLength(faqQuestion, "질문", 200)) return false;
+        return this.rules.required(faqAnswer, "답변");
     },
 
     checkField(fieldId, fieldName) {

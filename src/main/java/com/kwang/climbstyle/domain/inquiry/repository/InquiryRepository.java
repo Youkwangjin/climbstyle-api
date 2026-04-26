@@ -15,15 +15,25 @@ public interface InquiryRepository {
 
     Integer selectInquiryListCountByRequest(@Param("request") PaginationRequest request, @Param("userNo") Integer userNo);
 
+    Integer selectAdminInquiryListCountByRequest(PaginationRequest request);
+
     List<InquiryListResponse> selectUserInquiryList(@Param("request") PaginationRequest request, @Param("userNo") Integer userNo);
+
+    List<AdminInquiryListResponse> selectAdminInquiryList(PaginationRequest request);
 
     List<AdminInquiryListResponse> selectPendingInquiryList();
 
     InquiryDetailResponse selectInquiryByNo(@Param("inquiryNo") Integer inquiryNo, @Param("userNo") Integer userNo);
 
+    InquiryDetailResponse selectAdminInquiryByNo(@Param("inquiryNo") Integer inquiryNo);
+
     void insert(InquiryEntity inquiryEntity);
 
     void update(InquiryEntity inquiryEntity);
+
+    void updateStatus(InquiryEntity inquiryEntity);
+
+    void saveAnswer(InquiryEntity inquiryEntity);
 
     void delete(InquiryEntity inquiryEntity);
 }

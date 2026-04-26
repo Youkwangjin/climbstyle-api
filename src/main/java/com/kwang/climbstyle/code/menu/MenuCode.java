@@ -13,7 +13,7 @@ public enum MenuCode {
     FEED("피드", "/feed", "Y", MenuGroup.NAV),
     RANKING("랭킹", "/rankings/realtime", "Y", MenuGroup.NAV),
     SHOP("공지사항", "/notices", "Y", MenuGroup.NAV),
-    FAQ("FAQ", "/faq", "Y", MenuGroup.NAV),
+    FAQ("FAQ", "/faqs", "Y", MenuGroup.NAV),
 
     LOGIN("로그인", "/auth/login", "Y", MenuGroup.CTA),
     REGISTER("가입하기", "/auth/register", "Y", MenuGroup.CTA),

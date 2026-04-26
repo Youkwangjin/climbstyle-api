@@ -373,11 +373,7 @@ tbody td {
     font-weight: 700;
 }
 
-.badge-notice { background: #fff3eb; color: #ff6b00 }
-.badge-event  { background: var(--admin-brand-light); color: var(--admin-brand) }
-.badge-update { background: #f0fdf4; color: #16a34a }
-.badge-pinned { background: #fef9c3; color: #854d0e }
-.badge-hidden { background: var(--admin-card); color: var(--admin-muted) }
+
 
 .bulk-bar {
     display: none;
@@ -528,10 +524,6 @@ tbody td {
 .th-views   { width: 80px }
 .th-file    { width: 60px; text-align: center }
 
-.row-pinned { background: #f0f7ff }
-.row-pinned:hover { background: #dbeafe !important }
-
-.td-hidden a { color: var(--admin-muted) }
 
 .pagination {
     display: grid;

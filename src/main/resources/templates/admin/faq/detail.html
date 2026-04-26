@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>FAQ 상세 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/faq/list.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/faq/detail.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <input type="hidden" id="faqNo" th:value="${faqDetail.faqNo}">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>FAQ</span></div>
+                <h1>FAQ 상세</h1>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-sm" onclick="faqList()">목록</button>
+                <button type="button" class="btn btn-sm btn-danger" onclick="deleteFaq()">삭제</button>
+                <a th:href="@{/admin/faqs/{faqNo}/edit(faqNo=${faqDetail.faqNo})}" class="btn btn-sm btn-primary">수정</a>
+            </div>
+        </div>
+        <div class="faq-detail-wrap">
+            <div class="faq-detail-header">
+                <div class="faq-meta">
+                    <span th:if="${faqDetail.faqVisibleYn == 'N'}" class="badge badge-faq-hidden">숨김</span>
+                    <span class="meta-item">
+                        <span class="meta-label">작성일</span>
+                        <span class="meta-value" th:text="${#temporals.format(faqDetail.faqCreated, 'yyyy.MM.dd HH:mm')}"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="faq-section">
+                <div class="faq-section-label">질문</div>
+                <div class="faq-section-content" th:text="${faqDetail.faqQuestion}"></div>
+            </div>
+            <div class="faq-section">
+                <div class="faq-section-label">답변</div>
+                <div class="faq-section-content faq-answer" th:text="${faqDetail.faqAnswer}"></div>
+            </div>
+        </div>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script th:src="@{/js/common/api.js}"></script>
+<script>
+    function faqList() {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]",
+            searchName: "[[${request.searchName}]]"
+        });
+        location.href = "/admin/faqs?" + params.toString();
+    }
+
+    function deleteFaq() {
+        if (!confirm("FAQ를 삭제하시겠습니까?")) return;
+
+        API.callJson(`/api/v1/faqs/${document.getElementById("faqNo").value}`, {
+            method: "DELETE"
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.href = "/admin/faqs";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<nav class="pagination"
+     th:fragment="pagination(request, inquiryList, currentUrl)"
+     aria-label="문의 페이지 이동"
+     th:if="${!#lists.isEmpty(inquiryList) && request.totalCount > 0}">
+    <div class="pagination-inner">
+
+        <a th:if="${request.startPageNo > 1}"
+           th:href="@{${currentUrl}(pageNo=${request.firstPageNo}, inquiryStatus=${request.inquiryStatus},
+           searchType=${request.searchType}, searchName=${request.searchName})}"
+           class="page-btn"
+           aria-label="첫 페이지">
+            <th:block th:replace="~{fragments/common/icons :: chevron-double-left}" />
+        </a>
+
+        <a th:if="${request.pageNoAsInt > request.startPageNo}"
+           th:href="@{${currentUrl}(pageNo=${request.prevPageNo}, inquiryStatus=${request.inquiryStatus},
+           searchType=${request.searchType}, searchName=${request.searchName})}"
+           class="page-btn"
+           aria-label="이전 페이지">
+            <th:block th:replace="~{fragments/common/icons :: chevron-left}" />
+        </a>
+
+        <div class="page-list" aria-label="페이지 번호">
+            <th:block th:each="pageNum : ${#numbers.sequence(request.startPageNo, request.endPageNo)}">
+                <a th:href="@{${currentUrl}(pageNo=${pageNum}, inquiryStatus=${request.inquiryStatus},
+                   searchType=${request.searchType}, searchName=${request.searchName})}"
+                   class="page-num"
+                   th:classappend="${pageNum == request.pageNoAsInt} ? 'is-active' : ''"
+                   th:attr="aria-current=${pageNum == request.pageNoAsInt} ? 'page' : null"
+                   th:text="${pageNum}">1</a>
+            </th:block>
+        </div>
+
+        <a th:if="${request.pageNoAsInt < request.endPageNo}"
+           th:href="@{${currentUrl}(pageNo=${request.nextPageNo}, inquiryStatus=${request.inquiryStatus},
+           searchType=${request.searchType}, searchName=${request.searchName})}"
+           class="page-btn"
+           aria-label="다음 페이지">
+            <th:block th:replace="~{fragments/common/icons :: chevron-right}" />
+        </a>
+
+        <a th:if="${request.endPageNo < request.finalPageNo}"
+           th:href="@{${currentUrl}(pageNo=${request.finalPageNo}, inquiryStatus=${request.inquiryStatus},
+           searchType=${request.searchType}, searchName=${request.searchName})}"
+           class="page-btn"
+           aria-label="마지막 페이지">
+            <th:block th:replace="~{fragments/common/icons :: chevron-double-right}" />
+        </a>
+    </div>
+</nav>

@@ -6,8 +6,12 @@ import com.kwang.climbstyle.code.inquiry.InquiryErrorCode;
 import com.kwang.climbstyle.code.inquiry.InquiryStatusCode;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
+import com.kwang.climbstyle.domain.admin.dto.request.AdminInquiryListRequest;
+import com.kwang.climbstyle.domain.admin.dto.response.AdminInquiryListResponse;
 import com.kwang.climbstyle.domain.file.service.FileService;
+import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryAnswerRequest;
 import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryCreateRequest;
+import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryStatusRequest;
 import com.kwang.climbstyle.domain.inquiry.dto.request.InquiryUpdateRequest;
 import com.kwang.climbstyle.domain.inquiry.dto.response.InquiryDetailResponse;
 import com.kwang.climbstyle.domain.inquiry.dto.response.InquiryFileResponse;
@@ -20,6 +24,7 @@ import com.kwang.climbstyle.exception.ClimbStyleException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,9 +51,24 @@ public class InquiryService {
         return inquiryRepository.selectUserInquiryList(request, userNo);
     }
 
+    public List<AdminInquiryListResponse> getAdminInquiryList(AdminInquiryListRequest request) {
+        request.setTotalCount(inquiryRepository.selectAdminInquiryListCountByRequest(request));
+
+        return inquiryRepository.selectAdminInquiryList(request);
+    }
+
     public InquiryDetailResponse getInquiryDetail(Integer inquiryNo) {
         Integer userNo = SecurityUtil.getCurrentUserNo();
         InquiryDetailResponse inquiry = inquiryRepository.selectInquiryByNo(inquiryNo, userNo);
+        if (inquiry == null) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
+        }
+
+        return inquiry;
+    }
+
+    public InquiryDetailResponse getAdminInquiryDetail(Integer inquiryNo) {
+        InquiryDetailResponse inquiry = inquiryRepository.selectAdminInquiryByNo(inquiryNo);
         if (inquiry == null) {
             throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
         }
@@ -120,8 +140,8 @@ public class InquiryService {
             throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
         }
 
-        final String currnetInquiryStatus = inquiry.getInquiryStatus();
-        if (!StringUtils.equals(inquiryStatus, currnetInquiryStatus)) {
+        final String currentInquiryStatus = inquiry.getInquiryStatus();
+        if (!StringUtils.equals(inquiryStatus, currentInquiryStatus)) {
             throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_MODIFIABLE);
         }
 
@@ -187,6 +207,68 @@ public class InquiryService {
     }
 
     @Transactional
+    public void updateInquiryStatus(Integer inquiryNo, InquiryStatusRequest request) {
+        final String inquiryStatus = request.getInquiryStatus();
+
+        InquiryDetailResponse inquiry = inquiryRepository.selectAdminInquiryByNo(inquiryNo);
+        if (inquiry == null) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
+        }
+
+        final String currentInquiryDeleteYn = inquiry.getInquiryDeleteYn();
+        final String currentInquiryStatus = inquiry.getInquiryStatus();
+
+        if (StringUtils.equals(currentInquiryDeleteYn, InquiryDeleteCode.DELETED.getCode())) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_ALREADY_DELETED);
+        }
+
+        if (StringUtils.equals(currentInquiryStatus, InquiryStatusCode.COMPLETED.getCode())) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_STATUS_NOT_CHANGEABLE);
+        }
+
+        InquiryEntity inquiryEntity = InquiryEntity.builder()
+                .inquiryNo(inquiryNo)
+                .inquiryStatus(inquiryStatus)
+                .build();
+
+        inquiryRepository.updateStatus(inquiryEntity);
+    }
+
+    @Transactional
+    public void saveInquiryAnswer(Integer inquiryNo, InquiryAnswerRequest request) {
+        final Integer adminNo = SecurityUtil.getCurrentAdminNo();
+        final String inquiryAnswerContent =  request.getInquiryAnswerContent();
+        final String inquiryAnswerContentText = Jsoup.parse(inquiryAnswerContent).text();
+        final String inquiryStatus = InquiryStatusCode.COMPLETED.getCode();
+
+        InquiryDetailResponse inquiry = inquiryRepository.selectAdminInquiryByNo(inquiryNo);
+        if (inquiry == null) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
+        }
+
+        final String currentInquiryDeleteYn = inquiry.getInquiryDeleteYn();
+        final String currentInquiryStatus = inquiry.getInquiryStatus();
+
+        if (StringUtils.equals(currentInquiryDeleteYn, InquiryDeleteCode.DELETED.getCode())) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_ALREADY_DELETED);
+        }
+
+        if (!StringUtils.equals(currentInquiryStatus, InquiryStatusCode.PROGRESS.getCode())) {
+            throw new ClimbStyleException(InquiryErrorCode.INQUIRY_ANSWER_NOT_ALLOWED);
+        }
+
+        InquiryEntity inquiryEntity = InquiryEntity.builder()
+                .inquiryNo(inquiryNo)
+                .adminNo(adminNo)
+                .inquiryStatus(inquiryStatus)
+                .inquiryAnswerContent(inquiryAnswerContent)
+                .inquiryAnswerContentText(inquiryAnswerContentText)
+                .build();
+
+        inquiryRepository.saveAnswer(inquiryEntity);
+    }
+
+    @Transactional
     public void deleteInquiry(Integer inquiryNo) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
         final String inquiryStatus = InquiryStatusCode.PROGRESS.getCode();
@@ -198,8 +280,8 @@ public class InquiryService {
             throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_FOUND);
         }
 
-        final String currnetInquiryStatus = inquiry.getInquiryStatus();
-        if (StringUtils.equals(inquiryStatus, currnetInquiryStatus)) {
+        final String currentInquiryStatus = inquiry.getInquiryStatus();
+        if (StringUtils.equals(inquiryStatus, currentInquiryStatus)) {
             throw new ClimbStyleException(InquiryErrorCode.INQUIRY_NOT_DELETABLE);
         }
 
