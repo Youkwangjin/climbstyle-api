@@ -11,11 +11,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AdminUserListResponse {
 
+    private Integer userNo;
+
+    private String userId;
+
+    private String userNm;
+
     private String userEmail;
 
-    private String userImageUrl;
-
     private String userNickname;
+
+    private String userStatus;
+
+    private String userImageUrl;
 
     private LocalDateTime userCreated;
 }

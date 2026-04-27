@@ -6,6 +6,8 @@ import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.code.role.RoleCode;
 import com.kwang.climbstyle.code.user.UserStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
+import com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest;
+import com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse;
 import com.kwang.climbstyle.domain.feed.repository.FeedRepository;
 import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.role.entity.RoleEntity;
@@ -85,6 +87,13 @@ public class UserService {
         if (existNickname) {
             throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdminUserListResponse> getAdminUserList(AdminUserListRequest request) {
+        request.setTotalCount(userRepository.selectAdminUserListCountByRequest(request));
+
+        return userRepository.selectAdminUserList(request);
     }
 
     public UserProfileResponse selectUserByNo(Integer userNo) {

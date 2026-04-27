@@ -1,0 +1,21 @@
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--admin-card);
+    border: 1px solid var(--admin-line);
+}
+
+.td-avatar {
+    width: 48px;
+    text-align: center;
+}
+
+.th-status { width: 80px }
+.td-status  { width: 80px; white-space: nowrap }
+
+.badge-user-active    { background: #f0fdf4; color: #16a34a }
+.badge-user-dormant   { background: #fef9c3; color: #854d0e }
+.badge-user-suspended { background: #fee2e2; color: #b91c1c }
+.badge-user-withdrawn { background: var(--admin-card); color: var(--admin-muted) }

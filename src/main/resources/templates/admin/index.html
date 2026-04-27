@@ -44,7 +44,9 @@
         <div class="dashboard-row3">
             <div class="dashboard-card">
                 <div class="dashboard-card-title">최근 가입 회원</div>
-                <div class="list-item" th:each="user : ${recentUsers}">
+                <div class="list-item" th:each="user : ${recentUsers}"
+                     th:onclick="|location.href='/admin/users/' + ${user.userNo}|"
+                     style="cursor:pointer;">
                     <div class="user-profile">
                         <img th:if="${!#strings.isEmpty(user.userImageUrl)}" th:src="${user.userImageUrl}" alt="프로필 이미지">
                     </div>
@@ -60,7 +62,9 @@
             </div>
             <div class="dashboard-card">
                 <div class="dashboard-card-title">미처리 1:1 문의</div>
-                <div class="list-item" th:each="inquiry : ${inquiryList}">
+                <div class="list-item" th:each="inquiry : ${inquiryList}"
+                     th:onclick="|location.href='/admin/inquiries/' + ${inquiry.inquiryNo}|"
+                     style="cursor:pointer;">
                     <div class="item-info">
                         <div class="item-name" th:text="${inquiry.inquiryTitle}"></div>
                         <div class="item-meta" th:text="${inquiry.userNickname + ' · ' + inquiry.inquiryCreated}"></div>
@@ -73,7 +77,9 @@
             </div>
             <div class="dashboard-card">
                 <div class="dashboard-card-title">최근 공지사항</div>
-                <div class="list-item" th:each="notice : ${noticeList}">
+                <div class="list-item" th:each="notice : ${noticeList}"
+                     th:onclick="|location.href='/admin/notices/' + ${notice.noticeNo}|"
+                     style="cursor:pointer;">
                     <div class="item-info">
                         <div class="item-name" th:text="${notice.noticeTitle}"></div>
                         <div class="item-time" th:text="${#temporals.format(notice.noticeCreated, 'yyyy-MM-dd HH:mm')}"></div>
