@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="'에러 ' + ${httpStatus.value()} + ' | ClimbStyle Admin'">Error</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/error.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main error-main">
+        <p class="error-code" th:text="${httpStatus.value()}"></p>
+        <p class="error-message" th:text="${message}"></p>
+        <a class="error-back" href="javascript:history.back();">돌아가기</a>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+</body>
+</html>

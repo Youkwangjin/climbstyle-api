@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.util.Collections;
 import java.util.List;
 
-@ControllerAdvice(basePackages = "com.kwang.climbstyle.domain.admin.controller")
+@ControllerAdvice(basePackages = {
+        "com.kwang.climbstyle.domain.admin.controller",
+        "com.kwang.climbstyle.exception"
+})
 @RequiredArgsConstructor
 public class AdminMenuAdvice {
 
