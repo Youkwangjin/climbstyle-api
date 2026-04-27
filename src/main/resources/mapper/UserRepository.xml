@@ -146,6 +146,65 @@
             user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
     </select>
 
+    <select id="selectAdminUserListCountByRequest" parameterType="com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest"
+            resultType="Integer">
+        SELECT
+            COUNT(user_no)
+        FROM
+            tb_user
+        <where>
+            <if test="userStatus != null and userStatus.trim() != ''">
+                AND user_status = #{userStatus}
+            </if>
+            <if test="searchType == 'userId' and searchName != null and searchName.trim() != ''">
+                AND user_id LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNm' and searchName != null and searchName.trim() != ''">
+                AND user_name LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userEmail' and searchName != null and searchName.trim() != ''">
+                AND user_email LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNickname' and searchName != null and searchName.trim() != ''">
+                AND user_nickname LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAdminUserList" parameterType="com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse">
+        SELECT
+            user_no,
+            user_id,
+            user_name AS userNm,
+            user_email,
+            user_nickname,
+            user_status,
+            user_created
+        FROM
+            tb_user
+        <where>
+            <if test="userStatus != null and userStatus.trim() != ''">
+                AND user_status = #{userStatus}
+            </if>
+            <if test="searchType == 'userId' and searchName != null and searchName.trim() != ''">
+                AND user_id LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNm' and searchName != null and searchName.trim() != ''">
+                AND user_name LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userEmail' and searchName != null and searchName.trim() != ''">
+                AND user_email LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNickname' and searchName != null and searchName.trim() != ''">
+                AND user_nickname LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+        ORDER BY
+            user_created DESC
+        LIMIT #{pageSize} OFFSET #{startRowNum}
+    </select>
+
     <select id="selectRecentUserList"
             resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse">
         SELECT
