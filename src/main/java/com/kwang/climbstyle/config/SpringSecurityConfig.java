@@ -124,6 +124,8 @@ public class SpringSecurityConfig {
                                          "/js/**").permitAll()
 
                         .requestMatchers("/",
+                                        "/terms",
+                                        "/privacy",
                                         "/error",
                                         "/auth/session-expired",
                                         "/logout",
