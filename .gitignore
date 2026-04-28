@@ -43,6 +43,5 @@ out/
 
 CLAUDE.md
 
-### Static Images ###
-src/main/resources/static/img/*.jpeg
-src/main/resources/static/img/*.png
+### Static Images (upload directory only) ###
+upload/
