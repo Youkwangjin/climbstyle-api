@@ -23,6 +23,11 @@ public class IndexController {
         return "index";
     }
 
+    @GetMapping(value = "/about")
+    public String about() {
+        return "about";
+    }
+
     @GetMapping(value = "/terms")
     public String terms() {
         return "policy/terms";

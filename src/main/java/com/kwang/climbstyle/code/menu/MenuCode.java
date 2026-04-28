@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public enum MenuCode {
+    ABOUT("서비스", "/about", "Y", MenuGroup.NAV),
     FEED("피드", "/feed", "Y", MenuGroup.NAV),
     RANKING("랭킹", "/rankings/realtime", "Y", MenuGroup.NAV),
     SHOP("공지사항", "/notices", "Y", MenuGroup.NAV),
