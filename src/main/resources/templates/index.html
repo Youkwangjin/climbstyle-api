@@ -25,19 +25,13 @@
         <div class="hero-visual" role="img" aria-label="메인 비주얼 슬라이드">
             <div class="slides">
                 <div class="slide is-active"
-                     style="background-image: url(/img/main1.png)"
+                     style="background-image: url(/img/main1.jpeg)"
                      aria-hidden="false"></div>
-
                 <div class="slide"
-                     style="background-image: url(/img/main1.png)"
+                     style="background-image: url(/img/main2.jpeg)"
                      aria-hidden="true"></div>
-
                 <div class="slide"
-                     style="background-image: url(/img/main1.png)"
-                     aria-hidden="true"></div>
-
-                <div class="slide"
-                     style="background-image: url(/img/main1.png)"
+                     style="background-image: url(/img/main3.jpeg)"
                      aria-hidden="true"></div>
             </div>
         </div>
@@ -69,5 +63,18 @@
 </section>
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/logout.js}"></script>
+<script>
+    (function () {
+        const slides = document.querySelectorAll(".hero-visual .slide");
+        let current = 0;
+        setInterval(function () {
+            slides[current].classList.remove("is-active");
+            slides[current].setAttribute("aria-hidden", "true");
+            current = (current + 1) % slides.length;
+            slides[current].classList.add("is-active");
+            slides[current].setAttribute("aria-hidden", "false");
+        }, 4000);
+    })();
+</script>
 </body>
 </html>
