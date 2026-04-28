@@ -6,9 +6,11 @@ import com.kwang.climbstyle.common.response.ApiResponseBuilder;
 import com.kwang.climbstyle.common.response.ApiSuccessResponse;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.user.dto.request.*;
+import com.kwang.climbstyle.domain.user.service.EmailVerificationService;
 import com.kwang.climbstyle.domain.user.service.UserService;
 import com.kwang.climbstyle.exception.ClimbStyleException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -23,6 +25,7 @@ import java.util.Objects;
 public class UserApiController {
 
     private final UserService userService;
+    private final EmailVerificationService emailVerificationService;
 
     @PostMapping(value = "/api/v1/users/id/availability", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> checkUserIdDuplicate(@Valid @RequestBody UserIdRequest request) {
@@ -31,11 +34,18 @@ public class UserApiController {
         return ApiResponseBuilder.ok(UserSuccessCode.USER_ID_AVAILABLE);
     }
 
-    @PostMapping(value = "/api/v1/users/email/availability", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiSuccessResponse<Object>> checkUserEmailDuplicate(@Valid @RequestBody UserEmailRequest request) {
-        userService.checkUserEmailDuplicate(request);
+    @PostMapping(value = "/api/v1/users/email/verification-code", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> sendEmailVerificationCode(@Valid @RequestBody UserEmailRequest request, HttpSession session) {
+        emailVerificationService.sendVerificationCode(request, session);
 
-        return ApiResponseBuilder.ok(UserSuccessCode.USER_EMAIL_AVAILABLE);
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_EMAIL_VERIFICATION_CODE_SENT);
+    }
+
+    @PostMapping(value = "/api/v1/users/email/verification", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> verifyEmailCode(@Valid @RequestBody UserEmailVerificationRequest request, HttpSession session) {
+        emailVerificationService.verifyCode(request, session);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_EMAIL_VERIFIED);
     }
 
     @PostMapping(value = "/api/v1/users/nickname/availability", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +56,8 @@ public class UserApiController {
     }
 
     @PostMapping(value = "/api/v1/users", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiSuccessResponse<Object>> createUser(@Valid @RequestBody UserCreateRequest request) {
+    public ResponseEntity<ApiSuccessResponse<Object>> createUser(@Valid @RequestBody UserCreateRequest request, HttpSession session) {
+        emailVerificationService.checkEmailVerified(request.getUserEmail(), session);
         userService.createUser(request);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_REGISTER_SUCCESS);

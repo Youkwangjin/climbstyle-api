@@ -124,6 +124,8 @@ public class SpringSecurityConfig {
                                          "/js/**").permitAll()
 
                         .requestMatchers("/",
+                                        "/terms",
+                                        "/privacy",
                                         "/error",
                                         "/auth/session-expired",
                                         "/logout",
@@ -144,7 +146,6 @@ public class SpringSecurityConfig {
                                          "/feed/new").hasAuthority(RoleCode.ROLE_USER.getCode())
 
                         .requestMatchers("/api/v1/users/id/availability",
-                                         "/api/v1/users/email/availability",
                                          "/api/v1/users/nickname/availability",
                                          "/api/v1/login",
                                          "/api/v1/admin/login").permitAll()

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>서비스 소개 | ClimbStyle</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/about/about.css}">
+</head>
+<body>
+<header>
+    <div th:replace="~{fragments/common/header :: header}"></div>
+</header>
+<section class="section">
+    <div class="container">
+        <div class="about-wrap">
+            <div class="about-header">
+                <h1>서비스 소개</h1>
+                <p>ClimbStyle은 클라이밍을 즐기는 사람들이 패션과 스타일을 공유하는 커뮤니티입니다.</p>
+            </div>
+            <div class="about-developer">
+                <div class="about-developer-photo">
+                    <img th:src="@{/img/developer.jpeg}" alt="개발자 프로필 사진">
+                </div>
+                <div class="about-developer-info">
+                    <h2 class="about-developer-name">유광진</h2>
+                    <p class="about-developer-role">백엔드 개발자</p>
+                    <p class="about-developer-bio">
+                        클라이밍을 사랑하는 개발자입니다.<br>
+                        클라이밍과 패션의 교차점에서 영감을 받아 ClimbStyle을 만들었습니다.<br>
+                        더 많은 클라이머들이 서로의 스타일을 나누는 공간이 되길 바랍니다.
+                    </p>
+                    <p class="about-developer-contact">
+                        문의: <a href="mailto:kwangjin5468@gmail.com">kwangjin5468@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+            <h2 class="about-features-title">서비스 주요 기능</h2>
+            <div class="about-features">
+                <div class="about-feature-card">
+                    <h3>피드</h3>
+                    <p>클라이밍 패션 사진과 스타일을 자유롭게 업로드하고 공유하세요. 다른 클라이머들의 코디에서 영감을 얻을 수 있어요.</p>
+                </div>
+                <div class="about-feature-card">
+                    <h3>랭킹</h3>
+                    <p>실시간, 주간, 월간 인기 피드를 한눈에 확인하세요. 좋아요를 많이 받은 스타일리시한 클라이머들을 만나볼 수 있어요.</p>
+                </div>
+                <div class="about-feature-card">
+                    <h3>커뮤니티</h3>
+                    <p>공지사항과 FAQ를 통해 서비스 소식을 확인하고, 1:1 문의로 궁금한 점을 바로 해결할 수 있어요.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div th:replace="~{fragments/common/footer :: footer}"></div>
+<script th:src="@{/js/common/logout.js}"></script>
+</body>
+</html>
