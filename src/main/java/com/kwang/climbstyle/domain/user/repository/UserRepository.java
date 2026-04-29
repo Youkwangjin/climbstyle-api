@@ -36,6 +36,8 @@ public interface UserRepository {
 
     void reactivateUser(UserEntity userEntity);
 
+    void withdrawUser(UserEntity userEntity);
+
     void update(UserEntity userEntity);
 
     void updatePassword(UserEntity userEntity);
