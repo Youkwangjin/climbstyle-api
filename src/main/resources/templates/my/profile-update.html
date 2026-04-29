@@ -141,6 +141,29 @@
                     <button type="button" class="btn btn-primary" onclick="updatePassword()">비밀번호 변경</button>
                 </div>
             </form>
+            <section class="my-card my-card-dormant" aria-label="회원 탈퇴">
+                <div class="my-card-header">
+                    <h3>회원 탈퇴</h3>
+                </div>
+                <div class="my-form-body">
+                    <div class="my-dormant-box">
+                        <p class="my-dormant-title">탈퇴하시면 계정 및 모든 활동 데이터에 접근할 수 없게 돼요.</p>
+                        <ul class="my-dormant-list">
+                            <li>탈퇴 후에는 동일한 아이디로 재가입이 가능해요.</li>
+                            <li class="is-warn">탈퇴 처리는 즉시 적용되며 되돌릴 수 없어요.</li>
+                        </ul>
+                    </div>
+                    <div class="my-field" th:attr="hidden=${profile.userOauthProvider != null}">
+                        <label for="withdrawPassword" class="my-field-label">비밀번호 확인</label>
+                        <input id="withdrawPassword" type="password"
+                               class="my-input" placeholder="현재 비밀번호를 입력하세요" />
+                        <p class="my-field-help">탈퇴를 위해 현재 비밀번호를 입력해주세요.</p>
+                    </div>
+                </div>
+                <div class="my-form-footer my-dormant-footer">
+                    <button type="button" class="btn btn-danger-outline" onclick="withdrawAccount()">회원 탈퇴</button>
+                </div>
+            </section>
             <section class="my-card my-card-dormant" aria-label="계정 휴면">
                 <div class="my-card-header">
                     <h3>계정 휴면</h3>
@@ -295,6 +318,35 @@
             }
         };
     })();
+
+    function withdrawAccount() {
+        const withdrawPassword = document.getElementById("withdrawPassword").value.trim();
+        if (!withdrawPassword) {
+            alert("비밀번호를 입력해주세요.");
+            return;
+        }
+
+        if (!confirm("정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
+            return;
+        }
+
+        API.callJson(`/api/v1/users/${document.getElementById("userNo").value}`, {
+            method: "DELETE",
+            body: JSON.stringify({ userPassword: document.getElementById("withdrawPassword").value.trim() })
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (response.ok) {
+                    alert(body.message);
+                    logout();
+                } else {
+                    alert(body.message);
+                }
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
 
     function deactivateAccount() {
         if (!confirm("정말 휴면 처리 하시겠습니까?")) {

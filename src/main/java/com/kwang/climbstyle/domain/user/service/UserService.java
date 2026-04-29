@@ -108,6 +108,7 @@ public class UserService {
         final String userStatus = data.getUserStatus();
         final String userImageUrl = data.getUserImageUrl();
         final String userIntro = data.getUserIntro();
+        final String userOauthProvider = data.getUserOauthProvider();
         final LocalDateTime userCreated = data.getUserCreated();
         final LocalDateTime userUpdated = data.getUserUpdated();
         final LocalDateTime userDeactivated = data.getUserDeactivated();
@@ -118,6 +119,7 @@ public class UserService {
                 .userEmail(userEmail)
                 .userNickname(userNickname)
                 .userStatus(userStatus)
+                .userOauthProvider(userOauthProvider)
                 .userImgUrl(userImageUrl)
                 .userIntro(userIntro)
                 .userCreated(userCreated)
@@ -337,6 +339,39 @@ public class UserService {
         userRepository.reactivateUser(userEntity);
 
         feedRepository.updateFeedVisibleYnByUserNo(userNo, FeedVisibleStatus.VISIBLE.getCode());
+    }
+
+    @Transactional
+    public void withdrawUser(Integer userNo, UserWithdrawRequest request) {
+        final String userPassword = request.getUserPassword();
+        final String withdrawnStatus = UserStatus.WITHDRAWN.getCode();
+        final LocalDateTime userWithdrawn = LocalDateTime.now();
+
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String userOauthProvider = data.getUserOauthProvider();
+        if (userOauthProvider == null) {
+            if (StringUtils.isBlank(userPassword)) {
+                throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
+            }
+
+            if (!passwordEncoder.matches(userPassword, data.getUserPassword())) {
+                throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
+            }
+        }
+
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userStatus(withdrawnStatus)
+                .userWithdrawn(userWithdrawn)
+                .build();
+
+        userRepository.withdrawUser(userEntity);
+
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, FeedVisibleStatus.HIDDEN.getCode());
     }
 
     @Transactional

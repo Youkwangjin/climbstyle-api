@@ -79,6 +79,8 @@
             tb_user
         WHERE
             user_no = #{userNo}
+        AND
+            user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
     </select>
 
     <select id="selectUserById" parameterType="String" resultMap="userResultMap">
@@ -109,6 +111,8 @@
             ON r.role_no = ur.role_no
         WHERE
             u.user_id = #{userId}
+        AND
+            u.user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
     </select>
 
     <select id="selectUserByOAuthId" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity"
@@ -262,6 +266,16 @@
             tb_user
         SET
             user_status = #{userStatus}
+        WHERE
+            user_no = #{userNo}
+    </update>
+
+    <update id="withdrawUser" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
+        UPDATE
+            tb_user
+        SET
+            user_status = #{userStatus},
+            user_withdrawn = #{userWithdrawn}
         WHERE
             user_no = #{userNo}
     </update>

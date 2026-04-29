@@ -19,6 +19,8 @@ public class UserProfileResponse {
 
     private String userStatus;
 
+    private String userOauthProvider;
+
     private String userImgUrl;
 
     private String userIntro;
