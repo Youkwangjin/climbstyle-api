@@ -8,6 +8,7 @@ import com.kwang.climbstyle.code.user.UserStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest;
 import com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse;
+import com.kwang.climbstyle.domain.feed.repository.FeedFileRepository;
 import com.kwang.climbstyle.domain.feed.repository.FeedRepository;
 import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.role.entity.RoleEntity;
@@ -54,6 +55,8 @@ public class UserService {
     private final UserRoleRepository userRoleRepository;
 
     private final FeedRepository feedRepository;
+
+    private final FeedFileRepository feedFileRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -106,9 +109,9 @@ public class UserService {
         final String userEmail = data.getUserEmail();
         final String userNickname = data.getUserNickname();
         final String userStatus = data.getUserStatus();
+        final String userOauthProvider = data.getUserOauthProvider();
         final String userImageUrl = data.getUserImageUrl();
         final String userIntro = data.getUserIntro();
-        final String userOauthProvider = data.getUserOauthProvider();
         final LocalDateTime userCreated = data.getUserCreated();
         final LocalDateTime userUpdated = data.getUserUpdated();
         final LocalDateTime userDeactivated = data.getUserDeactivated();
@@ -313,6 +316,7 @@ public class UserService {
         final Integer userNo = data.getUserNo();
         final String userStatus = data.getUserStatus();
         final String reactivateStatus = UserStatus.ACTIVE.getCode();
+
         if (StringUtils.equals(userStatus, reactivateStatus)) {
             throw new ClimbStyleException(UserErrorCode.USER_ALREADY_REACTIVATE);
         }
@@ -330,15 +334,41 @@ public class UserService {
 
     @Transactional
     public void reactivateOAuth2User(Integer userNo) {
+        final String userStatus = UserStatus.ACTIVE.getCode();
+        final LocalDateTime userUpdated = LocalDateTime.now();
+
         UserEntity userEntity = UserEntity.builder()
                 .userNo(userNo)
-                .userStatus(UserStatus.ACTIVE.getCode())
-                .userUpdated(LocalDateTime.now())
+                .userStatus(userStatus)
+                .userUpdated(userUpdated)
                 .build();
 
         userRepository.reactivateUser(userEntity);
 
         feedRepository.updateFeedVisibleYnByUserNo(userNo, FeedVisibleStatus.VISIBLE.getCode());
+    }
+
+    @Transactional
+    public void reactivateWithdrawnOAuth2User(Integer userNo, OAuth2UserResponse oAuth2UserResponse) {
+        final String userNm = oAuth2UserResponse.getUserNm();
+        final String userEmail = oAuth2UserResponse.getUserEmail();
+        final String userNickname = oAuth2UserResponse.getUserNickname();
+        final String userStatus = UserStatus.ACTIVE.getCode();
+        final LocalDateTime userUpdated = LocalDateTime.now();
+
+        userRepository.reactivateUser(UserEntity.builder()
+                .userNo(userNo)
+                .userStatus(userStatus)
+                .userUpdated(userUpdated)
+                .build());
+
+        userRepository.update(UserEntity.builder()
+                .userNo(userNo)
+                .userNm(userNm)
+                .userEmail(userEmail)
+                .userNickname(userNickname)
+                .userUpdated(userUpdated)
+                .build());
     }
 
     @Transactional
@@ -371,7 +401,12 @@ public class UserService {
 
         userRepository.withdrawUser(userEntity);
 
-        feedRepository.updateFeedVisibleYnByUserNo(userNo, FeedVisibleStatus.HIDDEN.getCode());
+        List<String> filePaths = feedFileRepository.selectFeedFilePathsByUserNo(userNo);
+        feedRepository.deleteByUserNo(userNo);
+
+        for (String filePath : filePaths) {
+            fileService.fileDelete(filePath);
+        }
     }
 
     @Transactional

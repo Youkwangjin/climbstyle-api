@@ -14,5 +14,7 @@ public interface FeedFileRepository {
 
     List<String> selectFeedFilePathsByFeedNo(@Param("feedNo") Integer feedNo);
 
+    List<String> selectFeedFilePathsByUserNo(@Param("userNo") Integer userNo);
+
     void insert(FeedFileEntity feedFileEntity);
 }
