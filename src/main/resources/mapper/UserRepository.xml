@@ -147,7 +147,7 @@
         AND
             u.user_oauth_id = #{userOauthId}
         AND
-            user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
+            user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED', 'WITHDRAWN')
     </select>
 
     <select id="selectAdminUserListCountByRequest" parameterType="com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest"
@@ -265,7 +265,8 @@
         UPDATE
             tb_user
         SET
-            user_status = #{userStatus}
+            user_status = #{userStatus},
+            user_updated = #{userUpdated}
         WHERE
             user_no = #{userNo}
     </update>

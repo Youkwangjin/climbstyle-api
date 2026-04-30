@@ -47,6 +47,18 @@
             feed_file_sort_order ASC
     </select>
 
+    <select id="selectFeedFilePathsByUserNo" parameterType="Integer" resultType="String">
+        SELECT
+            ff.feed_file_path
+        FROM
+            tb_feed_file ff
+        INNER JOIN
+            tb_feed f
+            ON f.feed_no = ff.feed_no
+        WHERE
+            f.user_no = #{userNo}
+    </select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedFileEntity" useGeneratedKeys="true"
             keyProperty="feedFileNo">
         INSERT INTO tb_feed_file (

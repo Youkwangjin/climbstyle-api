@@ -240,4 +240,12 @@
         WHERE
             feed_no = #{feedNo}
     </delete>
+
+    <delete id="deleteByUserNo" parameterType="Integer">
+        DELETE
+        FROM
+            tb_feed
+        WHERE
+            user_no = #{userNo}
+    </delete>
 </mapper>

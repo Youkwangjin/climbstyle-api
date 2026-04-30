@@ -115,7 +115,7 @@
                     <button type="button" class="btn btn-primary" onclick="update()">변경 내용 저장</button>
                 </div>
             </form>
-            <form class="my-form my-card my-card-password">
+            <form class="my-form my-card my-card-password" th:if="${profile.userOauthProvider == null}">
                 <div class="my-card-header">
                     <h3>비밀번호 변경</h3>
                 </div>
@@ -153,7 +153,7 @@
                             <li class="is-warn">탈퇴 처리는 즉시 적용되며 되돌릴 수 없어요.</li>
                         </ul>
                     </div>
-                    <div class="my-field" th:attr="hidden=${profile.userOauthProvider != null}">
+                    <div class="my-field" th:if="${profile.userOauthProvider == null}">
                         <label for="withdrawPassword" class="my-field-label">비밀번호 확인</label>
                         <input id="withdrawPassword" type="password"
                                class="my-input" placeholder="현재 비밀번호를 입력하세요" />
@@ -320,8 +320,8 @@
     })();
 
     function withdrawAccount() {
-        const withdrawPassword = document.getElementById("withdrawPassword").value.trim();
-        if (!withdrawPassword) {
+        const passwordInput = document.getElementById("withdrawPassword");
+        if (passwordInput && !passwordInput.value.trim()) {
             alert("비밀번호를 입력해주세요.");
             return;
         }
@@ -330,9 +330,14 @@
             return;
         }
 
+        let userPassword = null;
+        if (passwordInput) {
+            userPassword = passwordInput.value.trim();
+        }
+
         API.callJson(`/api/v1/users/${document.getElementById("userNo").value}`, {
             method: "DELETE",
-            body: JSON.stringify({ userPassword: document.getElementById("withdrawPassword").value.trim() })
+            body: JSON.stringify({ userPassword: userPassword })
         })
             .then(async response => {
                 const body = await response.json();

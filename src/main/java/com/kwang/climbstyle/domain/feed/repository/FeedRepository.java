@@ -33,4 +33,6 @@ public interface FeedRepository {
     void updateFeedVisibleYnByUserNo(@Param("userNo") Integer userNo, @Param("feedVisibleYn") String feedVisibleYn);
 
     void delete(@Param("feedNo") Integer feedNo);
+
+    void deleteByUserNo(@Param("userNo") Integer userNo);
 }
