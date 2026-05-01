@@ -31,6 +31,8 @@ public class InquiryEntity {
 
     private String inquiryDeleteYn;
 
+    private String inquiryVisibleYn;
+
     private LocalDateTime inquiryCreated;
 
     private LocalDateTime inquiryUpdated;

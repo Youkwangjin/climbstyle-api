@@ -200,6 +200,7 @@
             inquiry_content,
             inquiry_status,
             inquiry_delete_yn,
+            inquiry_visible_yn,
             inquiry_created
         ) VALUES (
             #{userNo},
@@ -207,6 +208,7 @@
             #{inquiryContent},
             #{inquiryStatus},
             #{inquiryDeleteYn},
+            #{inquiryVisibleYn},
             #{inquiryCreated}
         )
     </insert>
@@ -251,5 +253,23 @@
             inquiry_updated = #{inquiryUpdated}
         WHERE
             inquiry_no = #{inquiryNo}
+    </update>
+
+    <update id="deleteByUserNo" parameterType="Integer">
+        UPDATE
+            tb_inquiry
+        SET
+            inquiry_delete_yn = 'Y'
+        WHERE
+            user_no = #{userNo}
+    </update>
+
+    <update id="updateVisibleYnByUserNo">
+        UPDATE
+            tb_inquiry
+        SET
+            inquiry_visible_yn = #{inquiryVisibleYn}
+        WHERE
+            user_no = #{userNo}
     </update>
 </mapper>

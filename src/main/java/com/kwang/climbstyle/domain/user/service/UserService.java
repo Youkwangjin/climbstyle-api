@@ -1,6 +1,7 @@
 package com.kwang.climbstyle.domain.user.service;
 
 import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
+import com.kwang.climbstyle.code.inquiry.InquiryVisibleCode;
 import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.code.role.RoleCode;
@@ -10,6 +11,7 @@ import com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest;
 import com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse;
 import com.kwang.climbstyle.domain.feed.repository.FeedFileRepository;
 import com.kwang.climbstyle.domain.feed.repository.FeedRepository;
+import com.kwang.climbstyle.domain.inquiry.repository.InquiryRepository;
 import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.role.entity.RoleEntity;
 import com.kwang.climbstyle.domain.role.entity.UserRoleEntity;
@@ -58,6 +60,8 @@ public class UserService {
 
     private final FeedFileRepository feedFileRepository;
 
+    private final InquiryRepository inquiryRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     public static final String DELETE_FLAG = "true";
@@ -69,16 +73,6 @@ public class UserService {
 
         if (existId) {
             throw new ClimbStyleException(UserErrorCode.USER_ID_DUPLICATED);
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public void checkUserEmailDuplicate(UserEmailRequest request) {
-        final String userEmail = request.getUserEmail();
-        Boolean existEmail = userRepository.existUserEmail(userEmail);
-
-        if (existEmail) {
-            throw new ClimbStyleException(UserErrorCode.USER_EMAIL_DUPLICATED);
         }
     }
 
@@ -296,7 +290,10 @@ public class UserService {
         userRepository.deactivateUser(userEntity);
 
         final String feedVisibleYn = FeedVisibleStatus.HIDDEN.getCode();
+        final String inquiryVisibleYn = InquiryVisibleCode.HIDDEN.getCode();
+
         feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
+        inquiryRepository.updateVisibleYnByUserNo(userNo, inquiryVisibleYn);
     }
 
     @Transactional
@@ -329,7 +326,10 @@ public class UserService {
         userRepository.reactivateUser(userEntity);
 
         final String feedVisibleYn = FeedVisibleStatus.VISIBLE.getCode();
+        final String inquiryVisibleYn = InquiryVisibleCode.VISIBLE.getCode();
+
         feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
+        inquiryRepository.updateVisibleYnByUserNo(userNo, inquiryVisibleYn);
     }
 
     @Transactional
@@ -345,7 +345,11 @@ public class UserService {
 
         userRepository.reactivateUser(userEntity);
 
-        feedRepository.updateFeedVisibleYnByUserNo(userNo, FeedVisibleStatus.VISIBLE.getCode());
+        final String feedVisibleYn = FeedVisibleStatus.VISIBLE.getCode();
+        final String inquiryVisibleYn = InquiryVisibleCode.VISIBLE.getCode();
+
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
+        inquiryRepository.updateVisibleYnByUserNo(userNo, inquiryVisibleYn);
     }
 
     @Transactional
@@ -355,6 +359,10 @@ public class UserService {
         final String userNickname = oAuth2UserResponse.getUserNickname();
         final String userStatus = UserStatus.ACTIVE.getCode();
         final LocalDateTime userUpdated = LocalDateTime.now();
+
+        if (userRepository.existUserEmail(userEmail)) {
+            throw new ClimbStyleException(UserErrorCode.USER_EMAIL_DUPLICATED);
+        }
 
         userRepository.reactivateUser(UserEntity.builder()
                 .userNo(userNo)
@@ -401,10 +409,11 @@ public class UserService {
 
         userRepository.withdrawUser(userEntity);
 
-        List<String> filePaths = feedFileRepository.selectFeedFilePathsByUserNo(userNo);
+        List<String> feedFilePaths = feedFileRepository.selectFeedFilePathsByUserNo(userNo);
         feedRepository.deleteByUserNo(userNo);
+        inquiryRepository.deleteByUserNo(userNo);
 
-        for (String filePath : filePaths) {
+        for (String filePath : feedFilePaths) {
             fileService.fileDelete(filePath);
         }
     }

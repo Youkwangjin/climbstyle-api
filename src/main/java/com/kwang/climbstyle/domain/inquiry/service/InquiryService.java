@@ -4,6 +4,7 @@ import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.inquiry.InquiryDeleteCode;
 import com.kwang.climbstyle.code.inquiry.InquiryErrorCode;
 import com.kwang.climbstyle.code.inquiry.InquiryStatusCode;
+import com.kwang.climbstyle.code.inquiry.InquiryVisibleCode;
 import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.admin.dto.request.AdminInquiryListRequest;
@@ -83,6 +84,7 @@ public class InquiryService {
         final String inquiryContent = request.getInquiryContent();
         final String inquiryStatus = InquiryStatusCode.PENDING.getCode();
         final String inquiryDeleteYn = InquiryDeleteCode.NOT_DELETED.getCode();
+        final String inquiryVisibleYn = InquiryVisibleCode.VISIBLE.getCode();
         final LocalDateTime inquiryCreated = LocalDateTime.now();
         final List<MultipartFile> inquiryFiles = request.getInquiryFiles();
 
@@ -92,6 +94,7 @@ public class InquiryService {
                 .inquiryContent(inquiryContent)
                 .inquiryStatus(inquiryStatus)
                 .inquiryDeleteYn(inquiryDeleteYn)
+                .inquiryVisibleYn(inquiryVisibleYn)
                 .inquiryCreated(inquiryCreated)
                 .build();
 

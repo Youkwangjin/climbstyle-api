@@ -132,7 +132,12 @@ public class NaverOAuth2UserService extends DefaultOAuth2UserService {
         if (StringUtils.equals(user.getUserStatus(), UserStatus.WITHDRAWN.getCode())) {
             log.info("소셜 로그인 탈퇴 계정 재가입 - userNo: {}", user.getUserNo());
 
-            userService.reactivateWithdrawnOAuth2User(user.getUserNo(), naverOAuth2UserResponse);
+            try {
+                userService.reactivateWithdrawnOAuth2User(user.getUserNo(), naverOAuth2UserResponse);
+            } catch (ClimbStyleException e) {
+                throw new OAuth2AuthenticationException(new OAuth2Error(e.getCode()), e);
+            }
+
             user = userRepository.selectUserByOAuthId(
                     naverOAuth2UserResponse.getProvider(),
                     naverOAuth2UserResponse.getOAuthId()
