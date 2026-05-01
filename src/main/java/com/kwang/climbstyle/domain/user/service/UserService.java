@@ -360,6 +360,10 @@ public class UserService {
         final String userStatus = UserStatus.ACTIVE.getCode();
         final LocalDateTime userUpdated = LocalDateTime.now();
 
+        if (userRepository.existUserEmail(userEmail)) {
+            throw new ClimbStyleException(UserErrorCode.USER_EMAIL_DUPLICATED);
+        }
+
         userRepository.reactivateUser(UserEntity.builder()
                 .userNo(userNo)
                 .userStatus(userStatus)
