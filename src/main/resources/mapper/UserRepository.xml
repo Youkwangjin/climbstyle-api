@@ -79,6 +79,8 @@
             tb_user
         WHERE
             user_no = #{userNo}
+        AND
+            user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
     </select>
 
     <select id="selectUserById" parameterType="String" resultMap="userResultMap">
@@ -109,6 +111,8 @@
             ON r.role_no = ur.role_no
         WHERE
             u.user_id = #{userId}
+        AND
+            u.user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
     </select>
 
     <select id="selectUserByOAuthId" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity"
@@ -143,12 +147,72 @@
         AND
             u.user_oauth_id = #{userOauthId}
         AND
-            user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED')
+            user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED', 'WITHDRAWN')
+    </select>
+
+    <select id="selectAdminUserListCountByRequest" parameterType="com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest"
+            resultType="Integer">
+        SELECT
+            COUNT(user_no)
+        FROM
+            tb_user
+        <where>
+            <if test="userStatus != null and userStatus.trim() != ''">
+                AND user_status = #{userStatus}
+            </if>
+            <if test="searchType == 'userId' and searchName != null and searchName.trim() != ''">
+                AND user_id LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNm' and searchName != null and searchName.trim() != ''">
+                AND user_name LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userEmail' and searchName != null and searchName.trim() != ''">
+                AND user_email LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNickname' and searchName != null and searchName.trim() != ''">
+                AND user_nickname LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAdminUserList" parameterType="com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse">
+        SELECT
+            user_no,
+            user_id,
+            user_name AS userNm,
+            user_email,
+            user_nickname,
+            user_status,
+            user_created
+        FROM
+            tb_user
+        <where>
+            <if test="userStatus != null and userStatus.trim() != ''">
+                AND user_status = #{userStatus}
+            </if>
+            <if test="searchType == 'userId' and searchName != null and searchName.trim() != ''">
+                AND user_id LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNm' and searchName != null and searchName.trim() != ''">
+                AND user_name LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userEmail' and searchName != null and searchName.trim() != ''">
+                AND user_email LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'userNickname' and searchName != null and searchName.trim() != ''">
+                AND user_nickname LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+        ORDER BY
+            user_created DESC
+        LIMIT #{pageSize} OFFSET #{startRowNum}
     </select>
 
     <select id="selectRecentUserList"
             resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse">
         SELECT
+            user_no,
             user_nickname,
             user_email,
             user_image_url,
@@ -201,7 +265,18 @@
         UPDATE
             tb_user
         SET
-            user_status = #{userStatus}
+            user_status = #{userStatus},
+            user_updated = #{userUpdated}
+        WHERE
+            user_no = #{userNo}
+    </update>
+
+    <update id="withdrawUser" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
+        UPDATE
+            tb_user
+        SET
+            user_status = #{userStatus},
+            user_withdrawn = #{userWithdrawn}
         WHERE
             user_no = #{userNo}
     </update>

@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.domain.user.repository;
 
+import com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest;
 import com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
@@ -23,6 +24,10 @@ public interface UserRepository {
     UserEntity selectUserByOAuthId(@Param("userOauthProvider") String userOauthProvider,
                                    @Param("userOauthId") String userOauthId);
 
+    Integer selectAdminUserListCountByRequest(AdminUserListRequest request);
+
+    List<AdminUserListResponse> selectAdminUserList(AdminUserListRequest request);
+
     List<AdminUserListResponse> selectRecentUserList();
 
     void insert(UserEntity userEntity);
@@ -30,6 +35,8 @@ public interface UserRepository {
     void deactivateUser(UserEntity userEntity);
 
     void reactivateUser(UserEntity userEntity);
+
+    void withdrawUser(UserEntity userEntity);
 
     void update(UserEntity userEntity);
 

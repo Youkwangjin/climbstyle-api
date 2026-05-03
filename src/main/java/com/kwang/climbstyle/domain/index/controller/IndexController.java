@@ -15,11 +15,26 @@ public class IndexController {
 
     private final RankingService rankingService;
 
-    @GetMapping("/")
+    @GetMapping(value = "/")
     public String index(Model model) {
         List<RankingListResponse> rankingListResponse = rankingService.getIndexRealtimeRankingList();
 
         model.addAttribute("realtimeTop3", rankingListResponse);
         return "index";
+    }
+
+    @GetMapping(value = "/about")
+    public String about() {
+        return "about";
+    }
+
+    @GetMapping(value = "/terms")
+    public String terms() {
+        return "policy/terms";
+    }
+
+    @GetMapping(value = "/privacy")
+    public String privacy() {
+        return "policy/privacy";
     }
 }

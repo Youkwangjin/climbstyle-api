@@ -1,6 +1,7 @@
 package com.kwang.climbstyle.exception;
 
 import com.kwang.climbstyle.code.http.HttpErrorCode;
+import com.kwang.climbstyle.common.util.SecurityUtil;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +20,7 @@ public class WebErrorResponse {
 
         HttpStatus httpStatus = HttpStatus.valueOf(statusCode);
 
-        ModelAndView mav = new ModelAndView("error");
+        ModelAndView mav = new ModelAndView(resolveErrorView());
         mav.setStatus(httpStatus);
 
         Object code = request.getAttribute("code");
@@ -32,6 +33,13 @@ public class WebErrorResponse {
         mav.addObject("message", message != null ? message : (errorCode != null ? errorCode.getMessage() : httpStatus.getReasonPhrase()));
 
         return mav;
+    }
+
+    private String resolveErrorView() {
+        if (SecurityUtil.getCurrentAdminNo() != null) {
+            return "admin/error";
+        }
+        return "error";
     }
 
     private HttpErrorCode getHttpErrorCode(HttpStatus httpStatus) {

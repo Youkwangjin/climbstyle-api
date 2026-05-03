@@ -1,12 +1,17 @@
 package com.kwang.climbstyle.domain.user.service;
 
 import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
+import com.kwang.climbstyle.code.inquiry.InquiryVisibleCode;
 import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.code.role.RoleCode;
 import com.kwang.climbstyle.code.user.UserStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
+import com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest;
+import com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse;
+import com.kwang.climbstyle.domain.feed.repository.FeedFileRepository;
 import com.kwang.climbstyle.domain.feed.repository.FeedRepository;
+import com.kwang.climbstyle.domain.inquiry.repository.InquiryRepository;
 import com.kwang.climbstyle.domain.file.service.FileService;
 import com.kwang.climbstyle.domain.role.entity.RoleEntity;
 import com.kwang.climbstyle.domain.role.entity.UserRoleEntity;
@@ -53,6 +58,10 @@ public class UserService {
 
     private final FeedRepository feedRepository;
 
+    private final FeedFileRepository feedFileRepository;
+
+    private final InquiryRepository inquiryRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     public static final String DELETE_FLAG = "true";
@@ -68,16 +77,6 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public void checkUserEmailDuplicate(UserEmailRequest request) {
-        final String userEmail = request.getUserEmail();
-        Boolean existEmail = userRepository.existUserEmail(userEmail);
-
-        if (existEmail) {
-            throw new ClimbStyleException(UserErrorCode.USER_EMAIL_DUPLICATED);
-        }
-    }
-
-    @Transactional(readOnly = true)
     public void checkUserNicknameDuplicate(UserNicknameRequest request) {
         final String userNickName = request.getUserNickname();
         Boolean existNickname = userRepository.existUserNickname(userNickName);
@@ -85,6 +84,13 @@ public class UserService {
         if (existNickname) {
             throw new ClimbStyleException(UserErrorCode.USER_NICKNAME_DUPLICATED);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdminUserListResponse> getAdminUserList(AdminUserListRequest request) {
+        request.setTotalCount(userRepository.selectAdminUserListCountByRequest(request));
+
+        return userRepository.selectAdminUserList(request);
     }
 
     public UserProfileResponse selectUserByNo(Integer userNo) {
@@ -97,6 +103,7 @@ public class UserService {
         final String userEmail = data.getUserEmail();
         final String userNickname = data.getUserNickname();
         final String userStatus = data.getUserStatus();
+        final String userOauthProvider = data.getUserOauthProvider();
         final String userImageUrl = data.getUserImageUrl();
         final String userIntro = data.getUserIntro();
         final LocalDateTime userCreated = data.getUserCreated();
@@ -109,6 +116,7 @@ public class UserService {
                 .userEmail(userEmail)
                 .userNickname(userNickname)
                 .userStatus(userStatus)
+                .userOauthProvider(userOauthProvider)
                 .userImgUrl(userImageUrl)
                 .userIntro(userIntro)
                 .userCreated(userCreated)
@@ -282,7 +290,10 @@ public class UserService {
         userRepository.deactivateUser(userEntity);
 
         final String feedVisibleYn = FeedVisibleStatus.HIDDEN.getCode();
+        final String inquiryVisibleYn = InquiryVisibleCode.HIDDEN.getCode();
+
         feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
+        inquiryRepository.updateVisibleYnByUserNo(userNo, inquiryVisibleYn);
     }
 
     @Transactional
@@ -302,6 +313,7 @@ public class UserService {
         final Integer userNo = data.getUserNo();
         final String userStatus = data.getUserStatus();
         final String reactivateStatus = UserStatus.ACTIVE.getCode();
+
         if (StringUtils.equals(userStatus, reactivateStatus)) {
             throw new ClimbStyleException(UserErrorCode.USER_ALREADY_REACTIVATE);
         }
@@ -314,20 +326,96 @@ public class UserService {
         userRepository.reactivateUser(userEntity);
 
         final String feedVisibleYn = FeedVisibleStatus.VISIBLE.getCode();
+        final String inquiryVisibleYn = InquiryVisibleCode.VISIBLE.getCode();
+
         feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
+        inquiryRepository.updateVisibleYnByUserNo(userNo, inquiryVisibleYn);
     }
 
     @Transactional
     public void reactivateOAuth2User(Integer userNo) {
+        final String userStatus = UserStatus.ACTIVE.getCode();
+        final LocalDateTime userUpdated = LocalDateTime.now();
+
         UserEntity userEntity = UserEntity.builder()
                 .userNo(userNo)
-                .userStatus(UserStatus.ACTIVE.getCode())
-                .userUpdated(LocalDateTime.now())
+                .userStatus(userStatus)
+                .userUpdated(userUpdated)
                 .build();
 
         userRepository.reactivateUser(userEntity);
 
-        feedRepository.updateFeedVisibleYnByUserNo(userNo, FeedVisibleStatus.VISIBLE.getCode());
+        final String feedVisibleYn = FeedVisibleStatus.VISIBLE.getCode();
+        final String inquiryVisibleYn = InquiryVisibleCode.VISIBLE.getCode();
+
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
+        inquiryRepository.updateVisibleYnByUserNo(userNo, inquiryVisibleYn);
+    }
+
+    @Transactional
+    public void reactivateWithdrawnOAuth2User(Integer userNo, OAuth2UserResponse oAuth2UserResponse) {
+        final String userNm = oAuth2UserResponse.getUserNm();
+        final String userEmail = oAuth2UserResponse.getUserEmail();
+        final String userNickname = oAuth2UserResponse.getUserNickname();
+        final String userStatus = UserStatus.ACTIVE.getCode();
+        final LocalDateTime userUpdated = LocalDateTime.now();
+
+        if (userRepository.existUserEmail(userEmail)) {
+            throw new ClimbStyleException(UserErrorCode.USER_EMAIL_DUPLICATED);
+        }
+
+        userRepository.reactivateUser(UserEntity.builder()
+                .userNo(userNo)
+                .userStatus(userStatus)
+                .userUpdated(userUpdated)
+                .build());
+
+        userRepository.update(UserEntity.builder()
+                .userNo(userNo)
+                .userNm(userNm)
+                .userEmail(userEmail)
+                .userNickname(userNickname)
+                .userUpdated(userUpdated)
+                .build());
+    }
+
+    @Transactional
+    public void withdrawUser(Integer userNo, UserWithdrawRequest request) {
+        final String userPassword = request.getUserPassword();
+        final String withdrawnStatus = UserStatus.WITHDRAWN.getCode();
+        final LocalDateTime userWithdrawn = LocalDateTime.now();
+
+        UserEntity data = userRepository.selectUserByNo(userNo);
+        if (data == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String userOauthProvider = data.getUserOauthProvider();
+        if (userOauthProvider == null) {
+            if (StringUtils.isBlank(userPassword)) {
+                throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
+            }
+
+            if (!passwordEncoder.matches(userPassword, data.getUserPassword())) {
+                throw new ClimbStyleException(UserErrorCode.USER_PASSWORD_MISMATCH);
+            }
+        }
+
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userStatus(withdrawnStatus)
+                .userWithdrawn(userWithdrawn)
+                .build();
+
+        userRepository.withdrawUser(userEntity);
+
+        List<String> feedFilePaths = feedFileRepository.selectFeedFilePathsByUserNo(userNo);
+        feedRepository.deleteByUserNo(userNo);
+        inquiryRepository.deleteByUserNo(userNo);
+
+        for (String filePath : feedFilePaths) {
+            fileService.fileDelete(filePath);
+        }
     }
 
     @Transactional

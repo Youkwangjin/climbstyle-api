@@ -63,4 +63,5 @@
         WHERE
             inquiry_file_no = #{inquiryFileNo}
     </delete>
+
 </mapper>

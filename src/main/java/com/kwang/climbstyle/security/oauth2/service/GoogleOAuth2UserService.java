@@ -130,6 +130,21 @@ public class GoogleOAuth2UserService extends DefaultOAuth2UserService {
             );
         }
 
+        if (StringUtils.equals(user.getUserStatus(), UserStatus.WITHDRAWN.getCode())) {
+            log.info("소셜 로그인 탈퇴 계정 재가입 - userNo: {}", user.getUserNo());
+
+            try {
+                userService.reactivateWithdrawnOAuth2User(user.getUserNo(), googleOAuth2UserResponse);
+            } catch (ClimbStyleException e) {
+                throw new OAuth2AuthenticationException(new OAuth2Error(e.getCode()), e);
+            }
+
+            user = userRepository.selectUserByOAuthId(
+                    googleOAuth2UserResponse.getProvider(),
+                    googleOAuth2UserResponse.getOAuthId()
+            );
+        }
+
         if (StringUtils.equals(user.getUserStatus(), UserStatus.DORMANT.getCode())) {
             log.info("소셜 로그인 휴면 계정 자동 활성화 - userNo: {}", user.getUserNo());
 

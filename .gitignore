@@ -42,3 +42,6 @@ out/
 .vscode/
 
 CLAUDE.md
+
+### Static Images (upload directory only) ###
+upload/

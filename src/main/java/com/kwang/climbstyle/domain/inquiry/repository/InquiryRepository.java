@@ -36,4 +36,8 @@ public interface InquiryRepository {
     void saveAnswer(InquiryEntity inquiryEntity);
 
     void delete(InquiryEntity inquiryEntity);
+
+    void deleteByUserNo(@Param("userNo") Integer userNo);
+
+    void updateVisibleYnByUserNo(@Param("userNo") Integer userNo, @Param("inquiryVisibleYn") String inquiryVisibleYn);
 }

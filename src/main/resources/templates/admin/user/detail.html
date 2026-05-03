@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>회원 상세 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/user/detail.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>회원</span></div>
+                <h1>회원 상세</h1>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-sm" onclick="userList()">목록</button>
+            </div>
+        </div>
+
+        <div class="user-detail-wrap">
+            <div class="user-profile-card">
+                <div class="user-profile-card-header">
+                    <th:block th:if="${user.userImgUrl != null and !#strings.isEmpty(user.userImgUrl)}">
+                        <img class="user-detail-avatar"
+                             th:src="${user.userImgUrl}"
+                             th:alt="${user.userNickname}">
+                    </th:block>
+                    <th:block th:unless="${user.userImgUrl != null and !#strings.isEmpty(user.userImgUrl)}">
+                        <div class="user-detail-avatar-fallback"
+                             th:text="${#strings.substring(user.userNickname, 0, 1)}"></div>
+                    </th:block>
+                    <div class="user-profile-identity">
+                        <h2 class="user-profile-nickname">
+                            <span th:text="${user.userNickname}"></span>
+                            <th:block th:switch="${user.userStatus}">
+                                <span th:case="'ACTIVE'"    class="badge badge-user-active">활성</span>
+                                <span th:case="'DORMANT'"   class="badge badge-user-dormant">휴면</span>
+                                <span th:case="'SUSPENDED'" class="badge badge-user-suspended">정지</span>
+                                <span th:case="'WITHDRAWN'" class="badge badge-user-withdrawn">탈퇴</span>
+                            </th:block>
+                        </h2>
+                        <span class="user-profile-sub" th:text="${user.userEmail}"></span>
+                    </div>
+                </div>
+                <div class="user-info-section">
+                    <div class="info-grid">
+                        <div class="info-row">
+                            <span class="info-label">이름</span>
+                            <span class="info-value" th:text="${user.userNm}"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">닉네임</span>
+                            <span class="info-value" th:text="${user.userNickname}"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">이메일</span>
+                            <span class="info-value" th:text="${user.userEmail}"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">가입일</span>
+                            <span class="info-value"
+                                  th:text="${#temporals.format(user.userCreated, 'yyyy.MM.dd HH:mm')}"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">최근 수정일</span>
+                            <span class="info-value"
+                                  th:if="${user.userUpdated != null}"
+                                  th:text="${#temporals.format(user.userUpdated, 'yyyy.MM.dd HH:mm')}"></span>
+                            <span class="info-value is-empty" th:unless="${user.userUpdated != null}">없음</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">휴면 전환일</span>
+                            <span class="info-value"
+                                  th:if="${user.userDeactivated != null}"
+                                  th:text="${#temporals.format(user.userDeactivated, 'yyyy.MM.dd HH:mm')}"></span>
+                            <span class="info-value is-empty" th:unless="${user.userDeactivated != null}">없음</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-intro-card">
+                <div class="user-intro-card-header">자기소개</div>
+                <div class="user-intro-body"
+                     th:classappend="${user.userIntro == null or #strings.isEmpty(user.userIntro)} ? 'is-empty'"
+                     th:text="${user.userIntro != null and !#strings.isEmpty(user.userIntro)} ? ${user.userIntro} : '작성된 자기소개가 없습니다.'">
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script>
+    function userList() {
+        const params = new URLSearchParams({
+            pageNo: "[[${request.pageNo}]]",
+            userStatus: "[[${request.userStatus}]]",
+            searchType: "[[${request.searchType}]]",
+            searchName: "[[${request.searchName}]]"
+        });
+        location.href = "/admin/users?" + params.toString();
+    }
+</script>
+</body>
+</html>

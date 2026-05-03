@@ -34,6 +34,7 @@
                            required />
                 </div>
                 <div class="field field-row">
+                    <a class="link-muted" th:href="@{/auth/forgot/password}">아이디 찾기</a>
                     <a class="link-muted" th:href="@{/auth/forgot/password}">비밀번호 찾기</a>
                 </div>
                 <div class="field">
@@ -99,11 +100,11 @@
         const error = urlParams.get("error");
 
         if (error === "dormant") {
-            alert("휴면 계정이에요. 관리자에게 문의해 주세요.");
+            alert("휴면 계정입니다.. 관리자에게 문의해 주세요.");
         } else if (error === "suspended") {
-            alert("정지된 계정이에요. 관리자에게 문의해 주세요.");
+            alert("정지된 계정입니다.. 관리자에게 문의해 주세요.");
         } else if (error === "email_duplicated") {
-            alert("이미 해당 이메일로 가입된 계정이 있어요. 일반 로그인을 이용해 주세요.");
+            alert("이미 해당 이메일로 가입된 계정이 있습니다. 일반 로그인을 이용해 주세요.");
         } else if (error === "oauth2") {
             alert("소셜 로그인 중 문제가 발생했습니다. 다시 시도해 주세요.");
         }
