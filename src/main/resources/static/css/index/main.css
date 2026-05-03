@@ -34,6 +34,10 @@
     padding: 0 20px;
 }
 
+.head .btn {
+    color: var(--text);
+}
+
 .hero-visual {
     position: relative;
     overflow: hidden;
