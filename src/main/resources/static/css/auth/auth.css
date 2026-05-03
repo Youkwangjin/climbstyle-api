@@ -60,8 +60,10 @@
 .field-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 16px;
 }
+
 
 .checkbox {
     display: inline-flex;

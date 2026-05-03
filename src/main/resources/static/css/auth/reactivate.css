@@ -127,3 +127,7 @@
     outline: none;
     border-color: var(--brand);
 }
+
+.btn-outline {
+    color: var(--text);
+}
