@@ -2,6 +2,7 @@ package com.kwang.climbstyle.domain.user.controller;
 
 import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.code.user.UserSuccessCode;
+import com.kwang.climbstyle.code.user.VerificationPurpose;
 import com.kwang.climbstyle.common.response.ApiResponseBuilder;
 import com.kwang.climbstyle.common.response.ApiSuccessResponse;
 import com.kwang.climbstyle.common.util.SecurityUtil;
@@ -36,14 +37,14 @@ public class UserApiController {
 
     @PostMapping(value = "/api/v1/users/email/verification-code", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> sendEmailVerificationCode(@RequestBody @Valid UserEmailRequest request, HttpSession session) {
-        emailVerificationService.sendVerificationCode(request, session);
+        emailVerificationService.sendCode(VerificationPurpose.REGISTER, request, session);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_EMAIL_VERIFICATION_CODE_SENT);
     }
 
     @PostMapping(value = "/api/v1/users/email/verification", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> verifyEmailCode(@RequestBody @Valid UserEmailVerificationRequest request, HttpSession session) {
-        emailVerificationService.verifyCode(request, session);
+        emailVerificationService.verifyCode(VerificationPurpose.REGISTER, request, session);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_EMAIL_VERIFIED);
     }
@@ -57,7 +58,7 @@ public class UserApiController {
 
     @PostMapping(value = "/api/v1/users", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> createUser(@RequestBody @Valid UserCreateRequest request, HttpSession session) {
-        emailVerificationService.checkEmailVerified(request.getUserEmail(), session);
+        emailVerificationService.checkVerified(VerificationPurpose.REGISTER, request.getUserEmail(), session);
         userService.createUser(request);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_REGISTER_SUCCESS);
@@ -75,6 +76,28 @@ public class UserApiController {
         userService.createOAuth2User(request, httpServletRequest, oAuth2User);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_REGISTER_SUCCESS);
+    }
+
+    @PostMapping(value = "/api/v1/users/id/find", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> findUserId(@RequestBody @Valid UserFindIdRequest request) {
+        String maskedId = userService.findUserId(request);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_FIND_ID_SUCCESS, maskedId);
+    }
+
+    @PostMapping(value = "/api/v1/users/id/find/verification-code", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> sendIdFindVerificationCode(@RequestBody @Valid UserEmailRequest request, HttpSession session) {
+        emailVerificationService.sendCode(VerificationPurpose.FIND_ID, request, session);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_EMAIL_VERIFICATION_CODE_SENT);
+    }
+
+    @PostMapping(value = "/api/v1/users/id/reveal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> revealUserId(@RequestBody @Valid UserEmailVerificationRequest request, HttpSession session) {
+        emailVerificationService.verifyCode(VerificationPurpose.FIND_ID, request, session);
+        final String userId = userService.getUserIdByEmail(request.getUserEmail());
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_FIND_ID_REVEAL_SUCCESS, userId);
     }
 
     @PatchMapping(value = "/api/v1/users/{userNo}/dormancy", produces = MediaType.APPLICATION_JSON_VALUE)

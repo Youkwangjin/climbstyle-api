@@ -21,6 +21,9 @@ public enum UserSuccessCode implements ApiCode {
     USER_DORMANT_SUCCESS(HttpStatus.OK,                     "1000", "계정이 비활성화 처리되었습니다."),
     USER_REACTIVATE_SUCCESS(HttpStatus.OK,                  "1000", "계정이 활성화되었습니다. 다시 로그인해주세요."),
     USER_PASSWORD_UPDATE_SUCCESS(HttpStatus.OK,             "1000", "비밀번호가 성공적으로 변경되었습니다. 다시 로그인해주세요."),
+
+    USER_FIND_ID_SUCCESS(HttpStatus.OK,                     "1000", "아이디를 찾았습니다."),
+    USER_FIND_ID_REVEAL_SUCCESS(HttpStatus.OK,              "1000", "아이디 전체 확인이 완료되었습니다."),
     ;
 
     private final HttpStatus httpStatus;

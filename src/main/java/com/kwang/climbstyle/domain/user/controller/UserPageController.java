@@ -16,6 +16,11 @@ public class UserPageController {
 
     private final UserService userService;
 
+    @GetMapping("/auth/forgot/id")
+    public String forgotId() {
+        return "auth/forgot-id";
+    }
+
     @GetMapping("/my/profile")
     public String myProfile(Model model) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
