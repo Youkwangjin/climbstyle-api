@@ -34,7 +34,7 @@
                            required />
                 </div>
                 <div class="field field-row">
-                    <a class="link-muted" th:href="@{/auth/forgot/password}">아이디 찾기</a>
+                    <a class="link-muted" th:href="@{/auth/forgot/id}">아이디 찾기</a>
                     <a class="link-muted" th:href="@{/auth/forgot/password}">비밀번호 찾기</a>
                 </div>
                 <div class="field">
@@ -59,7 +59,6 @@
         </section>
     </div>
 </main>
-
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/api.js}"></script>
 <script th:src="@{/js/common/validator.js}"></script>

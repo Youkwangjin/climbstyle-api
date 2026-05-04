@@ -294,6 +294,34 @@
             user_no = #{userNo}
     </update>
 
+    <select id="selectUserByNmAndEmail" resultMap="userResultMap">
+        SELECT
+            user_id
+        FROM
+            tb_user
+        WHERE
+            user_name = #{userNm}
+        AND
+            user_email = #{userEmail}
+        AND
+            user_oauth_provider IS NULL
+        AND
+            user_status IN ('ACTIVE', 'DORMANT')
+    </select>
+
+    <select id="selectNonOAuthUserByEmail" resultMap="userResultMap">
+        SELECT
+            user_id
+        FROM
+            tb_user
+        WHERE
+            user_email = #{userEmail}
+        AND
+            user_oauth_provider IS NULL
+        AND
+            user_status IN ('ACTIVE', 'DORMANT')
+    </select>
+
     <update id="updatePassword" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
         UPDATE
             tb_user

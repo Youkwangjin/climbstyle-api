@@ -24,6 +24,10 @@ public interface UserRepository {
     UserEntity selectUserByOAuthId(@Param("userOauthProvider") String userOauthProvider,
                                    @Param("userOauthId") String userOauthId);
 
+    UserEntity selectUserByNmAndEmail(@Param("userNm") String userNm, @Param("userEmail") String userEmail);
+
+    UserEntity selectNonOAuthUserByEmail(@Param("userEmail") String userEmail);
+
     Integer selectAdminUserListCountByRequest(AdminUserListRequest request);
 
     List<AdminUserListResponse> selectAdminUserList(AdminUserListRequest request);

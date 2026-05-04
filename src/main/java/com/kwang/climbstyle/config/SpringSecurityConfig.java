@@ -132,6 +132,7 @@ public class SpringSecurityConfig {
                                         "/auth/login",
                                         "/admin/auth/login",
                                         "/auth/register",
+                                        "/auth/forgot/id",
                                         "/login/oauth2/code/**",
                                         "/oauth2/authorization/**",
                                         "/feed",

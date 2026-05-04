@@ -33,6 +33,7 @@ public enum UserErrorCode implements ApiCode {
 
     USER_DORMANT_FORBIDDEN(HttpStatus.FORBIDDEN,                  "4031", "비활성화된 사용자는 회원정보를 수정할 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,                          "4041", "존재하지 않는 사용자입니다."),
+    USER_FIND_ID_NOT_FOUND(HttpStatus.NOT_FOUND,                  "4042", "입력하신 정보와 일치하는 아이디가 없습니다."),
 
     USER_ID_DUPLICATED(HttpStatus.CONFLICT,                       "4091", "이미 사용 중인 아이디입니다."),
     USER_EMAIL_DUPLICATED(HttpStatus.CONFLICT,                    "4092", "이미 사용 중인 이메일입니다."),

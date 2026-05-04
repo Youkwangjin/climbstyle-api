@@ -67,6 +67,33 @@ public class UserService {
     public static final String DELETE_FLAG = "true";
 
     @Transactional(readOnly = true)
+    public String findUserId(UserFindIdRequest request) {
+        final String userNm = request.getUserNm();
+        final String userEmail = request.getUserEmail();
+
+        UserEntity user = userRepository.selectUserByNmAndEmail(userNm, userEmail);
+        if (user == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_FIND_ID_NOT_FOUND);
+        }
+
+        String userId = user.getUserId();
+        int len = userId.length();
+        if (len <= 2) return userId;
+        if (len <= 4) return userId.charAt(0) + "*".repeat(len - 1);
+
+        return userId.substring(0, 2) + "*".repeat(len - 4) + userId.substring(len - 2);
+    }
+
+    @Transactional(readOnly = true)
+    public String getUserIdByEmail(String userEmail) {
+        UserEntity user = userRepository.selectNonOAuthUserByEmail(userEmail);
+        if (user == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_FIND_ID_NOT_FOUND);
+        }
+        return user.getUserId();
+    }
+
+    @Transactional(readOnly = true)
     public void checkUserIdDuplicate(UserIdRequest request) {
         final String userId = request.getUserId();
         Boolean existId = userRepository.existUserId(userId);
