@@ -26,6 +26,7 @@ import java.util.Objects;
 public class UserApiController {
 
     private final UserService userService;
+
     private final EmailVerificationService emailVerificationService;
 
     @PostMapping(value = "/api/v1/users/id/availability", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -92,12 +93,58 @@ public class UserApiController {
         return ApiResponseBuilder.ok(UserSuccessCode.USER_EMAIL_VERIFICATION_CODE_SENT);
     }
 
+    @PostMapping(value = "/api/v1/users/password/recovery/verification-code", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> sendPwFindVerificationCode(@RequestBody @Valid UserFindPwRequest request, HttpSession session) {
+        userService.validateUserForPwReset(request);
+        emailVerificationService.sendCode(VerificationPurpose.FIND_PW, request.getUserEmail(), session);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_FIND_PW_CODE_SENT);
+    }
+
+    @PostMapping(value = "/api/v1/users/password/recovery/verification", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> verifyPwRecoveryCode(@RequestBody @Valid UserEmailVerificationRequest request, HttpSession session) {
+        emailVerificationService.verifyCode(VerificationPurpose.FIND_PW, request, session);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_EMAIL_VERIFIED);
+    }
+
+    @PostMapping(value = "/api/v1/users/password/recovery", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> resetPassword(@RequestBody @Valid UserResetPasswordRequest request, HttpSession session) {
+        emailVerificationService.checkVerified(VerificationPurpose.FIND_PW, request.getUserEmail(), session);
+        userService.resetPassword(request);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_RESET_PASSWORD_SUCCESS);
+    }
+
     @PostMapping(value = "/api/v1/users/id/reveal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> revealUserId(@RequestBody @Valid UserEmailVerificationRequest request, HttpSession session) {
         emailVerificationService.verifyCode(VerificationPurpose.FIND_ID, request, session);
         final String userId = userService.getUserIdByEmail(request.getUserEmail());
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_FIND_ID_REVEAL_SUCCESS, userId);
+    }
+
+    @PatchMapping(value = "/api/v1/users/{userNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> updateUser(@PathVariable Integer userNo, @Valid UserUpdateRequest request) {
+        final Integer currentUserNo = SecurityUtil.getCurrentUserNo();
+        if (!Objects.equals(userNo, currentUserNo)) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        userService.updateUser(userNo, request);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_UPDATE_SUCCESS);
+    }
+
+    @PatchMapping(value = "/api/v1/users/password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> changePassword(@Valid @RequestBody UserPasswordUpdateRequest request) {
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        if (userNo == null) {
+            throw new ClimbStyleException(HttpErrorCode.UNAUTHORIZED_ERROR);
+        }
+        userService.changePassword(userNo, request);
+
+        return ApiResponseBuilder.ok(UserSuccessCode.USER_PASSWORD_UPDATE_SUCCESS);
     }
 
     @PatchMapping(value = "/api/v1/users/{userNo}/dormancy", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -130,28 +177,5 @@ public class UserApiController {
         userService.withdrawUser(userNo, request);
 
         return ApiResponseBuilder.ok(UserSuccessCode.USER_DELETE_SUCCESS);
-    }
-
-    @PatchMapping(value = "/api/v1/users/password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiSuccessResponse<Object>> changePassword(@Valid @RequestBody UserPasswordUpdateRequest request) {
-        final Integer userNo = SecurityUtil.getCurrentUserNo();
-        if (userNo == null) {
-            throw new ClimbStyleException(HttpErrorCode.UNAUTHORIZED_ERROR);
-        }
-        userService.changePassword(userNo, request);
-
-        return ApiResponseBuilder.ok(UserSuccessCode.USER_PASSWORD_UPDATE_SUCCESS);
-    }
-
-    @PatchMapping(value = "/api/v1/users/{userNo}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiSuccessResponse<Object>> updateUser(@PathVariable Integer userNo, @Valid UserUpdateRequest request) {
-        final Integer currentUserNo = SecurityUtil.getCurrentUserNo();
-        if (!Objects.equals(userNo, currentUserNo)) {
-            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
-        }
-
-        userService.updateUser(userNo, request);
-
-        return ApiResponseBuilder.ok(UserSuccessCode.USER_UPDATE_SUCCESS);
     }
 }

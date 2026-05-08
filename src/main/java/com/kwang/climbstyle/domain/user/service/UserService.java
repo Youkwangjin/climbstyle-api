@@ -85,6 +85,47 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public void validateUserForPwReset(UserFindPwRequest request) {
+        final String userId = request.getUserId();
+        final String userEmail = request.getUserEmail();
+
+        UserEntity user = userRepository.selectUserById(userId);
+        if (user == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_FIND_PW_NOT_FOUND);
+        }
+
+        final String currentUserEmail = user.getUserEmail();
+        final String userOauthProvider = user.getUserOauthProvider();
+
+        if (userOauthProvider != null || !StringUtils.equals(currentUserEmail, userEmail)) {
+            throw new ClimbStyleException(UserErrorCode.USER_FIND_PW_NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    public void resetPassword(UserResetPasswordRequest request) {
+        final String userEmail = request.getUserEmail();
+        final String userNewPassword = request.getUserNewPassword();
+        final String userPassword = passwordEncoder.encode(userNewPassword);
+        final LocalDateTime userUpdated = LocalDateTime.now();
+
+        UserEntity user = userRepository.selectNonOAuthUserByEmail(userEmail);
+        if (user == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final Integer userNo = user.getUserNo();
+
+        UserEntity userEntity = UserEntity.builder()
+                .userNo(userNo)
+                .userPassword(userPassword)
+                .userUpdated(userUpdated)
+                .build();
+
+        userRepository.updatePassword(userEntity);
+    }
+
+    @Transactional(readOnly = true)
     public String getUserIdByEmail(String userEmail) {
         UserEntity user = userRepository.selectNonOAuthUserByEmail(userEmail);
         if (user == null) {

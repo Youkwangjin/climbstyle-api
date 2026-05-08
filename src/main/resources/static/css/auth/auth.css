@@ -22,6 +22,7 @@
 
 .auth-card--wide {
     max-width: 560px;
+    width: 560px;
 }
 
 .auth-card h1 {

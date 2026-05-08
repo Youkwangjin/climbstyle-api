@@ -311,7 +311,9 @@
 
     <select id="selectNonOAuthUserByEmail" resultMap="userResultMap">
         SELECT
-            user_id
+            user_no,
+            user_id,
+            user_email
         FROM
             tb_user
         WHERE

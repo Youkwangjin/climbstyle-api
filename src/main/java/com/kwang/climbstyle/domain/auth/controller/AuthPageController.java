@@ -1,6 +1,9 @@
 package com.kwang.climbstyle.domain.auth.controller;
 
+import com.kwang.climbstyle.code.user.VerificationPurpose;
+import com.kwang.climbstyle.domain.user.dto.EmailVerificationData;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +21,36 @@ public class AuthPageController {
         return "auth/login";
     }
 
+    @GetMapping("/auth/forgot/id")
+    public String forgotId() {
+        return "auth/forgot-id";
+    }
+
+    @GetMapping("/auth/forgot/password")
+    public String forgotPassword() {
+        return "auth/forgot-password";
+    }
+
+    @GetMapping("/auth/forgot/password/reset")
+    public String resetPassword(HttpSession session, Model model) {
+        EmailVerificationData data = (EmailVerificationData) session.getAttribute(VerificationPurpose.FIND_PW.getSessionKey());
+        if (data == null || !data.isVerified()) {
+            return "redirect:/auth/forgot/password";
+        }
+
+        final String userEmail = data.getEmail();
+        model.addAttribute("userEmail", userEmail);
+
+        return "auth/reset-password";
+    }
+
     @GetMapping(value = "/auth/session-expired")
     public String sessionExpired(HttpServletRequest request) {
         boolean sessionExpired = request.getRequestedSessionId() != null && !request.isRequestedSessionIdValid();
         if (!sessionExpired) {
             return "redirect:/";
         }
+
         return "auth/session-expired";
     }
 
