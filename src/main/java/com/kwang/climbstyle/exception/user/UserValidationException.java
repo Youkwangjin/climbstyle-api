@@ -43,11 +43,13 @@ public class UserValidationException {
     private static UserErrorCode getUserErrorCode(List<FieldError> fieldErrors) {
         String[] fieldPriority = {"userId",
                                   "userPassword",
+                                  "userNewPassword",
                                   "userNm",
                                   "userEmail",
                                   "userNickName",
                                   "userProfileImg",
-                                  "userIntro",};
+                                  "userIntro",
+                                  "verificationCode",};
 
         for (String priorityField : fieldPriority) {
             for (FieldError fieldError : fieldErrors) {
@@ -55,11 +57,12 @@ public class UserValidationException {
                     String fieldName = fieldError.getField();
                     switch (fieldName) {
                         case "userId": return UserErrorCode.USER_ID_INVALID_FORMAT;
-                        case "userPassword": return UserErrorCode.USER_PASSWORD_INVALID_FORMAT;
+                        case "userPassword", "userNewPassword": return UserErrorCode.USER_PASSWORD_INVALID_FORMAT;
                         case "userNm": return UserErrorCode.USER_NAME_INVALID_FORMAT;
                         case "userEmail": return UserErrorCode.USER_EMAIL_INVALID_FORMAT;
                         case "userNickName": return UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
                         case "userIntro": return UserErrorCode.USER_INTRO_INVALID_FORMAT;
+                        case "verificationCode": return UserErrorCode.USER_EMAIL_VERIFICATION_CODE_MISMATCH;
                     }
                 }
             }

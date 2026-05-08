@@ -36,7 +36,11 @@ public class EmailVerificationService {
 
     @Transactional(readOnly = true)
     public void sendCode(VerificationPurpose purpose, UserEmailRequest request, HttpSession session) {
-        final String email = request.getUserEmail();
+        sendCode(purpose, request.getUserEmail(), session);
+    }
+
+    @Transactional(readOnly = true)
+    public void sendCode(VerificationPurpose purpose, String email, HttpSession session) {
         validateForPurpose(purpose, email);
 
         final String code = String.format("%06d", new SecureRandom().nextInt(1_000_000));
