@@ -34,7 +34,13 @@ public interface UserRepository {
 
     List<AdminUserListResponse> selectRecentUserList();
 
+    List<UserEntity> selectWithdrawnUserList();
+
     void insert(UserEntity userEntity);
+
+    void update(UserEntity userEntity);
+
+    void updatePassword(UserEntity userEntity);
 
     void deactivateUser(UserEntity userEntity);
 
@@ -42,7 +48,5 @@ public interface UserRepository {
 
     void withdrawUser(UserEntity userEntity);
 
-    void update(UserEntity userEntity);
-
-    void updatePassword(UserEntity userEntity);
+    void deleteByUserNo(@Param("userNo") Integer userNo);
 }

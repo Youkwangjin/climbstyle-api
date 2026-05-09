@@ -2,7 +2,9 @@ package com.kwang.climbstyle.exception.user;
 
 import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.common.response.ApiErrorResponse;
-import com.kwang.climbstyle.domain.user.controller.UserApiController;
+import com.kwang.climbstyle.domain.user.controller.UserAccountApiController;
+import com.kwang.climbstyle.domain.user.controller.UserAccountRecoveryApiController;
+import com.kwang.climbstyle.domain.user.controller.UserRegistrationApiController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
-@RestControllerAdvice(assignableTypes = {UserApiController.class})
+@RestControllerAdvice(assignableTypes = {UserRegistrationApiController.class, UserAccountRecoveryApiController.class, UserAccountApiController.class})
 public class UserValidationException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

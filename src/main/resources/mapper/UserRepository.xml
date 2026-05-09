@@ -226,6 +226,18 @@
         LIMIT 5
     </select>
 
+    <select id="selectWithdrawnUserList" resultMap="userResultMap">
+        SELECT
+            user_no,
+            user_withdrawn
+        FROM
+            tb_user
+        WHERE
+            user_status = 'WITHDRAWN'
+        AND
+            user_withdrawn &lt;= NOW() - INTERVAL '30 days'
+    </select>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity" useGeneratedKeys="true"
             keyProperty="userNo">
         INSERT INTO tb_user (
@@ -333,4 +345,11 @@
         WHERE
             user_no = #{userNo}
     </update>
+
+    <delete id="deleteByUserNo" parameterType="Integer">
+        DELETE FROM
+            tb_user
+        WHERE
+            user_no = #{userNo}
+    </delete>
 </mapper>

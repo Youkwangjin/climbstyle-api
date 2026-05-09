@@ -12,4 +12,12 @@
             #{roleNo}
         )
     </insert>
+
+    <delete id="deleteByUserNo" parameterType="Integer">
+        DELETE
+        FROM
+            tb_user_role
+        WHERE
+            user_no = #{userNo}
+    </delete>
 </mapper>
