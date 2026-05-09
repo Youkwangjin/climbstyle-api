@@ -73,8 +73,12 @@ public class FeedService {
         }
         feed.setFeedFilePaths(feedFilePaths);
 
-        Integer feedLikeCount = feedLikeRepository.selectFeedLikeCountByFeedNo(feedNo);
-        feed.setFeedLikeCount(feedLikeCount);
+        final String feedLikeVisibleYn = FeedVisibleStatus.HIDDEN.getCode();
+        final String currentLikeVisibleYn = feed.getFeedLikeVisibleYn();
+        if (!Objects.equals(currentLikeVisibleYn, feedLikeVisibleYn)) {
+            Integer feedLikeCount = feedLikeRepository.selectFeedLikeCountByFeedNo(feedNo);
+            feed.setFeedLikeCount(feedLikeCount);
+        }
 
         Integer feedCommentCount = feedCommentRepository.selectFeedCommentsCountByFeedNo(feedNo);
         feed.setFeedCommentCount(feedCommentCount);
