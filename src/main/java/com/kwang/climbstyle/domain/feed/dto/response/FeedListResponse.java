@@ -19,6 +19,8 @@ public class FeedListResponse {
 
     private String feedFilePath;
 
+    private String feedLikeVisibleYn;
+
     private Integer feedLikeCount;
 
     private Integer feedCommentCount;

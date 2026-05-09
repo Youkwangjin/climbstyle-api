@@ -268,6 +268,24 @@
     color: #111;
 }
 
+.detail-like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    transition: color 0.15s;
+}
+
+.detail-like-btn.is-liked {
+    color: #ff6b00;
+}
+
 .detail-comments {
     flex: 1;
     overflow-y: auto;

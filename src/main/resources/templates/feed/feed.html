@@ -60,7 +60,7 @@
                                     <th:block th:replace="~{fragments/common/icons :: heart}" />
                                 </th:block>
                             </span>
-                            <span class="like-count" th:text="${feed.feedLikeCount ?: 0}">0</span>
+                            <span class="like-count" th:if="${feed.feedLikeVisibleYn != 'N'}" th:text="${feed.feedLikeCount ?: 0}">0</span>
                         </button>
                         <button class="f-btn" type="button" aria-label="댓글">
                             <th:block th:replace="~{fragments/common/icons :: comment}"/>
@@ -116,11 +116,13 @@
                             <div class="detail-content" id="detailContent"></div>
                         </div>
                         <div class="detail-stats">
-                            <div class="detail-stat">
-                                <span id="detailLikeIcon">
-                                    <th:block th:replace="~{fragments/common/icons :: heart}" />
-                                </span>
-                                <span id="detailLikeCount">0</span>
+                            <div class="detail-stat" id="detailLikeStat">
+                                <button class="detail-like-btn" type="button" id="detailLikeBtn" onclick="likeFromDetail()" aria-label="좋아요">
+                                    <span id="detailLikeIcon">
+                                        <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                    </span>
+                                    <span id="detailLikeCount">0</span>
+                                </button>
                             </div>
                             <div class="detail-stat">
                                 <th:block th:replace="~{fragments/common/icons :: comment}" />

@@ -9,7 +9,7 @@ let totalImages = 0;
  * @property {string} feedTitle
  * @property {string} feedContent
  * @property {number} feedLikeCount
- * @property {string} isLiked
+ * @property {boolean} isLiked
  * @property {number} feedCommentCount
  * @property {string[]} feedFilePaths
  * @property {FeedComment[]} feedCommentList
@@ -57,7 +57,11 @@ function openFeedDetail(feedNo) {
 
             renderImages(feed.feedFilePaths);
             renderComments(feed.feedCommentList);
-            updateLikeStatus(feed.feedLikeCount);
+
+            const likeCountEl = document.getElementById("detailLikeCount");
+            likeCountEl.style.display = feed.feedLikeVisibleYn === 'N' ? "none" : "";
+            updateLikeStatus(feed.feedLikeCount, feed.isLiked);
+
             updateMoreButton(feed.isAuthor);
         })
         .catch(() => {
@@ -216,20 +220,51 @@ function renderComments(comments) {
     `).join("");
 }
 
-function updateLikeStatus(likeCount) {
+function updateLikeStatus(likeCount, isLiked) {
     const likeCountSpan = document.getElementById("detailLikeCount");
     const likeIcon = document.getElementById("detailLikeIcon");
+    const likeBtn = document.getElementById("detailLikeBtn");
 
-    if (likeCount !== null && likeCount !== undefined) {
-        likeCountSpan.textContent = likeCount;
-    } else {
-        likeCountSpan.textContent = "-";
-    }
+    likeCountSpan.textContent = likeCount ?? 0;
 
-    if (likeCount > 0) {
+    if (isLiked) {
+        likeBtn.classList.add("is-liked");
         likeIcon.innerHTML = Icons.heartFilled;
     } else {
+        likeBtn.classList.remove("is-liked");
         likeIcon.innerHTML = Icons.heart;
+    }
+}
+
+function likeFromDetail() {
+    const feedNo = getCurrentFeedNo();
+
+    API.callJson(`/api/v1/feeds/${feedNo}/like`, {
+        method: "POST"
+    })
+        .then(async response => {
+            const result = await response.json();
+
+            if (response.ok) {
+                const { isLiked, feedLikeCount } = result.data;
+                updateLikeStatus(feedLikeCount, isLiked);
+                syncListCard(feedNo, isLiked, feedLikeCount);
+            } else {
+                alert(result.message);
+            }
+        })
+        .catch(() => {
+            alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+        });
+}
+
+function syncListCard(feedNo, isLiked, feedLikeCount) {
+    const card = document.querySelector(`.f-card[data-feed-no="${feedNo}"]`);
+    if (!card) return;
+
+    const likeBtn = card.querySelector(".f-btn[data-feed-no]");
+    if (likeBtn) {
+        updateLikeButton(likeBtn, isLiked, feedLikeCount);
     }
 }
 
