@@ -10,12 +10,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+/**
+ * 사용자 페이지 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-09
+ * @version : 1.0
+ */
 @Controller
 @RequiredArgsConstructor
 public class UserPageController {
 
     private final UserService userService;
 
+    /**
+     * 마이페이지 프로필 조회 화면
+     * [ClimbStyle] > [마이페이지] > 프로필
+     */
     @GetMapping("/my/profile")
     public String myProfile(Model model) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
@@ -25,6 +36,10 @@ public class UserPageController {
         return "my/profile";
     }
 
+    /**
+     * 마이페이지 프로필 수정 화면
+     * [ClimbStyle] > [마이페이지] > 프로필 수정
+     */
     @GetMapping("/my/profile/update")
     public String myProfileUpdate(Model model) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();

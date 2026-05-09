@@ -10,7 +10,7 @@ import com.kwang.climbstyle.domain.role.repository.RoleRepository;
 import com.kwang.climbstyle.domain.role.repository.UserRoleRepository;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
-import com.kwang.climbstyle.domain.user.service.UserService;
+import com.kwang.climbstyle.domain.user.service.UserAccountService;
 import com.kwang.climbstyle.exception.ClimbStyleException;
 import com.kwang.climbstyle.security.oauth2.response.GoogleOAuth2UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class GoogleOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRoleRepository userRoleRepository;
 
-    private final UserService userService;
+    private final UserAccountService userAccountService;
 
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -134,7 +134,7 @@ public class GoogleOAuth2UserService extends DefaultOAuth2UserService {
             log.info("소셜 로그인 탈퇴 계정 재가입 - userNo: {}", user.getUserNo());
 
             try {
-                userService.reactivateWithdrawnOAuth2User(user.getUserNo(), googleOAuth2UserResponse);
+                userAccountService.reactivateWithdrawnOAuth2User(user.getUserNo(), googleOAuth2UserResponse);
             } catch (ClimbStyleException e) {
                 throw new OAuth2AuthenticationException(new OAuth2Error(e.getCode()), e);
             }
@@ -148,7 +148,7 @@ public class GoogleOAuth2UserService extends DefaultOAuth2UserService {
         if (StringUtils.equals(user.getUserStatus(), UserStatus.DORMANT.getCode())) {
             log.info("소셜 로그인 휴면 계정 자동 활성화 - userNo: {}", user.getUserNo());
 
-            userService.reactivateOAuth2User(user.getUserNo());
+            userAccountService.reactivateOAuth2User(user.getUserNo());
             user = userRepository.selectUserByOAuthId(
                     googleOAuth2UserResponse.getProvider(),
                     googleOAuth2UserResponse.getOAuthId()

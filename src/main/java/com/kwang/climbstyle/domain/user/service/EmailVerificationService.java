@@ -22,6 +22,13 @@ import org.thymeleaf.context.Context;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
+/**
+ * 이메일 인증 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-09
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationService {
@@ -34,11 +41,17 @@ public class EmailVerificationService {
 
     private final TemplateEngine templateEngine;
 
+    /**
+     * 이메일 인증 코드 발송 (요청 객체)
+     */
     @Transactional(readOnly = true)
     public void sendCode(VerificationPurpose purpose, UserEmailRequest request, HttpSession session) {
         sendCode(purpose, request.getUserEmail(), session);
     }
 
+    /**
+     * 이메일 인증 코드 발송 (이메일 직접 전달)
+     */
     @Transactional(readOnly = true)
     public void sendCode(VerificationPurpose purpose, String email, HttpSession session) {
         validateForPurpose(purpose, email);
@@ -50,6 +63,9 @@ public class EmailVerificationService {
         sendMail(purpose, email, code);
     }
 
+    /**
+     * 이메일 인증 코드 검증
+     */
     public void verifyCode(VerificationPurpose purpose, UserEmailVerificationRequest request, HttpSession session) {
         final String email = request.getUserEmail();
         final String code = request.getVerificationCode();
@@ -71,6 +87,9 @@ public class EmailVerificationService {
         session.setAttribute(sessionKey, data);
     }
 
+    /**
+     * 이메일 인증 완료 여부 확인
+     */
     public void checkVerified(VerificationPurpose purpose, String email, HttpSession session) {
         final String sessionKey = purpose.getSessionKey();
         EmailVerificationData data = (EmailVerificationData) session.getAttribute(sessionKey);
@@ -82,6 +101,9 @@ public class EmailVerificationService {
         session.removeAttribute(sessionKey);
     }
 
+    /**
+     * 인증 목적별 이메일 사전 검증
+     */
     private void validateForPurpose(VerificationPurpose purpose, String email) {
         switch (purpose) {
             case REGISTER -> {
@@ -97,6 +119,9 @@ public class EmailVerificationService {
         }
     }
 
+    /**
+     * 인증 목적에 맞는 이메일 발송
+     */
     private void sendMail(VerificationPurpose purpose, String email, String code) {
         try {
             Context context = new Context();
