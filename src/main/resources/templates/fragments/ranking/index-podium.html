@@ -2,7 +2,8 @@
      th:classappend="${rankingList.size() == 1 ? 'podium-single' :
                       (rankingList.size() == 2 ? 'podium-double' : '')}">
 
-    <article class="podium-card podium-1" th:with="rank=${rankingList[0]}">
+    <article class="podium-card podium-1" th:with="rank=${rankingList[0]}"
+             th:attr="data-feed-no=${rank.feedNo}" style="cursor: pointer;">
         <div class="podium-image">
             <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}" alt="1등 피드" />
         </div>
@@ -38,7 +39,8 @@
         </div>
     </article>
 
-    <article class="podium-card podium-2" th:if="${rankingList.size() >= 2}" th:with="rank=${rankingList[1]}">
+    <article class="podium-card podium-2" th:if="${rankingList.size() >= 2}" th:with="rank=${rankingList[1]}"
+             th:attr="data-feed-no=${rank.feedNo}" style="cursor: pointer;">
         <div class="podium-image">
             <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}" alt="2등 피드" />
         </div>
@@ -74,7 +76,8 @@
         </div>
     </article>
 
-    <article class="podium-card podium-3" th:if="${rankingList.size() >= 3}" th:with="rank=${rankingList[2]}">
+    <article class="podium-card podium-3" th:if="${rankingList.size() >= 3}" th:with="rank=${rankingList[2]}"
+             th:attr="data-feed-no=${rank.feedNo}" style="cursor: pointer;">
         <div class="podium-image">
             <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}" alt="3등 피드" />
         </div>
