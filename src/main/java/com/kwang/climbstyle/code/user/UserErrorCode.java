@@ -31,12 +31,14 @@ public enum UserErrorCode implements ApiCode {
 
     USER_ALREADY_WITHDRAWN(HttpStatus.BAD_REQUEST,                "4016", "이미 탈퇴 처리된 사용자입니다."),
 
-    USER_DORMANT_FORBIDDEN(HttpStatus.FORBIDDEN,                  "4031", "비활성화된 사용자는 회원정보를 수정할 수 없습니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND,                          "4041", "존재하지 않는 사용자입니다."),
+    USER_DORMANT_FORBIDDEN(HttpStatus.FORBIDDEN,                  "4017", "비활성화된 사용자는 회원정보를 수정할 수 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND,                          "4018", "존재하지 않는 사용자입니다."),
+    USER_FIND_ID_NOT_FOUND(HttpStatus.NOT_FOUND,                  "4019", "입력하신 정보와 일치하는 아이디가 없습니다."),
+    USER_FIND_PW_NOT_FOUND(HttpStatus.NOT_FOUND,                  "4020", "입력하신 정보와 일치하는 계정이 없습니다."),
 
-    USER_ID_DUPLICATED(HttpStatus.CONFLICT,                       "4091", "이미 사용 중인 아이디입니다."),
-    USER_EMAIL_DUPLICATED(HttpStatus.CONFLICT,                    "4092", "이미 사용 중인 이메일입니다."),
-    USER_NICKNAME_DUPLICATED(HttpStatus.CONFLICT,                 "4093", "이미 사용 중인 닉네임 입니다."),
+    USER_ID_DUPLICATED(HttpStatus.CONFLICT,                       "4021", "이미 사용 중인 아이디입니다."),
+    USER_EMAIL_DUPLICATED(HttpStatus.CONFLICT,                    "4022", "이미 사용 중인 이메일입니다."),
+    USER_NICKNAME_DUPLICATED(HttpStatus.CONFLICT,                 "4023", "이미 사용 중인 닉네임 입니다."),
     ;
 
     private final HttpStatus httpStatus;

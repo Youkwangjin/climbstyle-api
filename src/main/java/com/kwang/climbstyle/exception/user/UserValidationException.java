@@ -2,7 +2,9 @@ package com.kwang.climbstyle.exception.user;
 
 import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.common.response.ApiErrorResponse;
-import com.kwang.climbstyle.domain.user.controller.UserApiController;
+import com.kwang.climbstyle.domain.user.controller.UserAccountApiController;
+import com.kwang.climbstyle.domain.user.controller.UserAccountRecoveryApiController;
+import com.kwang.climbstyle.domain.user.controller.UserRegistrationApiController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
-@RestControllerAdvice(assignableTypes = {UserApiController.class})
+@RestControllerAdvice(assignableTypes = {UserRegistrationApiController.class, UserAccountRecoveryApiController.class, UserAccountApiController.class})
 public class UserValidationException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -43,11 +45,13 @@ public class UserValidationException {
     private static UserErrorCode getUserErrorCode(List<FieldError> fieldErrors) {
         String[] fieldPriority = {"userId",
                                   "userPassword",
+                                  "userNewPassword",
                                   "userNm",
                                   "userEmail",
                                   "userNickName",
                                   "userProfileImg",
-                                  "userIntro",};
+                                  "userIntro",
+                                  "verificationCode",};
 
         for (String priorityField : fieldPriority) {
             for (FieldError fieldError : fieldErrors) {
@@ -55,11 +59,12 @@ public class UserValidationException {
                     String fieldName = fieldError.getField();
                     switch (fieldName) {
                         case "userId": return UserErrorCode.USER_ID_INVALID_FORMAT;
-                        case "userPassword": return UserErrorCode.USER_PASSWORD_INVALID_FORMAT;
+                        case "userPassword", "userNewPassword": return UserErrorCode.USER_PASSWORD_INVALID_FORMAT;
                         case "userNm": return UserErrorCode.USER_NAME_INVALID_FORMAT;
                         case "userEmail": return UserErrorCode.USER_EMAIL_INVALID_FORMAT;
                         case "userNickName": return UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
                         case "userIntro": return UserErrorCode.USER_INTRO_INVALID_FORMAT;
+                        case "verificationCode": return UserErrorCode.USER_EMAIL_VERIFICATION_CODE_MISMATCH;
                     }
                 }
             }

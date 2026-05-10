@@ -11,8 +11,11 @@ import java.time.LocalDateTime;
 public class EmailVerificationData implements Serializable {
 
     private String email;
+
     private String code;
+
     private LocalDateTime expiresAt;
+
     private boolean verified;
 
     public EmailVerificationData(String email, String code, LocalDateTime expiresAt) {

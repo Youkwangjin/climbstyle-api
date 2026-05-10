@@ -19,7 +19,7 @@ public class FeedPageController {
 
     private final FeedService feedService;
 
-    @GetMapping(value = "/feed")
+    @GetMapping(value = "/feeds")
     public String feed(CommonListRequest request, Model model) {
         List<FeedListResponse> feedList = feedService.getFeedList(request);
         model.addAttribute("feedList", feedList);
@@ -39,7 +39,7 @@ public class FeedPageController {
         return "feed/feed";
     }
 
-    @GetMapping(value = "/feed/new")
+    @GetMapping(value = "/feeds/new")
     public String newFeed() {
         return "feed/new";
     }

@@ -24,13 +24,23 @@ public interface UserRepository {
     UserEntity selectUserByOAuthId(@Param("userOauthProvider") String userOauthProvider,
                                    @Param("userOauthId") String userOauthId);
 
+    UserEntity selectUserByNmAndEmail(@Param("userNm") String userNm, @Param("userEmail") String userEmail);
+
+    UserEntity selectNonOAuthUserByEmail(@Param("userEmail") String userEmail);
+
     Integer selectAdminUserListCountByRequest(AdminUserListRequest request);
 
     List<AdminUserListResponse> selectAdminUserList(AdminUserListRequest request);
 
     List<AdminUserListResponse> selectRecentUserList();
 
+    List<UserEntity> selectWithdrawnUserList();
+
     void insert(UserEntity userEntity);
+
+    void update(UserEntity userEntity);
+
+    void updatePassword(UserEntity userEntity);
 
     void deactivateUser(UserEntity userEntity);
 
@@ -38,7 +48,5 @@ public interface UserRepository {
 
     void withdrawUser(UserEntity userEntity);
 
-    void update(UserEntity userEntity);
-
-    void updatePassword(UserEntity userEntity);
+    void deleteByUserNo(@Param("userNo") Integer userNo);
 }

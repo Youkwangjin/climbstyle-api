@@ -132,9 +132,12 @@ public class SpringSecurityConfig {
                                         "/auth/login",
                                         "/admin/auth/login",
                                         "/auth/register",
+                                        "/auth/forgot/id",
+                                        "/auth/forgot/password",
+                                        "/auth/forgot/password/reset",
                                         "/login/oauth2/code/**",
                                         "/oauth2/authorization/**",
-                                        "/feed",
+                                        "/feeds",
                                         "/rankings/realtime/*",
                                         "/rankings/weekly/*",
                                         "/rankings/monthly/*",
@@ -143,7 +146,7 @@ public class SpringSecurityConfig {
 
                         .requestMatchers("/my/profile/**",
                                          "/my/feed/**",
-                                         "/feed/new").hasAuthority(RoleCode.ROLE_USER.getCode())
+                                         "/feeds/new").hasAuthority(RoleCode.ROLE_USER.getCode())
 
                         .requestMatchers("/api/v1/users/id/availability",
                                          "/api/v1/users/nickname/availability",

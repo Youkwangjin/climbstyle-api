@@ -22,6 +22,7 @@
 
 .auth-card--wide {
     max-width: 560px;
+    width: 560px;
 }
 
 .auth-card h1 {
@@ -202,4 +203,21 @@
     background: #fff;
     color: #3c4043;
     border: 1px solid var(--line);
+}
+
+ .find-id-result {
+     text-align: center;
+     padding: 24px 0 20px;
+ }
+.find-id-label {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: var(--muted);
+}
+.find-id-value {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text);
 }

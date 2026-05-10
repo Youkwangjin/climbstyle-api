@@ -11,7 +11,13 @@ function openFeedEdit(feedNo) {
 
             document.getElementById("editUsername").textContent = feed.userNickName;
             document.getElementById("editDate").textContent = formatDate(feed.feedCreated);
-            document.getElementById("editUserImage").src = feed.userImageUrl;
+
+            const editAvatar = document.querySelector("#feedEditModal .detail-avatar");
+            if (feed.userImageUrl) {
+                editAvatar.innerHTML = `<img id="editUserImage" src="${feed.userImageUrl}" alt="프로필" />`;
+            } else {
+                editAvatar.innerHTML = "";
+            }
 
             document.getElementById("editFeedTitle").value = feed.feedTitle;
             document.getElementById("editFeedContent").value = feed.feedContent;
