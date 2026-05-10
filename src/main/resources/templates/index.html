@@ -4,9 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ClimbStyle</title>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/ranking/ranking.css}">
     <link rel="stylesheet" th:href="@{/css/index/main.css}">
+    <link rel="stylesheet" th:href="@{/css/feed/feed-detail.css}">
+    <link rel="stylesheet" th:href="@{/css/feed/feed-new.css}">
 </head>
 <body>
 <header>
@@ -61,8 +65,168 @@
         </div>
     </div>
 </section>
+<div id="feedDetailModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" onclick="closeFeedDetail()"></div>
+    <div class="modal-container">
+        <button class="modal-close" onclick="closeFeedDetail()" aria-label="닫기">
+            <th:block th:replace="~{fragments/common/icons :: close}" />
+        </button>
+        <div class="modal-content">
+            <div class="modal-left">
+                <div class="image-slider">
+                    <button class="slider-btn slider-prev" onclick="prevImage()" aria-label="이전 이미지">
+                        <th:block th:replace="~{fragments/common/icons :: chevron-left}" />
+                    </button>
+                    <div class="slider-images" id="sliderImages"></div>
+                    <button class="slider-btn slider-next" onclick="nextImage()" aria-label="다음 이미지">
+                        <th:block th:replace="~{fragments/common/icons :: chevron-right}" />
+                    </button>
+                    <div class="slider-dots" id="sliderDots"></div>
+                </div>
+            </div>
+            <div class="modal-right">
+                <div class="detail-header">
+                    <div class="detail-user">
+                        <span class="detail-avatar">
+                            <img id="detailUserImage" src="" alt="프로필" />
+                        </span>
+                        <div class="detail-user-info">
+                            <div class="detail-username" id="detailUsername"></div>
+                            <div class="detail-date" id="detailDate"></div>
+                        </div>
+                    </div>
+                    <div class="detail-more-wrapper" style="display: none;">
+                        <button class="detail-more" type="button" aria-label="더보기" onclick="toggleMoreMenu(event)">
+                            <th:block th:replace="~{fragments/common/icons :: more}" />
+                        </button>
+                        <div class="more-dropdown" id="moreDropdown">
+                            <button type="button" class="more-item" onclick="updateFeed()">수정하기</button>
+                            <button type="button" class="more-item more-item-danger" onclick="deleteFeed()">삭제하기</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-body">
+                    <div class="detail-title" id="detailTitle"></div>
+                    <div class="detail-content" id="detailContent"></div>
+                </div>
+                <div class="detail-stats">
+                    <div class="detail-stat" id="detailLikeStat">
+                        <button class="detail-like-btn" type="button" id="detailLikeBtn" onclick="likeFromDetail()" aria-label="좋아요">
+                            <span id="detailLikeIcon">
+                                <th:block th:replace="~{fragments/common/icons :: heart}" />
+                            </span>
+                            <span id="detailLikeCount">0</span>
+                        </button>
+                    </div>
+                    <div class="detail-stat">
+                        <th:block th:replace="~{fragments/common/icons :: comment}" />
+                        <span id="detailCommentCount">0</span>
+                    </div>
+                </div>
+                <div class="detail-comments" id="detailComments"></div>
+                <div class="detail-comment-form">
+                    <input type="hidden" id="feedCommentParentNo" />
+                    <label>
+                        <input type="text" id="feedCommentContent" placeholder="댓글을 입력하세요..." />
+                    </label>
+                    <button type="button" onclick="submitComment()">게시</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="feedEditModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" onclick="closeFeedEdit()"></div>
+    <div class="modal-container">
+        <button class="modal-close" onclick="closeFeedEdit()" aria-label="닫기">
+            <th:block th:replace="~{fragments/common/icons :: close}" />
+        </button>
+        <div class="modal-content">
+            <div class="modal-left">
+                <div class="edit-image-container">
+                    <div id="editSliderImages"></div>
+                </div>
+                <div class="edit-image-notice">
+                    <span>사진은 변경할 수 없어요</span>
+                </div>
+            </div>
+            <div class="modal-right">
+                <div class="detail-header">
+                    <div class="detail-user">
+                        <span class="detail-avatar">
+                            <img id="editUserImage" src="" alt="프로필" />
+                        </span>
+                        <div class="detail-user-info">
+                            <div class="detail-username" id="editUsername"></div>
+                            <div class="detail-date" id="editDate"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="edit-form-body">
+                    <div class="u-label">
+                        <span>제목</span>
+                        <label for="editFeedTitle">
+                            <input type="text" id="editFeedTitle" class="u-input"
+                                   placeholder="예) 오늘의 볼더링 룩 / 겨울 암장 코디"
+                                   maxlength="50" required />
+                            <small class="u-help">50자 이내로 작성해주세요.</small>
+                        </label>
+                    </div>
+                    <div class="u-label">
+                        <span>내용</span>
+                        <label for="editFeedContent">
+                            <textarea id="editFeedContent" class="u-textarea"
+                                      placeholder="오늘의 착장 포인트를 짧게 적어주세요."
+                                      rows="5"></textarea>
+                        </label>
+                    </div>
+                    <div class="edit-select-row">
+                        <div class="u-label">
+                            <span>공개 설정</span>
+                            <label for="editFeedVisibleYn">
+                                <select id="editFeedVisibleYn" class="u-select">
+                                    <option value="Y">전체 공개</option>
+                                    <option value="N">비공개</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="u-label">
+                            <span>좋아요 공개 설정</span>
+                            <label for="editFeedLikeVisibleYn">
+                                <select id="editFeedLikeVisibleYn" class="u-select">
+                                    <option value="Y">전체 공개</option>
+                                    <option value="N">비공개</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="edit-form-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeFeedEdit()">취소</button>
+                    <button type="button" class="btn btn-primary" onclick="submitFeedEdit()">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/logout.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
+<script th:src="@{/js/common/icons.js}"></script>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/feed/feed-detail.js}"></script>
+<script th:src="@{/js/feed/feed-update.js}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".podium-card[data-feed-no]").forEach(card => {
+            card.addEventListener("click", () => {
+                openFeedDetail(parseInt(card.dataset.feedNo));
+            });
+        });
+    });
+</script>
 <script>
     (function () {
         const slides = document.querySelectorAll(".hero-visual .slide");

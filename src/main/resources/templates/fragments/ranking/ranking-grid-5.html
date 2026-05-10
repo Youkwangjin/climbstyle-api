@@ -1,5 +1,6 @@
 <div class="ranking-grid-5" th:fragment="grid5(rankingList)">
-    <article class="ranking-item" th:each="rank : ${rankingList}">
+    <article class="ranking-item" th:each="rank : ${rankingList}"
+             th:attr="data-feed-no=${rank.feedNo}" style="cursor: pointer;">
         <div class="ranking-image">
             <img th:src="${rank.feedFilePath != null ? rank.feedFilePath : '/img/main1.png'}"
                  alt="피드" />

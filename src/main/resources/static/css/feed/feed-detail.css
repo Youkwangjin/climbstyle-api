@@ -1,3 +1,31 @@
+.f-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.modal-close svg {
+    width: 20px;
+    height: 20px;
+}
+
+.slider-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.detail-more svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--muted);
+}
+
+.detail-stat svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
 .modal {
     position: fixed;
     top: 0;
