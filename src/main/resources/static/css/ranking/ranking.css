@@ -1,3 +1,8 @@
+#ranking {
+    padding-top: 100px;
+    background: #f9fafb;
+}
+
 #ranking .sub {
     color: var(--muted);
 }
@@ -58,7 +63,7 @@
 .podium {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    gap: 32px;
     align-items: flex-end;
     margin-bottom: 48px;
 }
@@ -236,21 +241,21 @@
 .ranking-grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-bottom: 14px;
+    gap: 32px;
+    margin-bottom: 32px;
 }
 
 .ranking-grid-4 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
+    gap: 32px;
     margin-bottom: 32px;
 }
 
 .ranking-grid-5 {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 14px;
+    gap: 32px;
 }
 
 .ranking-item {
