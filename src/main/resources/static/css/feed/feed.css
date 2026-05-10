@@ -1,3 +1,8 @@
+#feed {
+    padding-top: 100px;
+    background: #f9fafb;
+}
+
 #feed .sub { color: var(--muted); }
 
 .feed-head-actions { display: flex; gap: 8px; }
@@ -43,30 +48,30 @@
 
 .feed-grid{
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
 }
 
 .f-card{
     border: 1px solid var(--line);
-    border-radius: 0;
+    border-radius: 16px;
     background: #fff;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: transform .12s ease, box-shadow .12s ease;
+    transition: transform .2s ease, box-shadow .2s ease;
     cursor: pointer;
 }
 
 .f-card:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(15,23,42,.10);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(15,23,42,.12);
 }
 
 .f-media{
     position: relative;
     display: block;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 5;
     background: var(--card);
 }
 
@@ -347,20 +352,12 @@
     }
 }
 
-@media (max-width: 1280px){
-    .feed-grid{ grid-template-columns: repeat(4, 1fr); }
-}
-
 @media (max-width: 1024px){
-    .feed-grid{ grid-template-columns: repeat(3, 1fr); }
+    .feed-grid{ grid-template-columns: repeat(2, 1fr); }
     .feed-toolbar{ flex-direction: column; align-items: stretch; }
     .feed-sort{ justify-content: flex-end; }
 }
 
-@media (max-width: 768px){
-    .feed-grid{ grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 480px){
+@media (max-width: 640px){
     .feed-grid{ grid-template-columns: 1fr; }
 }
