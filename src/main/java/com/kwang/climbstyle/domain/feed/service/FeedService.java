@@ -4,12 +4,13 @@ import com.kwang.climbstyle.code.feed.FeedErrorCode;
 import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.http.HttpErrorCode;
-import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCommentCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
+import com.kwang.climbstyle.domain.feed.dto.request.FeedCursorRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedUpdateRequest;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedCommentListResponse;
+import com.kwang.climbstyle.domain.feed.dto.response.FeedCursorResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse;
@@ -49,14 +50,44 @@ public class FeedService {
 
     private final FileService fileService;
 
-    public List<FeedListResponse> getFeedList(CommonListRequest request) {
-        request.setTotalCount(feedRepository.selectFeedListCountByRequest(request));
-        return feedRepository.selectFeedList(request);
+    @Transactional(readOnly = true)
+    public FeedCursorResponse getFeedListByCursor(FeedCursorRequest request) {
+        final Integer cursor = request.getCursor();
+        final int size = request.getSize();
+
+        List<FeedListResponse> feeds = feedRepository.selectFeedListByCursor(cursor, size);
+        final boolean hasNext = feeds.size() == size;
+
+        Integer nextCursor = null;
+        if (hasNext) {
+            nextCursor = feeds.get(feeds.size() - 1).getFeedNo();
+        }
+
+        return FeedCursorResponse.builder()
+                .feeds(feeds)
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
+                .build();
     }
 
-    public List<FeedListResponse> getMyFeedList(CommonListRequest request, Integer userNo) {
-        request.setTotalCount(feedRepository.selectMyFeedListCountByRequest(request, userNo));
-        return feedRepository.selectMyFeedList(request, userNo);
+    @Transactional(readOnly = true)
+    public FeedCursorResponse getMyFeedListByCursor(FeedCursorRequest request, Integer userNo) {
+        final Integer cursor = request.getCursor();
+        final int size = request.getSize();
+
+        List<FeedListResponse> feeds = feedRepository.selectMyFeedListByCursor(cursor, size, userNo);
+        final boolean hasNext = feeds.size() == size;
+
+        Integer nextCursor = null;
+        if (hasNext) {
+            nextCursor = feeds.get(feeds.size() - 1).getFeedNo();
+        }
+
+        return FeedCursorResponse.builder()
+                .feeds(feeds)
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
+                .build();
     }
 
     public FeedDetailResponse detailFeed(Integer feedNo, Integer userNo) {
