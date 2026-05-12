@@ -42,29 +42,7 @@
         )
     </select>
 
-    <select id="selectFeedListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
-            resultType="Integer">
-        SELECT
-            COUNT(feed_no)
-        FROM
-            tb_feed
-        WHERE
-            feed_visible_yn = 'Y'
-    </select>
-
-    <select id="selectMyFeedListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
-            resultType="Integer">
-        SELECT
-            COUNT(feed_no)
-        FROM
-            tb_feed
-        WHERE
-            feed_visible_yn = 'Y'
-        AND
-            user_no = #{userNo}
-    </select>
-
-    <select id="selectFeedList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+    <select id="selectFeedListByCursor"
             resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse">
         SELECT
             feed_list.feed_no,
@@ -85,40 +63,42 @@
             (
                 SELECT
                     COUNT(fc.feed_no)
-                FROM
-                    tb_feed_comment fc
+                FROM tb_feed_comment fc
                 WHERE
                     fc.feed_no = feed_list.feed_no
                 AND
                     fc.feed_comment_visible_yn = 'Y'
             ) AS feed_comment_count
         FROM (
-             SELECT
-                 f.feed_no,
-                 f.feed_title,
-                 f.feed_created,
-                 f.feed_like_visible_yn,
-                 u.user_nickname,
-                 u.user_image_url,
-                 ff.feed_file_path
-             FROM
-                 tb_feed f
-             LEFT JOIN
-                 tb_feed_file ff
-                 ON f.feed_no = ff.feed_no
-                 AND ff.feed_file_sort_order = 1
-             INNER JOIN
-                 tb_user u
-                 ON f.user_no = u.user_no
-             WHERE
-                 f.feed_visible_yn = 'Y'
-             ORDER BY
-                 f.feed_created DESC
-             LIMIT #{pageSize} OFFSET #{startRowNum}
+            SELECT
+                f.feed_no,
+                f.feed_title,
+                f.feed_created,
+                f.feed_like_visible_yn,
+                u.user_nickname,
+                u.user_image_url,
+                ff.feed_file_path
+            FROM
+                tb_feed f
+            LEFT JOIN
+                tb_feed_file ff
+                ON f.feed_no = ff.feed_no
+                AND ff.feed_file_sort_order = 1
+            INNER JOIN
+                tb_user u
+                ON f.user_no = u.user_no
+            WHERE
+                f.feed_visible_yn = 'Y'
+            <if test="cursor != null">
+                AND f.feed_no &lt; #{cursor}
+            </if>
+            ORDER BY
+                f.feed_no DESC
+            LIMIT #{size}
         ) feed_list
     </select>
 
-    <select id="selectMyFeedList" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
+    <select id="selectMyFeedListByCursor"
             resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse">
         SELECT
             feed_list.feed_no,
@@ -147,28 +127,31 @@
                     fc.feed_comment_visible_yn = 'Y'
             ) AS feed_comment_count
         FROM (
-             SELECT
-                 u.user_image_url,
-                 u.user_nickname,
-                 f.feed_no,
-                 f.feed_title,
-                 f.feed_like_visible_yn,
-                 ff.feed_file_path,
-                 f.feed_created
-             FROM
-                 tb_feed f
-             LEFT JOIN
-                 tb_feed_file ff
-                 ON f.feed_no = ff.feed_no
-                 AND ff.feed_file_sort_order = 1
-             INNER JOIN
-                 tb_user u
-                 ON f.user_no = u.user_no
-             WHERE
-                 u.user_no = #{userNo}
-             ORDER BY
-                 f.feed_created DESC
-                 LIMIT #{request.pageSize} OFFSET #{request.startRowNum}
+            SELECT
+                f.feed_no,
+                f.feed_title,
+                f.feed_created,
+                f.feed_like_visible_yn,
+                u.user_nickname,
+                u.user_image_url,
+                ff.feed_file_path
+            FROM
+                tb_feed f
+            LEFT JOIN
+                tb_feed_file ff
+                ON f.feed_no = ff.feed_no
+                AND ff.feed_file_sort_order = 1
+            INNER JOIN
+                tb_user u
+                ON f.user_no = u.user_no
+            WHERE
+                u.user_no = #{userNo}
+            <if test="cursor != null">
+                AND f.feed_no &lt; #{cursor}
+            </if>
+            ORDER BY
+                f.feed_no DESC
+            LIMIT #{size}
         ) feed_list
     </select>
 

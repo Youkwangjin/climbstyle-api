@@ -27,6 +27,12 @@
             </div>
         </div>
 
+        <div id="feed-config"
+             th:data-next-cursor="${nextCursor}"
+             th:data-has-next="${hasNext}"
+             th:data-api-url="${feedApiUrl}">
+        </div>
+
         <div class="feed-grid" aria-label="피드 목록">
             <div th:if="${#lists.isEmpty(feedList)}" class="empty-state">
                 <p>등록된 피드가 없습니다.</p>
@@ -220,11 +226,11 @@
                 </div>
             </div>
         </div>
-        <th:block th:replace="~{fragments/feed/pagination :: pagination(
-            ${request},
-            ${feedList},
-            ${currentUrl}
-        )}"/>
+        <div class="load-more-wrap" id="loadMoreWrap" th:if="${hasNext}">
+            <button type="button" class="load-more-btn" id="loadMoreBtn" onclick="loadMoreFeeds()" aria-label="더 보기">
+                <span>+</span>
+            </button>
+        </div>
     </div>
 </section>
 <div th:replace="~{fragments/common/footer :: footer}"></div>
@@ -235,63 +241,163 @@
 <script th:src="@{/js/common/icons.js}"></script>
 <script th:src="@{/js/common/api.js}"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const feedCards = document.querySelectorAll(".f-card");
+    (function () {
+        const config = document.getElementById("feed-config");
+        let currentCursor = config.dataset.nextCursor || null;
+        let hasNext = config.dataset.hasNext === "true";
+        const feedApiUrl = config.dataset.apiUrl;
+        let isLoading = false;
 
-        feedCards.forEach(card => {
-            card.addEventListener("click", (e) => {
-                if (e.target.closest(".f-btn") || e.target.closest("button")) {
-                    return;
-                }
-
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelector(".feed-grid").addEventListener("click", (e) => {
+                const card = e.target.closest(".f-card");
+                if (!card || e.target.closest(".f-btn") || e.target.closest("button")) return;
                 const feedNo = card.getAttribute("data-feed-no");
-                if (feedNo) {
-                    openFeedDetail(parseInt(feedNo));
-                }
+                if (feedNo) openFeedDetail(parseInt(feedNo));
             });
         });
-    });
 
-    function like(button) {
-        API.callJson(`/api/v1/feeds/${button.getAttribute("data-feed-no")}/like`, {
-            method: "POST"
-        })
-            .then(async response => {
-                const result = await response.json();
+        function appendFeeds(feeds) {
+            const grid = document.querySelector(".feed-grid");
+            const emptyState = grid.querySelector(".empty-state");
+            if (emptyState) emptyState.remove();
 
-                if (response.ok) {
-                    updateLikeButton(button, result.data.isLiked, result.data.feedLikeCount);
-                } else {
-                    alert(result.message);
+            feeds.forEach(feed => {
+                const likeCount = feed.feedLikeCount || 0;
+                const isLiked = likeCount > 0;
+                const commentCount = feed.feedCommentCount || 0;
+                const imageSrc = feed.feedFilePath || "/img/main1.png";
+
+                let avatarHtml = "";
+                if (feed.userImageUrl) {
+                    avatarHtml = `<img src="${feed.userImageUrl}" alt="사용자 프로필" />`;
                 }
-            })
-            .catch(() => {
-                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+
+                let likeCountHtml = "";
+                if (feed.feedLikeVisibleYn !== "N") {
+                    likeCountHtml = `<span class="like-count">${likeCount}</span>`;
+                }
+
+                let likedClass = "";
+                if (isLiked) {
+                    likedClass = "is-liked";
+                }
+
+                const article = document.createElement("article");
+                article.className = "f-card";
+                article.setAttribute("data-feed-no", feed.feedNo);
+                article.style.cursor = "pointer";
+                article.innerHTML = `
+                    <div class="f-media">
+                        <img loading="lazy" src="${imageSrc}" alt="클라이밍 사진" />
+                    </div>
+                    <div class="f-body">
+                        <div class="f-top">
+                            <div class="f-user">
+                                <span class="f-avatar" aria-hidden="true">${avatarHtml}</span>
+                                <div class="f-user-meta">
+                                    <div class="f-name">${feed.userNickName || "익명 사용자"}</div>
+                                    <div class="f-time">${formatDate(feed.feedCreated)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="f-caption">${feed.feedTitle}</p>
+                        <div class="f-actions">
+                            <button class="f-btn ${likedClass}" type="button"
+                                    data-feed-no="${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
+                                <span class="icon-container">
+                                    ${isLiked ? Icons.heartFilled : Icons.heart}
+                                </span>
+                                ${likeCountHtml}
+                            </button>
+                            <button class="f-btn" type="button" aria-label="댓글">
+                                ${Icons.comment}
+                                <span>${commentCount}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(article);
             });
-    }
-
-    function updateLikeButton(button, isLiked, feedLikeCount) {
-        const iconContainer = button.querySelector(".icon-container");
-        const countSpan = button.querySelector(".like-count");
-
-        if (isLiked) {
-            button.classList.add("is-liked");
-        } else {
-            button.classList.remove("is-liked");
         }
 
-        if (iconContainer && Icons) {
+        window.loadMoreFeeds = function () {
+            if (isLoading || !hasNext) return;
+            isLoading = true;
+
+            const btn = document.getElementById("loadMoreBtn");
+            if (btn) btn.disabled = true;
+
+            fetch(`${feedApiUrl}?cursor=${currentCursor}&size=9`, { headers: { "Accept": "application/json" } })
+                .then(async response => {
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        appendFeeds(result.data.feeds);
+                        currentCursor = result.data.nextCursor;
+                        hasNext = result.data.hasNext;
+
+                        if (!hasNext) {
+                            const wrap = document.getElementById("loadMoreWrap");
+                            if (wrap) wrap.remove();
+                        }
+                    } else {
+                        alert(result.message);
+                    }
+                })
+                .catch(() => {
+                    alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+                })
+                .finally(() => {
+                    isLoading = false;
+                    if (hasNext) {
+                        const loadMoreBtn = document.getElementById("loadMoreBtn");
+                        if (loadMoreBtn) loadMoreBtn.disabled = false;
+                    }
+                });
+        };
+
+        window.like = function (button) {
+            API.callJson(`/api/v1/feeds/${button.getAttribute("data-feed-no")}/like`, {
+                method: "POST"
+            })
+                .then(async response => {
+                    const result = await response.json();
+                    if (response.ok) {
+                        updateLikeButton(button, result.data.isLiked, result.data.feedLikeCount);
+                    } else {
+                        alert(result.message);
+                    }
+                })
+                .catch(() => {
+                    alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+                });
+        };
+
+        window.updateLikeButton = function (button, isLiked, feedLikeCount) {
+            const iconContainer = button.querySelector(".icon-container");
+            const countSpan = button.querySelector(".like-count");
+
             if (isLiked) {
-                iconContainer.innerHTML = Icons.heartFilled;
+                button.classList.add("is-liked");
             } else {
-                iconContainer.innerHTML = Icons.heart;
+                button.classList.remove("is-liked");
             }
-        }
 
-        if (countSpan) {
-            countSpan.textContent = feedLikeCount;
-        }
-    }
+            if (iconContainer && Icons) {
+                if (isLiked) {
+                    iconContainer.innerHTML = Icons.heartFilled;
+                } else {
+                    iconContainer.innerHTML = Icons.heart;
+                }
+            }
+
+            if (countSpan) {
+                countSpan.textContent = feedLikeCount;
+            }
+        };
+    })();
 </script>
 </body>
 </html>

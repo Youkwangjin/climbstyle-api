@@ -7,7 +7,9 @@ import com.kwang.climbstyle.common.response.ApiSuccessResponse;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCommentCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
+import com.kwang.climbstyle.domain.feed.dto.request.FeedCursorRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedUpdateRequest;
+import com.kwang.climbstyle.domain.feed.dto.response.FeedCursorResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeResponse;
 import com.kwang.climbstyle.domain.feed.service.FeedService;
@@ -23,6 +25,24 @@ import org.springframework.web.bind.annotation.*;
 public class FeedApiController {
 
     private final FeedService feedService;
+
+    @GetMapping(value = "/api/v1/feeds", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<FeedCursorResponse>> getFeedList(FeedCursorRequest request) {
+        FeedCursorResponse data = feedService.getFeedListByCursor(request);
+
+        return ApiResponseBuilder.ok(FeedSuccessCode.FEED_LIST_SUCCESS, data);
+    }
+
+    @GetMapping(value = "/api/v1/feeds/my", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<FeedCursorResponse>> getMyFeedList(FeedCursorRequest request) {
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        if (userNo == null) {
+            throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
+        }
+
+        FeedCursorResponse data = feedService.getMyFeedListByCursor(request, userNo);
+        return ApiResponseBuilder.ok(FeedSuccessCode.FEED_LIST_SUCCESS, data);
+    }
 
     @GetMapping(value = "/api/v1/feeds/{feedNo}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<FeedDetailResponse>> detailFeed(@PathVariable("feedNo") Integer feedNo) {

@@ -3,6 +3,37 @@
     background: #f9fafb;
 }
 
+.load-more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.load-more-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--brand);
+    background: #fff;
+    color: var(--brand);
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+
+.load-more-btn:hover {
+    background: var(--brand);
+    color: #fff;
+}
+
+.load-more-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 #feed .sub { color: var(--muted); }
 
 .feed-head-actions { display: flex; gap: 8px; }
