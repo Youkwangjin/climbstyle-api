@@ -11,6 +11,8 @@ import com.kwang.climbstyle.domain.feed.dto.request.FeedCursorRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedUpdateRequest;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedCursorResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
+import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeDetailResponse;
+import java.util.List;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeResponse;
 import com.kwang.climbstyle.domain.feed.service.FeedService;
 import com.kwang.climbstyle.exception.ClimbStyleException;
@@ -50,6 +52,13 @@ public class FeedApiController {
         FeedDetailResponse data = feedService.detailFeed(feedNo, userNo);
 
         return ApiResponseBuilder.ok(FeedSuccessCode.FEED_DETAIL_SUCCESS, data);
+    }
+
+    @GetMapping(value = "/api/v1/feeds/{feedNo}/likes", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<List<FeedLikeDetailResponse>>> likesFeed(@PathVariable("feedNo") Integer feedNo) {
+        List<FeedLikeDetailResponse> data = feedService.detailFeedLike(feedNo);
+
+        return ApiResponseBuilder.ok(FeedSuccessCode.FEED_LIKE_DETAIL_SUCCESS, data);
     }
 
     @PostMapping(value = "/api/v1/feeds", produces = MediaType.APPLICATION_JSON_VALUE)

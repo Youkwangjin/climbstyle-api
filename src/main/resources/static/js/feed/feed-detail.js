@@ -37,6 +37,7 @@ function openFeedDetail(feedNo) {
             currentImageIndex = 0;
 
             modal.classList.add("is-active");
+            document.body.dataset.scrollY = window.scrollY;
             document.body.style.overflow = "hidden";
 
             document.getElementById("detailUsername").textContent = feed.userNickName;
@@ -59,7 +60,10 @@ function openFeedDetail(feedNo) {
             renderComments(feed.feedCommentList);
 
             const likeCountEl = document.getElementById("detailLikeCount");
-            likeCountEl.style.display = feed.feedLikeVisibleYn === 'N' ? "none" : "";
+            const likeCountBtn = document.getElementById("detailLikeCountBtn");
+            const isLikeHidden = feed.feedLikeVisibleYn === 'N';
+            likeCountEl.style.display = isLikeHidden ? "none" : "";
+            if (likeCountBtn) likeCountBtn.style.display = isLikeHidden ? "none" : "";
             updateLikeStatus(feed.feedLikeCount, feed.isLiked);
 
             updateMoreButton(feed.isAuthor);
@@ -73,6 +77,7 @@ function closeFeedDetail() {
     const modal = document.getElementById("feedDetailModal");
     modal.classList.remove("is-active");
     document.body.style.overflow = "";
+    window.scrollTo(0, parseInt(document.body.dataset.scrollY || "0"));
 
     const sliderImages = document.getElementById("sliderImages");
     if (sliderImages) {
@@ -262,10 +267,44 @@ function syncListCard(feedNo, isLiked, feedLikeCount) {
     const card = document.querySelector(`.f-card[data-feed-no="${feedNo}"]`);
     if (!card) return;
 
-    const likeBtn = card.querySelector(".f-btn[data-feed-no]");
+    const likeBtn = card.querySelector(".f-like-icon-btn[data-feed-no]");
     if (likeBtn) {
         updateLikeButton(likeBtn, isLiked, feedLikeCount);
     }
+}
+
+function openLikeList(feedNo) {
+
+    const modal = document.getElementById("feedLikeListModal");
+    const body = document.getElementById("likeListBody");
+
+    body.innerHTML = '<p class="like-list-loading">불러오는 중...</p>';
+    modal.classList.add("is-active");
+
+    fetch(`/api/v1/feeds/${feedNo}/likes`)
+        .then(response => response.json())
+        .then(result => {
+            if (!result.data || result.data.length === 0) {
+                body.innerHTML = '<p class="like-list-empty">아직 좋아요가 없어요.</p>';
+                return;
+            }
+            body.innerHTML = result.data.map(user => `
+                <div class="like-user-item">
+                    <div class="like-user-avatar">
+                        ${user.userImageUrl ? `<img src="${user.userImageUrl}" alt="${user.userNickname}" />` : ''}
+                    </div>
+                    <span class="like-user-name">${user.userNickname}</span>
+                </div>
+            `).join('');
+        })
+        .catch(() => {
+            body.innerHTML = '<p class="like-list-empty">목록을 불러오지 못했습니다.</p>';
+        });
+}
+
+function closeLikeList() {
+    const modal = document.getElementById("feedLikeListModal");
+    modal.classList.remove("is-active");
 }
 
 function updateMoreButton(isAuthor) {
@@ -432,6 +471,7 @@ function formatDate(dateString) {
 
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+        closeLikeList();
         closeFeedDetail();
     }
 });

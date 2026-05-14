@@ -19,6 +19,8 @@ public enum FeedErrorCode implements ApiCode {
     FEED_NOT_FOUND(HttpStatus.NOT_FOUND,                    "5404", "존재하지 않는 피드입니다."),
     FEED_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND,            "5404", "존재하지 않는 댓글입니다."),
     FEED_FILE_NOT_FOUND(HttpStatus.NOT_FOUND,               "5404", "해당 피드에 등록된 파일이 없습니다."),
+
+    FEED_LIKE_HIDDEN(HttpStatus.FORBIDDEN,                  "5403", "좋아요 수가 비공개 설정된 피드입니다."),
     ;
 
     private final HttpStatus httpStatus;

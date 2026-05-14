@@ -163,6 +163,7 @@ public class SpringSecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/feeds").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/feeds/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/feeds/*/likes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/feeds").hasAuthority(RoleCode.ROLE_USER.getCode())
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/feeds/*").hasAuthority(RoleCode.ROLE_USER.getCode())
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/feeds/*").hasAuthority(RoleCode.ROLE_USER.getCode())

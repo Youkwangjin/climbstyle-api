@@ -55,19 +55,27 @@
                     </div>
                     <p class="f-caption" th:text="${feed.feedTitle}"></p>
                     <div class="f-actions">
-                        <button class="f-btn"
-                                th:classappend="${feed.feedLikeCount != null && feed.feedLikeCount > 0} ? 'is-liked' : ''"
-                                type="button" th:attr="data-feed-no=${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
-                            <span class="icon-container">
-                                <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
-                                    <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
-                                </th:block>
-                                <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
-                                    <th:block th:replace="~{fragments/common/icons :: heart}" />
-                                </th:block>
-                            </span>
-                            <span class="like-count" th:if="${feed.feedLikeVisibleYn != 'N'}" th:text="${feed.feedLikeCount ?: 0}">0</span>
-                        </button>
+                        <div class="f-like-wrap">
+                            <button class="f-btn f-like-icon-btn"
+                                    th:classappend="${feed.feedLikeCount != null && feed.feedLikeCount > 0} ? 'is-liked' : ''"
+                                    type="button" th:attr="data-feed-no=${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
+                                <span class="icon-container">
+                                    <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
+                                        <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
+                                    </th:block>
+                                    <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
+                                        <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                    </th:block>
+                                </span>
+                            </button>
+                            <button class="f-like-count-btn" type="button"
+                                    th:if="${feed.feedLikeVisibleYn != 'N'}"
+                                    th:attr="data-feed-no=${feed.feedNo}"
+                                    th:onclick="|openLikeList(${feed.feedNo})|"
+                                    aria-label="좋아요한 사람 보기">
+                                <span class="like-count" th:text="${feed.feedLikeCount ?: 0}">0</span>
+                            </button>
+                        </div>
                         <button class="f-btn" type="button" aria-label="댓글">
                             <th:block th:replace="~{fragments/common/icons :: comment}"/>
                             <span th:text="${feed.feedCommentCount ?: 0}"></span>
@@ -123,12 +131,17 @@
                         </div>
                         <div class="detail-stats">
                             <div class="detail-stat" id="detailLikeStat">
-                                <button class="detail-like-btn" type="button" id="detailLikeBtn" onclick="likeFromDetail()" aria-label="좋아요">
-                                    <span id="detailLikeIcon">
-                                        <th:block th:replace="~{fragments/common/icons :: heart}" />
-                                    </span>
-                                    <span id="detailLikeCount">0</span>
-                                </button>
+                                <div class="detail-like-wrap">
+                                    <button class="detail-like-btn" type="button" id="detailLikeBtn" onclick="likeFromDetail()" aria-label="좋아요">
+                                        <span id="detailLikeIcon">
+                                            <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                        </span>
+                                    </button>
+                                    <button class="detail-like-count-btn" type="button" id="detailLikeCountBtn"
+                                            onclick="openLikeList(getCurrentFeedNo())" aria-label="좋아요한 사람 보기">
+                                        <span id="detailLikeCount">0</span>
+                                    </button>
+                                </div>
                             </div>
                             <div class="detail-stat">
                                 <th:block th:replace="~{fragments/common/icons :: comment}" />
@@ -226,6 +239,19 @@
                 </div>
             </div>
         </div>
+        <div id="feedLikeListModal" class="modal" aria-hidden="true">
+            <div class="modal-backdrop" onclick="closeLikeList()"></div>
+            <div class="like-list-container">
+                <div class="like-list-header">
+                    <span>좋아요</span>
+                    <button class="like-list-close" onclick="closeLikeList()" aria-label="닫기">
+                        <th:block th:replace="~{fragments/common/icons :: close}" />
+                    </button>
+                </div>
+                <div class="like-list-body" id="likeListBody"></div>
+            </div>
+        </div>
+
         <div class="load-more-wrap" id="loadMoreWrap" th:if="${hasNext}">
             <button type="button" class="load-more-btn" id="loadMoreBtn" onclick="loadMoreFeeds()" aria-label="더 보기">
                 <span>+</span>
@@ -273,9 +299,9 @@
                     avatarHtml = `<img src="${feed.userImageUrl}" alt="사용자 프로필" />`;
                 }
 
-                let likeCountHtml = "";
+                let likeCountBtnHtml = "";
                 if (feed.feedLikeVisibleYn !== "N") {
-                    likeCountHtml = `<span class="like-count">${likeCount}</span>`;
+                    likeCountBtnHtml = `<button class="f-like-count-btn" type="button" data-feed-no="${feed.feedNo}" onclick="openLikeList(${feed.feedNo})" aria-label="좋아요한 사람 보기"><span class="like-count">${likeCount}</span></button>`;
                 }
 
                 let likedClass = "";
@@ -303,13 +329,15 @@
                         </div>
                         <p class="f-caption">${feed.feedTitle}</p>
                         <div class="f-actions">
-                            <button class="f-btn ${likedClass}" type="button"
-                                    data-feed-no="${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
-                                <span class="icon-container">
-                                    ${isLiked ? Icons.heartFilled : Icons.heart}
-                                </span>
-                                ${likeCountHtml}
-                            </button>
+                            <div class="f-like-wrap">
+                                <button class="f-btn f-like-icon-btn ${likedClass}" type="button"
+                                        data-feed-no="${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
+                                    <span class="icon-container">
+                                        ${isLiked ? Icons.heartFilled : Icons.heart}
+                                    </span>
+                                </button>
+                                ${likeCountBtnHtml}
+                            </div>
                             <button class="f-btn" type="button" aria-label="댓글">
                                 ${Icons.comment}
                                 <span>${commentCount}</span>
@@ -377,7 +405,8 @@
 
         window.updateLikeButton = function (button, isLiked, feedLikeCount) {
             const iconContainer = button.querySelector(".icon-container");
-            const countSpan = button.querySelector(".like-count");
+            const wrap = button.closest(".f-like-wrap");
+            const countSpan = wrap ? wrap.querySelector(".like-count") : button.querySelector(".like-count");
 
             if (isLiked) {
                 button.classList.add("is-liked");
@@ -386,11 +415,7 @@
             }
 
             if (iconContainer && Icons) {
-                if (isLiked) {
-                    iconContainer.innerHTML = Icons.heartFilled;
-                } else {
-                    iconContainer.innerHTML = Icons.heart;
-                }
+                iconContainer.innerHTML = isLiked ? Icons.heartFilled : Icons.heart;
             }
 
             if (countSpan) {

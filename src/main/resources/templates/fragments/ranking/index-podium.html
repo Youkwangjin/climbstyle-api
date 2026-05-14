@@ -32,10 +32,12 @@
                 </div>
                 <span class="podium-username" th:text="${rank.userNickname}">사용자</span>
             </div>
-            <div class="podium-likes">
+            <button class="podium-likes" type="button"
+                    th:onclick="|openLikeList(${rank.feedNo})|"
+                    aria-label="좋아요한 사람 보기">
                 <th:block th:replace="~{fragments/common/icons :: heart}" />
                 <span th:text="${#numbers.formatInteger(rank.rankingLikeCount, 0, 'COMMA')}">1,250</span>
-            </div>
+            </button>
         </div>
     </article>
 
@@ -69,10 +71,12 @@
                 </div>
                 <span class="podium-username" th:text="${rank.userNickname}">사용자</span>
             </div>
-            <div class="podium-likes">
+            <button class="podium-likes" type="button"
+                    th:onclick="|openLikeList(${rank.feedNo})|"
+                    aria-label="좋아요한 사람 보기">
                 <th:block th:replace="~{fragments/common/icons :: heart}" />
                 <span th:text="${#numbers.formatInteger(rank.rankingLikeCount, 0, 'COMMA')}">980</span>
-            </div>
+            </button>
         </div>
     </article>
 
@@ -106,10 +110,12 @@
                 </div>
                 <span class="podium-username" th:text="${rank.userNickname}">사용자</span>
             </div>
-            <div class="podium-likes">
+            <button class="podium-likes" type="button"
+                    th:onclick="|openLikeList(${rank.feedNo})|"
+                    aria-label="좋아요한 사람 보기">
                 <th:block th:replace="~{fragments/common/icons :: heart}" />
                 <span th:text="${#numbers.formatInteger(rank.rankingLikeCount, 0, 'COMMA')}">720</span>
-            </div>
+            </button>
         </div>
     </article>
 </div>
