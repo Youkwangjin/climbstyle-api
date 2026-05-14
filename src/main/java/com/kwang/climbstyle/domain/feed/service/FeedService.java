@@ -9,11 +9,7 @@ import com.kwang.climbstyle.domain.feed.dto.request.FeedCommentCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCursorRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedUpdateRequest;
-import com.kwang.climbstyle.domain.feed.dto.response.FeedCommentListResponse;
-import com.kwang.climbstyle.domain.feed.dto.response.FeedCursorResponse;
-import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
-import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeResponse;
-import com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse;
+import com.kwang.climbstyle.domain.feed.dto.response.*;
 import com.kwang.climbstyle.domain.feed.entity.FeedCommentEntity;
 import com.kwang.climbstyle.domain.feed.entity.FeedEntity;
 import com.kwang.climbstyle.domain.feed.entity.FeedFileEntity;
@@ -118,6 +114,20 @@ public class FeedService {
         feed.setFeedCommentList(comments);
 
         return feed;
+    }
+
+    @Transactional(readOnly = true)
+    public List<FeedLikeDetailResponse> detailFeedLike(Integer feedNo) {
+        FeedDetailResponse feed = feedRepository.selectFeedByNo(feedNo);
+        if (feed == null) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
+        }
+
+        if (Objects.equals(feed.getFeedLikeVisibleYn(), FeedVisibleStatus.HIDDEN.getCode())) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_LIKE_HIDDEN);
+        }
+
+        return feedLikeRepository.selectFeedLikeListByNo(feedNo);
     }
 
     @Transactional

@@ -32,6 +32,24 @@
             feed_no = #{feedNo}
     </select>
 
+    <select id="selectFeedLikeListByNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedLikeDetailResponse">
+        SELECT
+            fl.feed_like_no,
+            u.user_nickname,
+            u.user_image_url
+        FROM
+            tb_feed_like fl
+        INNER JOIN
+            tb_user u
+            ON fl.user_no = u.user_no
+        WHERE
+            fl.feed_no = #{feedNo}
+        ORDER BY
+            fl.feed_like_created DESC
+    </select>
+
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedLikeEntity"
             useGeneratedKeys="true" keyProperty="feedLikeNo">
         INSERT INTO tb_feed_like (
