@@ -32,6 +32,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * 피드 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-16
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class FeedService {
@@ -46,6 +53,9 @@ public class FeedService {
 
     private final FileService fileService;
 
+    /**
+     * 피드 목록 조회 (커서 기반)
+     */
     @Transactional(readOnly = true)
     public FeedCursorResponse getFeedListByCursor(FeedCursorRequest request) {
         final Integer cursor = request.getCursor();
@@ -66,6 +76,9 @@ public class FeedService {
                 .build();
     }
 
+    /**
+     * 내 피드 목록 조회 (커서 기반)
+     */
     @Transactional(readOnly = true)
     public FeedCursorResponse getMyFeedListByCursor(FeedCursorRequest request, Integer userNo) {
         final Integer cursor = request.getCursor();
@@ -86,6 +99,9 @@ public class FeedService {
                 .build();
     }
 
+    /**
+     * 피드 상세 조회
+     */
     public FeedDetailResponse detailFeed(Integer feedNo, Integer userNo) {
         FeedDetailResponse feed = feedRepository.selectFeedByNo(feedNo);
         if (feed == null) {
@@ -116,6 +132,9 @@ public class FeedService {
         return feed;
     }
 
+    /**
+     * 피드 좋아요 사용자 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<FeedLikeDetailResponse> detailFeedLike(Integer feedNo) {
         FeedDetailResponse feed = feedRepository.selectFeedByNo(feedNo);
@@ -130,6 +149,9 @@ public class FeedService {
         return feedLikeRepository.selectFeedLikeListByNo(feedNo);
     }
 
+    /**
+     * 피드 등록
+     */
     @Transactional
     public void createFeed(FeedCreateRequest request) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
@@ -180,6 +202,9 @@ public class FeedService {
         }
     }
 
+    /**
+     * 피드 좋아요 / 좋아요 취소
+     */
     @Transactional
     public FeedLikeResponse likeFeed(Integer feedNo, Integer userNo) {
         if (!feedRepository.existFeedByNo(feedNo)) {
@@ -210,6 +235,9 @@ public class FeedService {
                 .build();
     }
 
+    /**
+     * 피드 댓글 등록
+     */
     @Transactional
     public void commentFeed(Integer userNo, Integer feedNo, FeedCommentCreateRequest request) {
         final String feedCommentContent = request.getFeedCommentContent();
@@ -240,6 +268,9 @@ public class FeedService {
         feedCommentRepository.insert(feedCommentEntity);
     }
 
+    /**
+     * 피드 수정
+     */
     @Transactional
     public void updateFeed(Integer userNo, Integer feedNo, FeedUpdateRequest request) {
         final String feedTitle = request.getFeedTitle();
@@ -268,6 +299,9 @@ public class FeedService {
         feedRepository.update(feedEntity);
     }
 
+    /**
+     * 피드 삭제
+     */
     @Transactional
     public void deleteFeed(Integer userNo, Integer feedNo) {
         if (!feedRepository.existFeedByNo(feedNo)) {
