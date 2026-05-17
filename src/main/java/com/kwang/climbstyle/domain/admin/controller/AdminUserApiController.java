@@ -13,12 +13,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 관리자 사용자 API 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-17
+ * @version : 1.0
+ */
 @RestController
 @RequiredArgsConstructor
 public class AdminUserApiController {
 
     private final AdminUserService adminUserService;
 
+    /**
+     * 사용자 정지 처리
+     */
     @PatchMapping(value = "/api/v1/admin/users/{userNo}/suspend", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> suspendUser(@PathVariable Integer userNo,
                                                                   @RequestBody AdminUserSuspendRequest request) {

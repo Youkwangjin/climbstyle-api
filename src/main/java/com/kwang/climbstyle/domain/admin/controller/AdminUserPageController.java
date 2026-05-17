@@ -13,12 +13,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+/**
+ * 관리자 사용자 페이지 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-09
+ * @version : 1.0
+ */
 @Controller
 @RequiredArgsConstructor
 public class AdminUserPageController {
 
     private final UserService userService;
 
+    /**
+     * 사용자 목록 페이지
+     */
     @GetMapping(value = "/admin/users")
     public String adminUserList(AdminUserListRequest request, Model model) {
         List<AdminUserListResponse> responses = userService.getAdminUserList(request);
@@ -29,6 +39,9 @@ public class AdminUserPageController {
         return "admin/user/list";
     }
 
+    /**
+     * 사용자 상세 페이지
+     */
     @GetMapping(value = "/admin/users/{userNo}")
     public String adminUserDetail(@PathVariable("userNo") Integer userNo, AdminUserListRequest request, Model model) {
         UserProfileResponse response = userService.selectUserByNo(userNo);

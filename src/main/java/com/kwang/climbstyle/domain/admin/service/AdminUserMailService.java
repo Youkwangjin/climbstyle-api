@@ -14,6 +14,13 @@ import org.thymeleaf.context.Context;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * 관리자 사용자 메일 발송 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-17
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminUserMailService {
@@ -28,6 +35,9 @@ public class AdminUserMailService {
 
     private final TemplateEngine templateEngine;
 
+    /**
+     * 정지 안내 메일 발송
+     */
     public void sendSuspendMail(UserEntity user, UserSuspendCategory suspendCategory,
                                 String suspendReason, LocalDateTime suspendUntil) {
         final String suspendUntilText;

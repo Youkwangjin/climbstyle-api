@@ -14,6 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * 관리자 사용자 관리 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-17
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminUserService {
@@ -22,6 +29,9 @@ public class AdminUserService {
 
     private final AdminUserMailService adminUserMailService;
 
+    /**
+     * 사용자 정지 처리
+     */
     @Transactional
     public void suspendUser(Integer userNo, AdminUserSuspendRequest request) {
         final UserSuspendCategory suspendCategory = request.getSuspendCategory();

@@ -12,12 +12,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+/**
+ * 관리자 1:1 문의 페이지 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-09
+ * @version : 1.0
+ */
 @Controller
 @RequiredArgsConstructor
 public class AdminInquiryPageController {
 
     private final InquiryService inquiryService;
 
+    /**
+     * 문의 목록 페이지
+     */
     @GetMapping(value = "/admin/inquiries")
     public String adminInquiriesList(AdminInquiryListRequest request, Model model) {
         List<AdminInquiryListResponse> responses = inquiryService.getAdminInquiryList(request);
@@ -28,6 +38,9 @@ public class AdminInquiryPageController {
         return "admin/inquiry/list";
     }
 
+    /**
+     * 문의 상세 페이지
+     */
     @GetMapping(value = "/admin/inquiries/{inquiryNo}")
     public String adminInquiryDetail(@PathVariable("inquiryNo") Integer inquiryNo,
                                      AdminInquiryListRequest request, Model model) {
