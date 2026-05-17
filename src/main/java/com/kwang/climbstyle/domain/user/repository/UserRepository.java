@@ -48,5 +48,7 @@ public interface UserRepository {
 
     void withdrawUser(UserEntity userEntity);
 
+    void suspendUser(UserEntity userEntity);
+
     void deleteByUserNo(@Param("userNo") Integer userNo);
 }

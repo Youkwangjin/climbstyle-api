@@ -1,6 +1,5 @@
 package com.kwang.climbstyle.domain.feed.repository;
 
-import com.kwang.climbstyle.common.protocal.PaginationRequest;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse;
 import com.kwang.climbstyle.domain.feed.entity.FeedEntity;
@@ -16,13 +15,9 @@ public interface FeedRepository {
 
     Boolean existsFeedByNoAndUserNo(@Param("feedNo") Integer feedNo, @Param("userNo") Integer userNo);
 
-    Integer selectFeedListCountByRequest(PaginationRequest request);
+    List<FeedListResponse> selectFeedListByCursor(@Param("cursor") Integer cursor, @Param("size") int size);
 
-    Integer selectMyFeedListCountByRequest(PaginationRequest request, @Param("userNo") Integer userNo);
-
-    List<FeedListResponse> selectFeedList(PaginationRequest request);
-
-    List<FeedListResponse> selectMyFeedList(PaginationRequest request, @Param("userNo") Integer userNo);
+    List<FeedListResponse> selectMyFeedListByCursor(@Param("cursor") Integer cursor, @Param("size") int size, @Param("userNo") Integer userNo);
 
     FeedDetailResponse selectFeedByNo(@Param("feedNo") Integer feedNo);
 

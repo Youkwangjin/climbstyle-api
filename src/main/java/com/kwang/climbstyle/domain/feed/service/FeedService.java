@@ -4,15 +4,12 @@ import com.kwang.climbstyle.code.feed.FeedErrorCode;
 import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
 import com.kwang.climbstyle.code.file.FileTypeCode;
 import com.kwang.climbstyle.code.http.HttpErrorCode;
-import com.kwang.climbstyle.common.protocal.CommonListRequest;
 import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCommentCreateRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedCreateRequest;
+import com.kwang.climbstyle.domain.feed.dto.request.FeedCursorRequest;
 import com.kwang.climbstyle.domain.feed.dto.request.FeedUpdateRequest;
-import com.kwang.climbstyle.domain.feed.dto.response.FeedCommentListResponse;
-import com.kwang.climbstyle.domain.feed.dto.response.FeedDetailResponse;
-import com.kwang.climbstyle.domain.feed.dto.response.FeedLikeResponse;
-import com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse;
+import com.kwang.climbstyle.domain.feed.dto.response.*;
 import com.kwang.climbstyle.domain.feed.entity.FeedCommentEntity;
 import com.kwang.climbstyle.domain.feed.entity.FeedEntity;
 import com.kwang.climbstyle.domain.feed.entity.FeedFileEntity;
@@ -35,6 +32,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * 피드 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-16
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class FeedService {
@@ -49,16 +53,55 @@ public class FeedService {
 
     private final FileService fileService;
 
-    public List<FeedListResponse> getFeedList(CommonListRequest request) {
-        request.setTotalCount(feedRepository.selectFeedListCountByRequest(request));
-        return feedRepository.selectFeedList(request);
+    /**
+     * 피드 목록 조회 (커서 기반)
+     */
+    @Transactional(readOnly = true)
+    public FeedCursorResponse getFeedListByCursor(FeedCursorRequest request) {
+        final Integer cursor = request.getCursor();
+        final int size = request.getSize();
+
+        List<FeedListResponse> feeds = feedRepository.selectFeedListByCursor(cursor, size);
+        final boolean hasNext = feeds.size() == size;
+
+        Integer nextCursor = null;
+        if (hasNext) {
+            nextCursor = feeds.get(feeds.size() - 1).getFeedNo();
+        }
+
+        return FeedCursorResponse.builder()
+                .feeds(feeds)
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
+                .build();
     }
 
-    public List<FeedListResponse> getMyFeedList(CommonListRequest request, Integer userNo) {
-        request.setTotalCount(feedRepository.selectMyFeedListCountByRequest(request, userNo));
-        return feedRepository.selectMyFeedList(request, userNo);
+    /**
+     * 내 피드 목록 조회 (커서 기반)
+     */
+    @Transactional(readOnly = true)
+    public FeedCursorResponse getMyFeedListByCursor(FeedCursorRequest request, Integer userNo) {
+        final Integer cursor = request.getCursor();
+        final int size = request.getSize();
+
+        List<FeedListResponse> feeds = feedRepository.selectMyFeedListByCursor(cursor, size, userNo);
+        final boolean hasNext = feeds.size() == size;
+
+        Integer nextCursor = null;
+        if (hasNext) {
+            nextCursor = feeds.get(feeds.size() - 1).getFeedNo();
+        }
+
+        return FeedCursorResponse.builder()
+                .feeds(feeds)
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
+                .build();
     }
 
+    /**
+     * 피드 상세 조회
+     */
     public FeedDetailResponse detailFeed(Integer feedNo, Integer userNo) {
         FeedDetailResponse feed = feedRepository.selectFeedByNo(feedNo);
         if (feed == null) {
@@ -89,6 +132,26 @@ public class FeedService {
         return feed;
     }
 
+    /**
+     * 피드 좋아요 사용자 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<FeedLikeDetailResponse> detailFeedLike(Integer feedNo) {
+        FeedDetailResponse feed = feedRepository.selectFeedByNo(feedNo);
+        if (feed == null) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
+        }
+
+        if (Objects.equals(feed.getFeedLikeVisibleYn(), FeedVisibleStatus.HIDDEN.getCode())) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_LIKE_HIDDEN);
+        }
+
+        return feedLikeRepository.selectFeedLikeListByNo(feedNo);
+    }
+
+    /**
+     * 피드 등록
+     */
     @Transactional
     public void createFeed(FeedCreateRequest request) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
@@ -139,6 +202,9 @@ public class FeedService {
         }
     }
 
+    /**
+     * 피드 좋아요 / 좋아요 취소
+     */
     @Transactional
     public FeedLikeResponse likeFeed(Integer feedNo, Integer userNo) {
         if (!feedRepository.existFeedByNo(feedNo)) {
@@ -169,6 +235,9 @@ public class FeedService {
                 .build();
     }
 
+    /**
+     * 피드 댓글 등록
+     */
     @Transactional
     public void commentFeed(Integer userNo, Integer feedNo, FeedCommentCreateRequest request) {
         final String feedCommentContent = request.getFeedCommentContent();
@@ -199,6 +268,9 @@ public class FeedService {
         feedCommentRepository.insert(feedCommentEntity);
     }
 
+    /**
+     * 피드 수정
+     */
     @Transactional
     public void updateFeed(Integer userNo, Integer feedNo, FeedUpdateRequest request) {
         final String feedTitle = request.getFeedTitle();
@@ -227,6 +299,9 @@ public class FeedService {
         feedRepository.update(feedEntity);
     }
 
+    /**
+     * 피드 삭제
+     */
     @Transactional
     public void deleteFeed(Integer userNo, Integer feedNo) {
         if (!feedRepository.existFeedByNo(feedNo)) {

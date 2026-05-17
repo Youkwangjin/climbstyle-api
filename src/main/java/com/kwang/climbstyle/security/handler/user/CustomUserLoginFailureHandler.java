@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,21 @@ public class CustomUserLoginFailureHandler implements AuthenticationFailureHandl
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
+
+        if (exception instanceof LockedException) {
+            ApiErrorResponse body = ApiErrorResponse.builder()
+                    .httpStatus(AuthErrorCode.LOGIN_SUSPENDED.getHttpStatus())
+                    .code(AuthErrorCode.LOGIN_SUSPENDED.getCode())
+                    .message(AuthErrorCode.LOGIN_SUSPENDED.getMessage())
+                    .build();
+
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write(objectMapper.writeValueAsString(body));
+
+            return;
+        }
 
         if (exception instanceof DisabledException) {
             String userId = (String) request.getAttribute("userId");

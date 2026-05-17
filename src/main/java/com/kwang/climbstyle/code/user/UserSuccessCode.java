@@ -27,6 +27,8 @@ public enum UserSuccessCode implements ApiCode {
 
     USER_FIND_PW_CODE_SENT(HttpStatus.OK,                   "1000", "인증번호가 발송되었습니다. 이메일을 확인해주세요."),
     USER_RESET_PASSWORD_SUCCESS(HttpStatus.OK,              "1000", "비밀번호가 성공적으로 재설정되었습니다. 다시 로그인해주세요."),
+
+    USER_SUSPEND_SUCCESS(HttpStatus.OK,                     "1000", "사용자가 정지 처리되었습니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -111,12 +111,17 @@
                 </div>
                 <div class="detail-stats">
                     <div class="detail-stat" id="detailLikeStat">
-                        <button class="detail-like-btn" type="button" id="detailLikeBtn" onclick="likeFromDetail()" aria-label="좋아요">
-                            <span id="detailLikeIcon">
-                                <th:block th:replace="~{fragments/common/icons :: heart}" />
-                            </span>
-                            <span id="detailLikeCount">0</span>
-                        </button>
+                        <div class="detail-like-wrap">
+                            <button class="detail-like-btn" type="button" id="detailLikeBtn" onclick="likeFromDetail()" aria-label="좋아요">
+                                <span id="detailLikeIcon">
+                                    <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                </span>
+                            </button>
+                            <button class="detail-like-count-btn" type="button" id="detailLikeCountBtn"
+                                    onclick="openLikeList(getCurrentFeedNo())" aria-label="좋아요한 사람 보기">
+                                <span id="detailLikeCount">0</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="detail-stat">
                         <th:block th:replace="~{fragments/common/icons :: comment}" />
@@ -211,6 +216,19 @@
     </div>
 </div>
 
+<div id="feedLikeListModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" onclick="closeLikeList()"></div>
+    <div class="like-list-container">
+        <div class="like-list-header">
+            <span>좋아요</span>
+            <button class="like-list-close" onclick="closeLikeList()" aria-label="닫기">
+                <th:block th:replace="~{fragments/common/icons :: close}" />
+            </button>
+        </div>
+        <div class="like-list-body" id="likeListBody"></div>
+    </div>
+</div>
+
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/logout.js}"></script>
 <script th:src="@{/js/common/validator.js}"></script>
@@ -221,7 +239,8 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".podium-card[data-feed-no]").forEach(card => {
-            card.addEventListener("click", () => {
+            card.addEventListener("click", (e) => {
+                if (e.target.closest("button")) return;
                 openFeedDetail(parseInt(card.dataset.feedNo));
             });
         });

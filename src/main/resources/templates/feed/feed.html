@@ -27,6 +27,12 @@
             </div>
         </div>
 
+        <div id="feed-config"
+             th:data-next-cursor="${nextCursor}"
+             th:data-has-next="${hasNext}"
+             th:data-api-url="${feedApiUrl}">
+        </div>
+
         <div class="feed-grid" aria-label="피드 목록">
             <div th:if="${#lists.isEmpty(feedList)}" class="empty-state">
                 <p>등록된 피드가 없습니다.</p>
@@ -49,19 +55,27 @@
                     </div>
                     <p class="f-caption" th:text="${feed.feedTitle}"></p>
                     <div class="f-actions">
-                        <button class="f-btn"
-                                th:classappend="${feed.feedLikeCount != null && feed.feedLikeCount > 0} ? 'is-liked' : ''"
-                                type="button" th:attr="data-feed-no=${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
-                            <span class="icon-container">
-                                <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
-                                    <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
-                                </th:block>
-                                <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
-                                    <th:block th:replace="~{fragments/common/icons :: heart}" />
-                                </th:block>
-                            </span>
-                            <span class="like-count" th:if="${feed.feedLikeVisibleYn != 'N'}" th:text="${feed.feedLikeCount ?: 0}">0</span>
-                        </button>
+                        <div class="f-like-wrap">
+                            <button class="f-btn f-like-icon-btn"
+                                    th:classappend="${feed.feedLikeCount != null && feed.feedLikeCount > 0} ? 'is-liked' : ''"
+                                    type="button" th:attr="data-feed-no=${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
+                                <span class="icon-container">
+                                    <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
+                                        <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
+                                    </th:block>
+                                    <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
+                                        <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                    </th:block>
+                                </span>
+                            </button>
+                            <button class="f-like-count-btn" type="button"
+                                    th:if="${feed.feedLikeVisibleYn != 'N'}"
+                                    th:attr="data-feed-no=${feed.feedNo}"
+                                    th:onclick="|openLikeList(${feed.feedNo})|"
+                                    aria-label="좋아요한 사람 보기">
+                                <span class="like-count" th:text="${feed.feedLikeCount ?: 0}">0</span>
+                            </button>
+                        </div>
                         <button class="f-btn" type="button" aria-label="댓글">
                             <th:block th:replace="~{fragments/common/icons :: comment}"/>
                             <span th:text="${feed.feedCommentCount ?: 0}"></span>
@@ -117,12 +131,17 @@
                         </div>
                         <div class="detail-stats">
                             <div class="detail-stat" id="detailLikeStat">
-                                <button class="detail-like-btn" type="button" id="detailLikeBtn" onclick="likeFromDetail()" aria-label="좋아요">
-                                    <span id="detailLikeIcon">
-                                        <th:block th:replace="~{fragments/common/icons :: heart}" />
-                                    </span>
-                                    <span id="detailLikeCount">0</span>
-                                </button>
+                                <div class="detail-like-wrap">
+                                    <button class="detail-like-btn" type="button" id="detailLikeBtn" onclick="likeFromDetail()" aria-label="좋아요">
+                                        <span id="detailLikeIcon">
+                                            <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                        </span>
+                                    </button>
+                                    <button class="detail-like-count-btn" type="button" id="detailLikeCountBtn"
+                                            onclick="openLikeList(getCurrentFeedNo())" aria-label="좋아요한 사람 보기">
+                                        <span id="detailLikeCount">0</span>
+                                    </button>
+                                </div>
                             </div>
                             <div class="detail-stat">
                                 <th:block th:replace="~{fragments/common/icons :: comment}" />
@@ -220,11 +239,24 @@
                 </div>
             </div>
         </div>
-        <th:block th:replace="~{fragments/feed/pagination :: pagination(
-            ${request},
-            ${feedList},
-            ${currentUrl}
-        )}"/>
+        <div id="feedLikeListModal" class="modal" aria-hidden="true">
+            <div class="modal-backdrop" onclick="closeLikeList()"></div>
+            <div class="like-list-container">
+                <div class="like-list-header">
+                    <span>좋아요</span>
+                    <button class="like-list-close" onclick="closeLikeList()" aria-label="닫기">
+                        <th:block th:replace="~{fragments/common/icons :: close}" />
+                    </button>
+                </div>
+                <div class="like-list-body" id="likeListBody"></div>
+            </div>
+        </div>
+
+        <div class="load-more-wrap" id="loadMoreWrap" th:if="${hasNext}">
+            <button type="button" class="load-more-btn" id="loadMoreBtn" onclick="loadMoreFeeds()" aria-label="더 보기">
+                <span>+</span>
+            </button>
+        </div>
     </div>
 </section>
 <div th:replace="~{fragments/common/footer :: footer}"></div>
@@ -235,63 +267,162 @@
 <script th:src="@{/js/common/icons.js}"></script>
 <script th:src="@{/js/common/api.js}"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const feedCards = document.querySelectorAll(".f-card");
+    (function () {
+        const config = document.getElementById("feed-config");
+        let currentCursor = config.dataset.nextCursor || null;
+        let hasNext = config.dataset.hasNext === "true";
+        const feedApiUrl = config.dataset.apiUrl;
+        let isLoading = false;
 
-        feedCards.forEach(card => {
-            card.addEventListener("click", (e) => {
-                if (e.target.closest(".f-btn") || e.target.closest("button")) {
-                    return;
-                }
-
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelector(".feed-grid").addEventListener("click", (e) => {
+                const card = e.target.closest(".f-card");
+                if (!card || e.target.closest(".f-btn") || e.target.closest("button")) return;
                 const feedNo = card.getAttribute("data-feed-no");
-                if (feedNo) {
-                    openFeedDetail(parseInt(feedNo));
-                }
+                if (feedNo) openFeedDetail(parseInt(feedNo));
             });
         });
-    });
 
-    function like(button) {
-        API.callJson(`/api/v1/feeds/${button.getAttribute("data-feed-no")}/like`, {
-            method: "POST"
-        })
-            .then(async response => {
-                const result = await response.json();
+        function appendFeeds(feeds) {
+            const grid = document.querySelector(".feed-grid");
+            const emptyState = grid.querySelector(".empty-state");
+            if (emptyState) emptyState.remove();
 
-                if (response.ok) {
-                    updateLikeButton(button, result.data.isLiked, result.data.feedLikeCount);
-                } else {
-                    alert(result.message);
+            feeds.forEach(feed => {
+                const likeCount = feed.feedLikeCount || 0;
+                const isLiked = likeCount > 0;
+                const commentCount = feed.feedCommentCount || 0;
+                const imageSrc = feed.feedFilePath || "/img/main1.png";
+
+                let avatarHtml = "";
+                if (feed.userImageUrl) {
+                    avatarHtml = `<img src="${feed.userImageUrl}" alt="사용자 프로필" />`;
                 }
-            })
-            .catch(() => {
-                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+
+                let likeCountBtnHtml = "";
+                if (feed.feedLikeVisibleYn !== "N") {
+                    likeCountBtnHtml = `<button class="f-like-count-btn" type="button" data-feed-no="${feed.feedNo}" onclick="openLikeList(${feed.feedNo})" aria-label="좋아요한 사람 보기"><span class="like-count">${likeCount}</span></button>`;
+                }
+
+                let likedClass = "";
+                if (isLiked) {
+                    likedClass = "is-liked";
+                }
+
+                const article = document.createElement("article");
+                article.className = "f-card";
+                article.setAttribute("data-feed-no", feed.feedNo);
+                article.style.cursor = "pointer";
+                article.innerHTML = `
+                    <div class="f-media">
+                        <img loading="lazy" src="${imageSrc}" alt="클라이밍 사진" />
+                    </div>
+                    <div class="f-body">
+                        <div class="f-top">
+                            <div class="f-user">
+                                <span class="f-avatar" aria-hidden="true">${avatarHtml}</span>
+                                <div class="f-user-meta">
+                                    <div class="f-name">${feed.userNickName || "익명 사용자"}</div>
+                                    <div class="f-time">${formatDate(feed.feedCreated)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="f-caption">${feed.feedTitle}</p>
+                        <div class="f-actions">
+                            <div class="f-like-wrap">
+                                <button class="f-btn f-like-icon-btn ${likedClass}" type="button"
+                                        data-feed-no="${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
+                                    <span class="icon-container">
+                                        ${isLiked ? Icons.heartFilled : Icons.heart}
+                                    </span>
+                                </button>
+                                ${likeCountBtnHtml}
+                            </div>
+                            <button class="f-btn" type="button" aria-label="댓글">
+                                ${Icons.comment}
+                                <span>${commentCount}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(article);
             });
-    }
-
-    function updateLikeButton(button, isLiked, feedLikeCount) {
-        const iconContainer = button.querySelector(".icon-container");
-        const countSpan = button.querySelector(".like-count");
-
-        if (isLiked) {
-            button.classList.add("is-liked");
-        } else {
-            button.classList.remove("is-liked");
         }
 
-        if (iconContainer && Icons) {
+        window.loadMoreFeeds = function () {
+            if (isLoading || !hasNext) return;
+            isLoading = true;
+
+            const btn = document.getElementById("loadMoreBtn");
+            if (btn) btn.disabled = true;
+
+            fetch(`${feedApiUrl}?cursor=${currentCursor}&size=9`, { headers: { "Accept": "application/json" } })
+                .then(async response => {
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        appendFeeds(result.data.feeds);
+                        currentCursor = result.data.nextCursor;
+                        hasNext = result.data.hasNext;
+
+                        if (!hasNext) {
+                            const wrap = document.getElementById("loadMoreWrap");
+                            if (wrap) wrap.remove();
+                        }
+                    } else {
+                        alert(result.message);
+                    }
+                })
+                .catch(() => {
+                    alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+                })
+                .finally(() => {
+                    isLoading = false;
+                    if (hasNext) {
+                        const loadMoreBtn = document.getElementById("loadMoreBtn");
+                        if (loadMoreBtn) loadMoreBtn.disabled = false;
+                    }
+                });
+        };
+
+        window.like = function (button) {
+            API.callJson(`/api/v1/feeds/${button.getAttribute("data-feed-no")}/like`, {
+                method: "POST"
+            })
+                .then(async response => {
+                    const result = await response.json();
+                    if (response.ok) {
+                        updateLikeButton(button, result.data.isLiked, result.data.feedLikeCount);
+                    } else {
+                        alert(result.message);
+                    }
+                })
+                .catch(() => {
+                    alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+                });
+        };
+
+        window.updateLikeButton = function (button, isLiked, feedLikeCount) {
+            const iconContainer = button.querySelector(".icon-container");
+            const wrap = button.closest(".f-like-wrap");
+            const countSpan = wrap ? wrap.querySelector(".like-count") : button.querySelector(".like-count");
+
             if (isLiked) {
-                iconContainer.innerHTML = Icons.heartFilled;
+                button.classList.add("is-liked");
             } else {
-                iconContainer.innerHTML = Icons.heart;
+                button.classList.remove("is-liked");
             }
-        }
 
-        if (countSpan) {
-            countSpan.textContent = feedLikeCount;
-        }
-    }
+            if (iconContainer && Icons) {
+                iconContainer.innerHTML = isLiked ? Icons.heartFilled : Icons.heart;
+            }
+
+            if (countSpan) {
+                countSpan.textContent = feedLikeCount;
+            }
+        };
+    })();
 </script>
 </body>
 </html>

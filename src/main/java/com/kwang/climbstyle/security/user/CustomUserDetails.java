@@ -52,7 +52,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !Objects.equals(userEntity.getUserStatus(), UserStatus.SUSPENDED.getCode());
     }
 
     @Override
