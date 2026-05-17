@@ -133,10 +133,15 @@
         INNER JOIN
             tb_feed_like fl
             ON f.feed_no = fl.feed_no
+        INNER JOIN
+            tb_user u
+            ON fl.user_no = u.user_no
         WHERE
             f.feed_visible_yn = 'Y'
         AND
             f.feed_like_visible_yn = 'Y'
+        AND
+            u.user_status IN ('ACTIVE', 'DORMANT')
         GROUP BY
             f.feed_no,
             f.feed_created
@@ -158,12 +163,17 @@
         INNER JOIN
             tb_feed_like fl
             ON f.feed_no = fl.feed_no
+        INNER JOIN
+            tb_user u
+            ON fl.user_no = u.user_no
         WHERE
             f.feed_visible_yn = 'Y'
         AND
             f.feed_like_visible_yn = 'Y'
         AND
             fl.feed_like_created >= #{startDate}
+        AND
+            u.user_status IN ('ACTIVE', 'DORMANT')
         GROUP BY
             f.feed_no,
             f.feed_created

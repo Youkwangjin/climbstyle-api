@@ -57,8 +57,13 @@
                     COUNT(fl.feed_no)
                 FROM
                     tb_feed_like fl
+                INNER JOIN
+                    tb_user flu
+                    ON fl.user_no = flu.user_no
                 WHERE
                     fl.feed_no = feed_list.feed_no
+                AND
+                    flu.user_status IN ('ACTIVE', 'DORMANT')
             ) AS feed_like_count,
             (
                 SELECT
@@ -113,8 +118,13 @@
                     COUNT(fl.feed_no)
                 FROM
                     tb_feed_like fl
+                INNER JOIN
+                    tb_user flu
+                    ON fl.user_no = flu.user_no
                 WHERE
                     fl.feed_no = feed_list.feed_no
+                AND
+                    flu.user_status IN ('ACTIVE', 'DORMANT')
             ) AS feed_like_count,
             (
                 SELECT

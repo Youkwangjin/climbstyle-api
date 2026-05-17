@@ -25,11 +25,16 @@
 
     <select id="selectFeedLikeCountByFeedNo" parameterType="Integer" resultType="Integer">
         SELECT
-            COUNT(feed_like_no)
+            COUNT(fl.feed_like_no)
         FROM
-            tb_feed_like
+            tb_feed_like fl
+        INNER JOIN
+            tb_user u
+            ON fl.user_no = u.user_no
         WHERE
-            feed_no = #{feedNo}
+            fl.feed_no = #{feedNo}
+        AND
+            u.user_status IN ('ACTIVE', 'DORMANT')
     </select>
 
     <select id="selectFeedLikeListByNo" parameterType="Integer"
@@ -45,6 +50,8 @@
             ON fl.user_no = u.user_no
         WHERE
             fl.feed_no = #{feedNo}
+        AND
+            u.user_status IN ('ACTIVE', 'DORMANT')
         ORDER BY
             fl.feed_like_created DESC
     </select>
