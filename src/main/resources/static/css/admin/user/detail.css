@@ -151,3 +151,104 @@
 .badge-user-dormant   { background: #fef9c3; color: #854d0e }
 .badge-user-suspended { background: #fee2e2; color: #b91c1c }
 .badge-user-withdrawn { background: var(--admin-card); color: var(--admin-muted) }
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.is-open {
+    display: flex;
+}
+
+.modal {
+    background: #fff;
+    border-radius: var(--admin-radius);
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--admin-line);
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--admin-muted);
+    padding: 4px;
+    line-height: 1;
+}
+
+.modal-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.modal-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--admin-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.modal-select,
+.modal-input,
+.modal-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--admin-line);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--admin-text);
+    background: #fff;
+    outline: none;
+    font-family: inherit;
+}
+
+.modal-select:focus,
+.modal-input:focus,
+.modal-textarea:focus {
+    border-color: var(--admin-brand);
+}
+
+.modal-textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--admin-line);
+}

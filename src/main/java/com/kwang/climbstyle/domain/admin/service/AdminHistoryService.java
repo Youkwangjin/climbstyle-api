@@ -9,12 +9,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * 관리자 로그인 이력 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-09
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminHistoryService {
 
     private final AdminHistoryRepository adminHistoryRepository;
 
+    /**
+     * 로그인 성공 이력 저장
+     */
     @Transactional
     public void saveSuccess(Integer adminNo, HttpServletRequest request) {
         final String adminLoginHistorySuccessYn = "Y";
@@ -33,6 +43,9 @@ public class AdminHistoryService {
         adminHistoryRepository.insert(adminLoginHistoryEntity);
     }
 
+    /**
+     * 로그인 실패 이력 저장
+     */
     @Transactional
     public void saveFailure(String failId, HttpServletRequest request) {
         final String adminLoginHistorySuccessYn = "N";

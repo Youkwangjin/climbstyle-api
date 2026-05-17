@@ -13,12 +13,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+/**
+ * 관리자 공지사항 페이지 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-09
+ * @version : 1.0
+ */
 @Controller
 @RequiredArgsConstructor
 public class AdminNoticePageController {
 
     private final NoticeService noticeService;
 
+    /**
+     * 공지사항 목록 페이지
+     */
     @GetMapping(value = "/admin/notices")
     public String adminNoticeList(NoticeListRequest request, Model model) {
         List<AdminNoticeListResponse> responses = noticeService.getAdminNoticeList(request);
@@ -30,6 +40,9 @@ public class AdminNoticePageController {
         return "admin/notice/list";
     }
 
+    /**
+     * 공지사항 상세 페이지
+     */
     @GetMapping(value = "/admin/notices/{noticeNo}")
     public String noticeDetail(@PathVariable("noticeNo") Integer noticeNo, NoticeDetailRequest request, Model model) {
         NoticeDetailResponse response = noticeService.getAdminNoticeDetail(noticeNo);
@@ -40,11 +53,17 @@ public class AdminNoticePageController {
         return "/admin/notice/detail";
     }
 
+    /**
+     * 공지사항 등록 페이지
+     */
     @GetMapping(value = "/admin/notices/new")
     public String newNotice() {
         return "admin/notice/new";
     }
 
+    /**
+     * 공지사항 수정 페이지
+     */
     @GetMapping(value = "/admin/notices/{noticeNo}/edit")
     public String editNotice(@PathVariable("noticeNo") Integer noticeNo, Model model) {
         NoticeDetailResponse response = noticeService.getAdminNoticeDetail(noticeNo);

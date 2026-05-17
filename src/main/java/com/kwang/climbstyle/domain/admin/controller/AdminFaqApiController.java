@@ -12,12 +12,22 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 관리자 FAQ API 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-09
+ * @version : 1.0
+ */
 @RestController
 @RequiredArgsConstructor
 public class AdminFaqApiController {
 
     private final FaqService faqService;
 
+    /**
+     * FAQ 등록
+     */
     @PostMapping(value = "/api/v1/faqs", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> createFaq(@RequestBody @Valid FaqCreateRequest request) {
         faqService.createFaq(request);
@@ -25,6 +35,9 @@ public class AdminFaqApiController {
         return ApiResponseBuilder.ok(FaqSuccessCode.FAQ_CREATE_SUCCESS);
     }
 
+    /**
+     * FAQ 수정
+     */
     @PatchMapping (value = "/api/v1/faqs/{faqNo}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> updateFaq(@PathVariable("faqNo") Integer faqNo,
                                                                 @RequestBody @Valid FaqUpdateRequest request) {
@@ -33,6 +46,9 @@ public class AdminFaqApiController {
         return ApiResponseBuilder.ok(FaqSuccessCode.FAQ_UPDATE_SUCCESS, faqNo);
     }
 
+    /**
+     * FAQ 삭제
+     */
     @DeleteMapping (value = "/api/v1/faqs/{faqNo}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> deleteFaq(@PathVariable("faqNo") Integer faqNo) {
         faqService.deleteFaq(faqNo);

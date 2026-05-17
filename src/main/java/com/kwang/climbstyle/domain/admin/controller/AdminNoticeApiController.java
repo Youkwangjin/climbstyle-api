@@ -14,12 +14,22 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 관리자 공지사항 API 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-09
+ * @version : 1.0
+ */
 @RestController
 @RequiredArgsConstructor
 public class AdminNoticeApiController {
 
     private final NoticeService noticeService;
 
+    /**
+     * 공지사항 등록
+     */
     @PostMapping(value = "/api/v1/notices", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> createNotice(@Valid NoticeCreateRequest request) {
         noticeService.createNotice(request);
@@ -27,6 +37,9 @@ public class AdminNoticeApiController {
         return ApiResponseBuilder.ok(NoticeSuccessCode.NOTICE_CREATE_SUCCESS);
     }
 
+    /**
+     * 공지사항 에디터 이미지 업로드
+     */
     @PostMapping(value = "/api/v1/notices/images", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> uploadNoticeImage(@Valid CommonEditorImageUploadRequest request) {
         CommonEditorImageUploadResponse imageUrl = noticeService.uploadNoticeImage(request);
@@ -34,6 +47,9 @@ public class AdminNoticeApiController {
         return ApiResponseBuilder.ok(NoticeSuccessCode.NOTICE_IMAGE_UPLOAD_SUCCESS, imageUrl);
     }
 
+    /**
+     * 공지사항 수정
+     */
     @PatchMapping(value = "/api/v1/notices/{noticeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> updateNotice(@Valid NoticeUpdateRequest request,
                                                                    @PathVariable("noticeNo") Integer noticeNo) {
@@ -42,6 +58,9 @@ public class AdminNoticeApiController {
         return ApiResponseBuilder.ok(NoticeSuccessCode.NOTICE_UPDATE_SUCCESS);
     }
 
+    /**
+     * 공지사항 삭제
+     */
     @DeleteMapping(value = "/api/v1/notices/{noticeNo}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<Object>> deleteNotice(@PathVariable("noticeNo") Integer noticeNo) {
         noticeService.deleteNotice(noticeNo);

@@ -15,10 +15,14 @@
         <result property="userOauthId"          column="user_oauth_id"/>
         <result property="userImageUrl"         column="user_image_url"/>
         <result property="userIntro"            column="user_intro"/>
+        <result property="userSuspendReason"    column="user_suspend_reason"/>
+        <result property="userSuspendCategory"  column="user_suspend_category"/>
         <result property="userCreated"          column="user_created"/>
         <result property="userUpdated"          column="user_updated"/>
         <result property="userDeactivated"      column="user_deactivated"/>
         <result property="userWithdrawn"        column="user_withdrawn"/>
+        <result property="userSuspended"        column="user_suspended"/>
+        <result property="userSuspendUntil"     column="user_suspend_until"/>
         <result property="userRole"             column="role_name"/>
     </resultMap>
 
@@ -148,6 +152,36 @@
             u.user_oauth_id = #{userOauthId}
         AND
             user_status IN ('ACTIVE', 'DORMANT', 'SUSPENDED', 'WITHDRAWN')
+    </select>
+
+    <select id="selectUserByNmAndEmail" resultMap="userResultMap">
+        SELECT
+            user_id
+        FROM
+            tb_user
+        WHERE
+            user_name = #{userNm}
+          AND
+            user_email = #{userEmail}
+          AND
+            user_oauth_provider IS NULL
+          AND
+            user_status IN ('ACTIVE', 'DORMANT')
+    </select>
+
+    <select id="selectNonOAuthUserByEmail" resultMap="userResultMap">
+        SELECT
+            user_no,
+            user_id,
+            user_email
+        FROM
+            tb_user
+        WHERE
+            user_email = #{userEmail}
+          AND
+            user_oauth_provider IS NULL
+          AND
+            user_status IN ('ACTIVE', 'DORMANT')
     </select>
 
     <select id="selectAdminUserListCountByRequest" parameterType="com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest"
@@ -293,6 +327,19 @@
             user_no = #{userNo}
     </update>
 
+    <update id="suspendUser" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
+        UPDATE
+            tb_user
+        SET
+            user_status = #{userStatus},
+            user_suspend_category = #{userSuspendCategory},
+            user_suspend_reason = #{userSuspendReason},
+            user_suspended = #{userSuspended},
+            user_suspend_until = #{userSuspendUntil}
+        WHERE
+            user_no = #{userNo}
+    </update>
+
     <update id="update" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
         UPDATE
             tb_user
@@ -305,36 +352,6 @@
         WHERE
             user_no = #{userNo}
     </update>
-
-    <select id="selectUserByNmAndEmail" resultMap="userResultMap">
-        SELECT
-            user_id
-        FROM
-            tb_user
-        WHERE
-            user_name = #{userNm}
-        AND
-            user_email = #{userEmail}
-        AND
-            user_oauth_provider IS NULL
-        AND
-            user_status IN ('ACTIVE', 'DORMANT')
-    </select>
-
-    <select id="selectNonOAuthUserByEmail" resultMap="userResultMap">
-        SELECT
-            user_no,
-            user_id,
-            user_email
-        FROM
-            tb_user
-        WHERE
-            user_email = #{userEmail}
-        AND
-            user_oauth_provider IS NULL
-        AND
-            user_status IN ('ACTIVE', 'DORMANT')
-    </select>
 
     <update id="updatePassword" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
         UPDATE

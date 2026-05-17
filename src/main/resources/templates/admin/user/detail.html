@@ -15,6 +15,7 @@
 <div class="admin-wrap">
     <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
     <main class="admin-main">
+        <input type="hidden" id="userNo" th:value="${user.userNo}">
         <div class="page-header">
             <div>
                 <div class="breadcrumb"><span>회원</span></div>
@@ -22,6 +23,9 @@
             </div>
             <div style="display:flex; gap:8px;">
                 <button type="button" class="btn btn-sm" onclick="userList()">목록</button>
+                <th:block th:if="${user.userStatus == 'ACTIVE'}">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="suspendUser()">정지</button>
+                </th:block>
             </div>
         </div>
 
@@ -97,7 +101,45 @@
         </div>
     </main>
 </div>
+<div class="modal-overlay" id="suspendModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">사용자 정지</h3>
+            <button type="button" class="modal-close" onclick="closeSuspendModal()">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-field">
+                <label class="modal-label">정지 분류</label>
+                <label for="suspendCategory">
+                    <select id="suspendCategory" class="modal-select">
+                        <option th:each="category : ${suspendCategories}"
+                                th:value="${category.code}"
+                                th:text="${category.description}">
+                        </option>
+                    </select>
+                </label>
+            </div>
+            <div class="modal-field">
+                <label class="modal-label">정지 사유</label>
+                <label for="suspendReason">
+                    <textarea id="suspendReason" class="modal-textarea" placeholder="정지 사유를 입력하세요." maxlength="200"></textarea>
+                </label>
+            </div>
+            <div class="modal-field">
+                <label class="modal-label">정지 기간 (일)</label>
+                <label for="suspendDays">
+                    <input type="number" id="suspendDays" class="modal-input" placeholder="비워두면 영구 정지" min="1" max="3650">
+                </label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm" onclick="closeSuspendModal()">취소</button>
+            <button type="button" class="btn btn-sm btn-danger" onclick="submitSuspend()">정지 처리</button>
+        </div>
+    </div>
+</div>
 <div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script th:src="@{/js/common/api.js}"></script>
 <script>
     function userList() {
         const params = new URLSearchParams({
@@ -107,6 +149,47 @@
             searchName: "[[${request.searchName}]]"
         });
         location.href = "/admin/users?" + params.toString();
+    }
+
+    function suspendUser() {
+        document.getElementById("suspendModal").classList.add("is-open");
+    }
+
+    function closeSuspendModal() {
+        document.getElementById("suspendModal").classList.remove("is-open");
+    }
+
+    function submitSuspend() {
+        const suspendReason = document.getElementById("suspendReason").value.trim();
+        if (!suspendReason) {
+            alert("정지 사유를 입력해주세요.");
+            return;
+        }
+
+        if (!confirm("해당 사용자를 정지 처리하시겠습니까?")) return;
+
+        const suspendDaysValue = document.getElementById("suspendDays").value.trim();
+
+        API.callJson(`/api/v1/admin/users/${document.getElementById("userNo").value}/suspend`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                suspendCategory: document.getElementById("suspendCategory").value,
+                suspendReason: suspendReason,
+                suspendDays: suspendDaysValue ? parseInt(suspendDaysValue) : null
+            })
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.reload();
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
     }
 </script>
 </body>

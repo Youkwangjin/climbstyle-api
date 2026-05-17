@@ -2,6 +2,7 @@ package com.kwang.climbstyle.security.provider;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
@@ -25,6 +26,9 @@ public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         super.additionalAuthenticationChecks(userDetails, authentication);
 
+        if (!userDetails.isAccountNonLocked()) {
+            throw new LockedException("User is suspended");
+        }
         if (!userDetails.isEnabled()) {
             throw new DisabledException("User is disabled");
         }

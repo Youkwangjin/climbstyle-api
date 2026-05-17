@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Apple SD Gothic Neo',Arial,sans-serif;">
+<table style="width:100%;background:#f4f4f4;padding:40px 0;border-collapse:collapse;border-spacing:0;">
+    <tr>
+        <td style="text-align:center;">
+            <table style="width:480px;background:#ffffff;border-radius:12px;overflow:hidden;border-collapse:collapse;border-spacing:0;margin:0 auto;">
+                <tr>
+                    <td style="background:#1a1a2e;padding:28px 40px;">
+                        <span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.5px;">ClimbStyle</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:40px 40px 8px;">
+                        <p style="margin:0 0 6px;font-size:20px;font-weight:700;color:#1a1a2e;">계정 이용 정지 안내</p>
+                        <p style="margin:0;font-size:14px;color:#555;line-height:1.8;">
+                            안녕하세요, <span th:text="${nickname}" style="font-weight:700;"></span>님.<br>
+                            아래와 같은 사유로 계정이 정지 처리되었습니다.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:24px 40px 0;">
+                        <table style="width:100%;border-collapse:collapse;border-spacing:0;background:#f8f8fb;border-radius:8px;">
+                            <tr>
+                                <td style="padding:16px 20px;border-bottom:1px solid #ebebeb;">
+                                    <span style="font-size:12px;font-weight:600;color:#888;display:block;margin-bottom:4px;">위반 분류</span>
+                                    <span th:text="${categoryDescription}" style="font-size:14px;font-weight:600;color:#1a1a2e;"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:16px 20px;border-bottom:1px solid #ebebeb;">
+                                    <span style="font-size:12px;font-weight:600;color:#888;display:block;margin-bottom:4px;">정지 사유</span>
+                                    <span th:text="${reason}" style="font-size:14px;color:#1a1a2e;line-height:1.7;"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:16px 20px;">
+                                    <span style="font-size:12px;font-weight:600;color:#888;display:block;margin-bottom:4px;">정지 기간</span>
+                                    <span th:text="${suspendUntil}" style="font-size:14px;font-weight:600;color:#c0392b;"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:24px 40px 40px;">
+                        <p style="margin:0;font-size:13px;color:#555;line-height:1.8;">
+                            정지 조치가 부당하다고 판단되시면 아래 이메일로 문의해 주세요.<br>
+                            검토 후 빠르게 답변드리겠습니다.
+                        </p>
+                        <p style="margin:12px 0 0;font-size:13px;line-height:1.8;">
+                            <span style="font-weight:700;color:#1a1a2e;">문의 이메일: </span>
+                            <a href="mailto:support@climbstyle.co.kr"
+                               style="color:#2563eb;text-decoration:none;">support@climbstyle.co.kr</a>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background:#f8f8fb;padding:16px 40px;text-align:center;">
+                        <span style="font-size:12px;color:#bbb;">© 2026 ClimbStyle. All rights reserved.</span>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
