@@ -65,6 +65,15 @@
             feed_comment_visible_yn = 'Y'
     </select>
 
+    <update id="updateFeedCommentVisibleYnByUserNo">
+        UPDATE
+            tb_feed_comment
+        SET
+            feed_comment_visible_yn = #{feedCommentVisibleYn}
+        WHERE
+            user_no = #{userNo}
+    </update>
+
     <insert id="insert" parameterType="com.kwang.climbstyle.domain.feed.entity.FeedCommentEntity">
         INSERT INTO tb_feed_comment (
             feed_no,

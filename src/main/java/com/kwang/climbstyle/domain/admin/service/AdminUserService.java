@@ -1,9 +1,12 @@
 package com.kwang.climbstyle.domain.admin.service;
 
+import com.kwang.climbstyle.code.feed.FeedVisibleStatus;
 import com.kwang.climbstyle.code.user.UserErrorCode;
 import com.kwang.climbstyle.code.user.UserSuspendCategory;
 import com.kwang.climbstyle.code.user.UserStatus;
 import com.kwang.climbstyle.domain.admin.dto.request.AdminUserSuspendRequest;
+import com.kwang.climbstyle.domain.feed.repository.FeedCommentRepository;
+import com.kwang.climbstyle.domain.feed.repository.FeedRepository;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import com.kwang.climbstyle.exception.ClimbStyleException;
@@ -26,6 +29,10 @@ import java.time.LocalDateTime;
 public class AdminUserService {
 
     private final UserRepository userRepository;
+
+    private final FeedRepository feedRepository;
+
+    private final FeedCommentRepository feedCommentRepository;
 
     private final AdminUserMailService adminUserMailService;
 
@@ -68,6 +75,12 @@ public class AdminUserService {
                 .build();
 
         userRepository.suspendUser(suspendedUser);
+
+        final String feedVisibleYn = FeedVisibleStatus.HIDDEN.getCode();
+        feedRepository.updateFeedVisibleYnByUserNo(userNo, feedVisibleYn);
+
+        final String feedCommentVisibleYn = FeedVisibleStatus.HIDDEN.getCode();
+        feedCommentRepository.updateFeedCommentVisibleYnByUserNo(userNo, feedCommentVisibleYn);
 
         adminUserMailService.sendSuspendMail(user, suspendCategory, suspendReason, userSuspendUntil);
     }
