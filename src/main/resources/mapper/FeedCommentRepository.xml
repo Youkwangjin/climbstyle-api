@@ -82,4 +82,13 @@
             #{feedCommentCreated}
         )
     </insert>
+
+    <update id="updateFeedCommentVisibleYnByUserNo">
+        UPDATE
+            tb_feed_comment
+        SET
+            feed_comment_visible_yn = #{feedCommentVisibleYn}
+        WHERE
+            user_no = #{userNo}
+    </update>
 </mapper>
