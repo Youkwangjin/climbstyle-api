@@ -35,6 +35,10 @@ public class UserEntity {
 
     private String userIntro;
 
+    private String userSuspendReason;
+
+    private String userSuspendCategory;
+
     private String userRole;
 
     private LocalDateTime userCreated;
@@ -44,4 +48,8 @@ public class UserEntity {
     private LocalDateTime userDeactivated;
 
     private LocalDateTime userWithdrawn;
+
+    private LocalDateTime userSuspended;
+
+    private LocalDateTime userSuspendUntil;
 }

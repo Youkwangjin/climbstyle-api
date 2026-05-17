@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.domain.admin.controller;
 
+import com.kwang.climbstyle.code.user.UserSuspendCategory;
 import com.kwang.climbstyle.domain.admin.dto.request.AdminUserListRequest;
 import com.kwang.climbstyle.domain.admin.dto.response.AdminUserListResponse;
 import com.kwang.climbstyle.domain.user.dto.response.UserProfileResponse;
@@ -34,6 +35,7 @@ public class AdminUserPageController {
 
         model.addAttribute("user", response);
         model.addAttribute("request", request);
+        model.addAttribute("suspendCategories", UserSuspendCategory.values());
 
         return "admin/user/detail";
     }
