@@ -340,6 +340,20 @@
             user_no = #{userNo}
     </update>
 
+    <update id="unsuspendUser" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
+        UPDATE
+            tb_user
+        SET
+            user_status = #{userStatus},
+            user_suspend_category = NULL,
+            user_suspend_reason = NULL,
+            user_suspended = NULL,
+            user_suspend_until = NULL,
+            user_updated = #{userUpdated}
+        WHERE
+            user_no = #{userNo}
+    </update>
+
     <update id="update" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
         UPDATE
             tb_user

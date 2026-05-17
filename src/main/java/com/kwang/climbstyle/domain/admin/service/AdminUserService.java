@@ -84,4 +84,34 @@ public class AdminUserService {
 
         adminUserMailService.sendSuspendMail(user, suspendCategory, suspendReason, userSuspendUntil);
     }
+
+    /**
+     * 사용자 정지 취소 처리
+     */
+    @Transactional
+    public void unsuspendUser(Integer userNo) {
+        UserEntity user = userRepository.selectUserByNo(userNo);
+        if (user == null) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        final String currentUserStatus = user.getUserStatus();
+        final String suspendedCode = UserStatus.SUSPENDED.getCode();
+
+        if (!StringUtils.equals(currentUserStatus, suspendedCode)) {
+            throw new ClimbStyleException(UserErrorCode.USER_NOT_SUSPENDED);
+        }
+
+        final String activeCode = UserStatus.ACTIVE.getCode();
+
+        UserEntity unsuspendedUser = UserEntity.builder()
+                .userNo(userNo)
+                .userStatus(activeCode)
+                .userUpdated(LocalDateTime.now())
+                .build();
+
+        userRepository.unsuspendUser(unsuspendedUser);
+
+        adminUserMailService.sendUnsuspendMail(user);
+    }
 }

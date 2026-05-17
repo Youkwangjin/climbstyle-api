@@ -29,6 +29,10 @@ public class AdminUserMailService {
 
     private static final String SUSPEND_MAIL_TEMPLATE = "mail/user-suspend";
 
+    private static final String UNSUSPEND_MAIL_SUBJECT = "[ClimbStyle] 계정 정지 해제 안내";
+
+    private static final String UNSUSPEND_MAIL_TEMPLATE = "mail/user-unsuspend";
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm");
 
     private final JavaMailSender mailSender;
@@ -64,6 +68,27 @@ public class AdminUserMailService {
             mailSender.send(message);
         } catch (MessagingException e) {
             throw new RuntimeException("정지 안내 메일 발송에 실패했습니다.", e);
+        }
+    }
+
+    /**
+     * 정지 해제 안내 메일 발송
+     */
+    public void sendUnsuspendMail(UserEntity user) {
+        Context context = new Context();
+        context.setVariable("nickname", user.getUserNickname());
+
+        String html = templateEngine.process(UNSUSPEND_MAIL_TEMPLATE, context);
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+            helper.setTo(user.getUserEmail());
+            helper.setSubject(UNSUSPEND_MAIL_SUBJECT);
+            helper.setText(html, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("정지 해제 안내 메일 발송에 실패했습니다.", e);
         }
     }
 }

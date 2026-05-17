@@ -50,5 +50,7 @@ public interface UserRepository {
 
     void suspendUser(UserEntity userEntity);
 
+    void unsuspendUser(UserEntity userEntity);
+
     void deleteByUserNo(@Param("userNo") Integer userNo);
 }
