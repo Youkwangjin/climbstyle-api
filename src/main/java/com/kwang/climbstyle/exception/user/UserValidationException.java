@@ -48,7 +48,7 @@ public class UserValidationException {
                                   "userNewPassword",
                                   "userNm",
                                   "userEmail",
-                                  "userNickName",
+                                  "userNickname",
                                   "userProfileImg",
                                   "userIntro",
                                   "verificationCode",};
@@ -62,7 +62,7 @@ public class UserValidationException {
                         case "userPassword", "userNewPassword": return UserErrorCode.USER_PASSWORD_INVALID_FORMAT;
                         case "userNm": return UserErrorCode.USER_NAME_INVALID_FORMAT;
                         case "userEmail": return UserErrorCode.USER_EMAIL_INVALID_FORMAT;
-                        case "userNickName": return UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
+                        case "userNickname": return UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
                         case "userIntro": return UserErrorCode.USER_INTRO_INVALID_FORMAT;
                         case "verificationCode": return UserErrorCode.USER_EMAIL_VERIFICATION_CODE_MISMATCH;
                     }

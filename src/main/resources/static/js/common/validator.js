@@ -60,9 +60,9 @@ const Validator = {
         },
 
         nickname(value, fieldName) {
-            const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,20}$/;
+            const nicknameRegex = /^(?!\.)(?!.*\.\.)[가-힣a-zA-Z0-9_.]{2,20}(?<!\.)$/;
             if (!nicknameRegex.test(value)) {
-                alert(`${fieldName}은(는) 한글, 영문, 숫자만 사용 가능하며 2~20자로 입력해주세요.`);
+                alert(`${fieldName}은(는) 한글, 영문, 숫자, _, .을 사용 가능하며 2~20자로 입력해주세요. (.은 맨 앞/뒤, 연속 사용 불가)`);
                 return false;
             }
             return true;
@@ -158,7 +158,7 @@ const Validator = {
 
         if (!this.rules.required(userName, "이름")) return false;
         if (!this.rules.required(userNickname, "닉네임")) return false;
-        if (!this.rules.range(userNickname, "닉네임", 2, 20)) return false;
+        if (!this.rules.nickname(userNickname, "닉네임")) return false;
         return this.rules.fileSize(userProfileImg, "프로필 이미지", 5 * 1024 * 1024);
     },
 

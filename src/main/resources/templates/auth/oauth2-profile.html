@@ -22,12 +22,12 @@
                         <input id="userNickname"
                                class="auth-input"
                                type="text"
-                               placeholder="닉네임을 입력하세요 (2~10자)"
+                               placeholder="닉네임을 입력하세요 (2~20자)"
                                required />
                         <button class="btn btn-check" type="button" onclick="nicknameCheck()">중복확인</button>
                     </div>
                 </div>
-                <p class="auth-guide">2~10자, 한글·영문·숫자만 사용 가능해요.</p>
+                <p class="auth-guide">2~20자, 한글·영문·숫자·_·. 사용 가능해요. (.은 맨 앞/뒤, 연속 사용 불가)</p>
                 <div class="field">
                     <button class="btn btn-primary auth-submit" type="button" onclick="saveProfile()">시작하기</button>
                 </div>
@@ -36,12 +36,15 @@
         </section>
     </div>
 </main>
-
 <script th:src="@{/js/common/api.js}"></script>
 <script th:src="@{/js/common/validator.js}"></script>
 <script>
     function nicknameCheck() {
         if (!Validator.checkField("userNickname", "닉네임")) {
+            return;
+        }
+
+        if (!Validator.rules.nickname(document.getElementById("userNickname").value.trim(), "닉네임")) {
             return;
         }
 
@@ -66,6 +69,10 @@
 
     function saveProfile() {
         if (!Validator.checkField("userNickname", "닉네임")) {
+            return;
+        }
+
+        if (!Validator.rules.nickname(document.getElementById("userNickname").value.trim(), "닉네임")) {
             return;
         }
 
