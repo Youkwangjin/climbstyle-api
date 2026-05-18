@@ -255,6 +255,10 @@
             return;
         }
 
+        if (!Validator.rules.nickname(document.getElementById("userNickname").value.trim(), "닉네임")) {
+            return;
+        }
+
         if (!confirm("닉네임 중복 여부를 확인하시겠습니까?")) {
             return;
         }
