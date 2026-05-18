@@ -19,6 +19,14 @@ public class UserScheduler {
     private final UserBatchService userBatchService;
 
     /**
+     * 정지 기간 만료 사용자 자동 정지 해제 (매일 새벽 1시)
+     */
+    @Scheduled(cron = "0 0 1 * * *")
+    public void unsuspendExpiredUsers() {
+        userBatchService.unsuspendExpiredUsers();
+    }
+
+    /**
      * 탈퇴 후 30일 경과 사용자 데이터 삭제 (매일 새벽 4시)
      */
     @Scheduled(cron = "0 0 4 * * *")

@@ -36,6 +36,8 @@ public interface UserRepository {
 
     List<UserEntity> selectWithdrawnUserList();
 
+    List<UserEntity> selectExpiredSuspendedUserList();
+
     void insert(UserEntity userEntity);
 
     void update(UserEntity userEntity);

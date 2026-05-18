@@ -260,6 +260,21 @@
         LIMIT 5
     </select>
 
+    <select id="selectExpiredSuspendedUserList" resultMap="userResultMap">
+        SELECT
+            user_no,
+            user_email,
+            user_nickname
+        FROM
+            tb_user
+        WHERE
+            user_status = 'SUSPENDED'
+        AND
+            user_suspend_until IS NOT NULL
+        AND
+            user_suspend_until &lt;= NOW()
+    </select>
+
     <select id="selectWithdrawnUserList" resultMap="userResultMap">
         SELECT
             user_no,
