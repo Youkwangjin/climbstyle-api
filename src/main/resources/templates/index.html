@@ -28,15 +28,14 @@
         </div>
         <div class="hero-visual" role="img" aria-label="메인 비주얼 슬라이드">
             <div class="slides">
-                <div class="slide is-active"
-                     style="background-image: url(/img/main1.jpeg)"
-                     aria-hidden="false"></div>
-                <div class="slide"
-                     style="background-image: url(/img/main2.jpeg)"
-                     aria-hidden="true"></div>
-                <div class="slide"
-                     style="background-image: url(/img/main3.jpeg)"
-                     aria-hidden="true"></div>
+                <th:block th:if="${#lists.isEmpty(bannerList)}">
+                </th:block>
+                <th:block th:unless="${#lists.isEmpty(bannerList)}">
+                    <div th:each="banner, iterStat : ${bannerList}"
+                         th:class="${iterStat.first} ? 'slide is-active' : 'slide'"
+                         th:style="'background-image: url(' + ${banner.bannerImagePath} + ')'"
+                         th:attr="aria-hidden=${iterStat.first} ? 'false' : 'true'"></div>
+                </th:block>
             </div>
         </div>
     </div>
