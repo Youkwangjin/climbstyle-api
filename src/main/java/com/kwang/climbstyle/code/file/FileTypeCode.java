@@ -42,6 +42,13 @@ public enum FileTypeCode {
             10 * 1024 * 1024,
             "문의 첨부파일"
     ),
+
+    BANNER(
+            "banner/",
+            new String[]{"jpg", "jpeg", "png"},
+            5 * 1024 * 1024,
+            "메인 배너 이미지"
+    ),
     ;
 
     private final String subPath;

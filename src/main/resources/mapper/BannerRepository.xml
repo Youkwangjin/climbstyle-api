@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kwang.climbstyle.domain.banner.repository.BannerRepository">
+    <select id="selectMaxBannerOrder" resultType="Integer">
+        SELECT
+            COALESCE(MAX(banner_order), 0)
+        FROM
+            tb_banner
+    </select>
+
+    <select id="selectVisibleBanners"
+            resultType="com.kwang.climbstyle.domain.banner.dto.response.BannerDetailResponse">
+        SELECT
+            banner_no,
+            banner_image_path,
+            banner_order
+        FROM
+            tb_banner
+        WHERE
+            banner_visible_yn = 'Y'
+        ORDER BY
+            banner_order ASC
+    </select>
+
+    <select id="selectAdminBannerList"
+            resultType="com.kwang.climbstyle.domain.admin.dto.response.AdminBannerListResponse">
+        SELECT
+            banner_no,
+            banner_image_path,
+            banner_order,
+            banner_visible_yn,
+            banner_created
+        FROM
+            tb_banner
+        ORDER BY
+            banner_order ASC
+    </select>
+
+    <select id="selectBannerByNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.banner.dto.response.BannerDetailResponse">
+        SELECT
+            banner_no,
+            banner_image_path,
+            banner_order,
+            banner_visible_yn,
+            banner_created,
+            banner_updated
+        FROM
+            tb_banner
+        WHERE
+            banner_no = #{bannerNo}
+    </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.banner.entity.BannerEntity"
+            useGeneratedKeys="true" keyProperty="bannerNo">
+        INSERT INTO tb_banner (
+            admin_no,
+            banner_image_path,
+            banner_order,
+            banner_visible_yn,
+            banner_created
+        ) VALUES (
+            #{adminNo},
+            #{bannerImagePath},
+            #{bannerOrder},
+            #{bannerVisibleYn},
+            #{bannerCreated}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.kwang.climbstyle.domain.banner.entity.BannerEntity">
+        UPDATE
+            tb_banner
+        SET
+            banner_order      = #{bannerOrder},
+            banner_visible_yn = #{bannerVisibleYn},
+            banner_updated    = #{bannerUpdated}
+        WHERE
+            banner_no = #{bannerNo}
+    </update>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE
+        FROM
+            tb_banner
+        WHERE
+            banner_no = #{bannerNo}
+    </delete>
+</mapper>

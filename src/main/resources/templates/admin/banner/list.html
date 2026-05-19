@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>배너 관리 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/banner/list.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>배너</span></div>
+                <h1>배너 관리</h1>
+            </div>
+            <a href="/admin/banners/new" class="btn btn-primary">배너 등록</a>
+        </div>
+        <div class="stats-row">
+            <div class="stat-chip">
+                <span class="num blue" th:text="${#lists.size(bannerList)}">0</span>
+                <span class="stat-label">전체 배너</span>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th class="th-preview">미리보기</th>
+                    <th class="th-order">순서</th>
+                    <th class="th-visible">공개</th>
+                    <th class="th-date">등록일</th>
+                    <th class="th-action">관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(bannerList)}">
+                    <td colspan="5" style="text-align:center; padding:40px; color:var(--admin-muted);">
+                        등록된 배너가 없습니다.
+                    </td>
+                </tr>
+                <tr th:each="banner : ${bannerList}" th:id="|row-${banner.bannerNo}|">
+                    <td class="td-preview">
+                        <img th:src="${banner.bannerImagePath}" alt="배너 이미지" class="banner-thumb" />
+                    </td>
+                    <td class="td-order">
+                        <label>
+                            <input type="number" class="order-input"
+                                   th:id="|order-${banner.bannerNo}|"
+                                   th:value="${banner.bannerOrder}"
+                                   min="1" max="99" />
+                        </label>
+                    </td>
+                    <td class="td-visible">
+                        <label class="toggle-wrap">
+                            <input type="checkbox" class="toggle-input"
+                                   th:id="|visible-${banner.bannerNo}|"
+                                   th:checked="${banner.bannerVisibleYn == 'Y'}" />
+                            <span class="toggle-track">
+                                <span class="toggle-thumb"></span>
+                            </span>
+                        </label>
+                    </td>
+                    <td class="td-date" th:text="${#temporals.format(banner.bannerCreated, 'yyyy.MM.dd')}"></td>
+                    <td class="td-action">
+                        <button class="btn btn-sm btn-outline" type="button"
+                                th:onclick="|updateBanner(${banner.bannerNo})|">저장</button>
+                        <button class="btn btn-sm btn-danger" type="button"
+                                th:onclick="|deleteBanner(${banner.bannerNo})|">삭제</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script th:src="@{/js/common/api.js}"></script>
+<script>
+    function updateBanner(bannerNo) {
+        const bannerOrder = Number(document.getElementById("order-" + bannerNo).value);
+        const bannerVisibleYn = document.getElementById("visible-" + bannerNo).checked ? "Y" : "N";
+
+        if (!bannerOrder || bannerOrder < 1) {
+            alert("순서는 1 이상으로 입력해주세요.");
+            return;
+        }
+
+        API.callJson("/api/v1/banners/" + bannerNo, {
+            method: "PATCH",
+            body: JSON.stringify({ bannerOrder, bannerVisibleYn })
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.reload();
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+
+    function deleteBanner(bannerNo) {
+        if (!confirm("배너를 삭제하시겠습니까?")) return;
+
+        API.callJson("/api/v1/banners/" + bannerNo, {
+            method: "DELETE"
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.reload();
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>

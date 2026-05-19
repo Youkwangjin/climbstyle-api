@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>배너 등록 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/banner/new.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>배너</span></div>
+                <h1>배너 등록</h1>
+            </div>
+            <button type="button" class="btn btn-sm" onclick="location.href='/admin/banners'">목록</button>
+        </div>
+
+        <form id="feedForm">
+            <div class="u-drop" id="feedDrop" tabindex="0" role="button" aria-label="배너 이미지 업로드 영역">
+                <input class="u-file" id="feedFile" type="file"
+                       accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple />
+
+                <div class="u-drop-inner" id="dropInner">
+                    <div class="u-txt">
+                        <div class="u-title">이미지를 드래그하거나 클릭해서 선택</div>
+                        <div class="u-sub">JPG/PNG · 최대 5MB · 최대 10장</div>
+                    </div>
+                    <button class="btn btn-primary u-btn" type="button" id="pickBtn">이미지 선택</button>
+                </div>
+
+                <div class="u-preview" id="feedPreview" hidden>
+                    <img alt="" src="" />
+                    <button class="btn btn-primary u-add" type="button" id="addMoreBtn">이미지 추가</button>
+                    <div class="u-thumb-list" id="thumbList"></div>
+                    <button class="u-remove" type="button" id="removeAllBtn" aria-label="전체 삭제">전체 삭제</button>
+                </div>
+            </div>
+
+            <div class="banner-form-footer">
+                <button type="button" class="btn" onclick="location.href='/admin/banners'">취소</button>
+                <button type="button" class="btn btn-primary" onclick="register()">등록하기</button>
+            </div>
+        </form>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script th:src="@{/js/feed/feed-upload.js}"></script>
+<script th:src="@{/js/common/api.js}"></script>
+<script>
+    function register() {
+        const files = FeedImageUploader.getFiles();
+
+        if (files.length === 0) {
+            alert("이미지를 선택해주세요.");
+            return;
+        }
+        if (!confirm(files.length + "장의 배너를 등록하시겠습니까?")) return;
+
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append("bannerImages", files[i]);
+        }
+
+        API.callFormData("/api/v1/banners", {
+            method: "POST",
+            body: formData
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.href = "/admin/banners";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>
