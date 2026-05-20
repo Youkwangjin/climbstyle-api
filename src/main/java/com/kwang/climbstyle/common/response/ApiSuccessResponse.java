@@ -5,6 +5,13 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+/**
+ * API 성공 응답 래퍼
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public class ApiSuccessResponse<T> {
