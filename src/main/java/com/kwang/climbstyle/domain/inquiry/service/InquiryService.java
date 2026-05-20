@@ -35,6 +35,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 문의 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class InquiryService {
@@ -45,6 +52,9 @@ public class InquiryService {
 
     private final InquiryFileRepository inquiryFileRepository;
 
+    /**
+     * 사용자 문의 목록 조회
+     */
     public List<InquiryListResponse> getInquiryList(CommonListRequest request) {
         Integer userNo = SecurityUtil.getCurrentUserNo();
         request.setTotalCount(inquiryRepository.selectInquiryListCountByRequest(request, userNo));
@@ -52,12 +62,18 @@ public class InquiryService {
         return inquiryRepository.selectUserInquiryList(request, userNo);
     }
 
+    /**
+     * 관리자 문의 목록 조회
+     */
     public List<AdminInquiryListResponse> getAdminInquiryList(AdminInquiryListRequest request) {
         request.setTotalCount(inquiryRepository.selectAdminInquiryListCountByRequest(request));
 
         return inquiryRepository.selectAdminInquiryList(request);
     }
 
+    /**
+     * 사용자 문의 상세 조회
+     */
     public InquiryDetailResponse getInquiryDetail(Integer inquiryNo) {
         Integer userNo = SecurityUtil.getCurrentUserNo();
         InquiryDetailResponse inquiry = inquiryRepository.selectInquiryByNo(inquiryNo, userNo);
@@ -68,6 +84,9 @@ public class InquiryService {
         return inquiry;
     }
 
+    /**
+     * 관리자 문의 상세 조회
+     */
     public InquiryDetailResponse getAdminInquiryDetail(Integer inquiryNo) {
         InquiryDetailResponse inquiry = inquiryRepository.selectAdminInquiryByNo(inquiryNo);
         if (inquiry == null) {
@@ -77,6 +96,9 @@ public class InquiryService {
         return inquiry;
     }
 
+    /**
+     * 문의 등록
+     */
     @Transactional
     public void createInquiry(InquiryCreateRequest request) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
@@ -129,6 +151,9 @@ public class InquiryService {
         }
     }
 
+    /**
+     * 문의 수정
+     */
     @Transactional
     public void updateInquiry(Integer inquiryNo, InquiryUpdateRequest request) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
@@ -209,6 +234,9 @@ public class InquiryService {
         }
     }
 
+    /**
+     * 문의 상태 변경
+     */
     @Transactional
     public void updateInquiryStatus(Integer inquiryNo, InquiryStatusRequest request) {
         final String inquiryStatus = request.getInquiryStatus();
@@ -237,6 +265,9 @@ public class InquiryService {
         inquiryRepository.updateStatus(inquiryEntity);
     }
 
+    /**
+     * 문의 답변 등록
+     */
     @Transactional
     public void saveInquiryAnswer(Integer inquiryNo, InquiryAnswerRequest request) {
         final Integer adminNo = SecurityUtil.getCurrentAdminNo();
@@ -271,6 +302,9 @@ public class InquiryService {
         inquiryRepository.saveAnswer(inquiryEntity);
     }
 
+    /**
+     * 문의 삭제
+     */
     @Transactional
     public void deleteInquiry(Integer inquiryNo) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
