@@ -31,6 +31,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 공지사항 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class NoticeService {
@@ -41,6 +48,9 @@ public class NoticeService {
 
     private final NoticeFileRepository noticeFileRepository;
 
+    /**
+     * 공지사항 목록 조회
+     */
     public List<NoticeListResponse> getNoticeList(NoticeListRequest request) {
         request.setTotalCount(noticeRepository.selectNoticeListCountByRequest(request));
 
@@ -54,6 +64,9 @@ public class NoticeService {
         return noticeList;
     }
 
+    /**
+     * 관리자 공지사항 목록 조회
+     */
     public List<AdminNoticeListResponse> getAdminNoticeList(NoticeListRequest request) {
         request.setTotalCount(noticeRepository.selectAdminNoticeListCountByRequest(request));
 
@@ -67,6 +80,9 @@ public class NoticeService {
         return adminNoticeList;
     }
 
+    /**
+     * 공지사항 상세 조회
+     */
     public NoticeDetailResponse getNoticeDetail(Integer noticeNo) {
         NoticeDetailResponse notice = noticeRepository.selectNoticeByNo(noticeNo);
         if (notice == null) {
@@ -82,6 +98,9 @@ public class NoticeService {
         return notice;
     }
 
+    /**
+     * 관리자 공지사항 상세 조회
+     */
     public NoticeDetailResponse getAdminNoticeDetail(Integer noticeNo) {
         NoticeDetailResponse notice = noticeRepository.selectAdminNoticeByNo(noticeNo);
         if (notice == null) {
@@ -97,6 +116,9 @@ public class NoticeService {
         return notice;
     }
 
+    /**
+     * 공지사항 등록
+     */
     @Transactional
     public void createNotice(NoticeCreateRequest request) {
         final Integer adminNo = SecurityUtil.getCurrentAdminNo();
@@ -152,6 +174,9 @@ public class NoticeService {
         }
     }
 
+    /**
+     * 공지사항 에디터 이미지 업로드
+     */
     public CommonEditorImageUploadResponse uploadNoticeImage(CommonEditorImageUploadRequest request) {
         final String originalName = FilenameUtils.getName(request.getFile().getOriginalFilename());
         final String extnsNm = FilenameUtils.getExtension(originalName);
@@ -164,6 +189,9 @@ public class NoticeService {
         return new CommonEditorImageUploadResponse(imageUrl);
     }
 
+    /**
+     * 공지사항 수정
+     */
     @Transactional
     public void updateNotice(NoticeUpdateRequest request, Integer noticeNo) {
         final String noticeCategory = request.getNoticeCategory();
@@ -245,6 +273,9 @@ public class NoticeService {
         }
     }
 
+    /**
+     * 공지사항 삭제
+     */
     @Transactional
     public void deleteNotice(Integer noticeNo) {
         NoticeDetailResponse notice = noticeRepository.selectAdminNoticeByNo(noticeNo);
