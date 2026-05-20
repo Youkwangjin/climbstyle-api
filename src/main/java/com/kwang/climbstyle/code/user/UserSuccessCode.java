@@ -5,6 +5,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+/**
+ * 사용자 성공 코드
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Getter
 @RequiredArgsConstructor
 public enum UserSuccessCode implements ApiCode {
