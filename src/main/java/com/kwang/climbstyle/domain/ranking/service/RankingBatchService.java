@@ -22,6 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 랭킹 배치 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -33,6 +40,9 @@ public class RankingBatchService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    /**
+     * 실시간 랭킹 갱신
+     */
     @Retryable(retryFor = {DataAccessException.class, RuntimeException.class}, backoff = @Backoff(delay = 1000, multiplier = 2, maxDelay = 10000))
     @Transactional
     public void updateRealtimeRanking() {
@@ -106,6 +116,9 @@ public class RankingBatchService {
         }
     }
 
+    /**
+     * 주간 랭킹 갱신
+     */
     @Retryable(retryFor = {DataAccessException.class, RuntimeException.class}, backoff = @Backoff(delay = 1000, multiplier = 2, maxDelay = 10000))
     @Transactional
     public void updateWeeklyRanking() {
@@ -183,6 +196,9 @@ public class RankingBatchService {
         }
     }
 
+    /**
+     * 월간 랭킹 갱신
+     */
     @Retryable(retryFor = {DataAccessException.class, RuntimeException.class}, backoff = @Backoff(delay = 1000, multiplier = 2, maxDelay = 10000))
     @Transactional
     public void updateMonthlyRanking() {
@@ -260,6 +276,9 @@ public class RankingBatchService {
         }
     }
 
+    /**
+     * 랭킹 배치 실행 이력 저장
+     */
     private void saveHistory(String rankingType, String rankingHistoryStatus, LocalDateTime rankingHistoryStarted,
                              long startTimeMs, int rankingHistoryProcessedCount) {
 

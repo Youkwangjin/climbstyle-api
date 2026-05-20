@@ -13,12 +13,22 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+/**
+ * 파일 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class FileService {
 
     private final FileStorage fileStorage;
 
+    /**
+     * 파일 업로드
+     */
     public String fileUpload(MultipartFile file, FileTypeCode fileTypeCode, String storedFilename) {
         if (file.isEmpty()) {
             throw new ClimbStyleException(FileErrorCode.FILE_EMPTY);
@@ -48,6 +58,9 @@ public class FileService {
         }
     }
 
+    /**
+     * 파일 삭제
+     */
     public void fileDelete(String fileUrl) {
         if (fileUrl == null || fileUrl.isEmpty()) {
             return;
@@ -55,6 +68,9 @@ public class FileService {
         fileStorage.delete(fileUrl);
     }
 
+    /**
+     * 날짜 기반 저장 경로 생성 (yyyy/MM/dd)
+     */
     private String generateDatePath() {
         final LocalDateTime now = LocalDateTime.now();
         return String.format("%d/%02d/%02d",

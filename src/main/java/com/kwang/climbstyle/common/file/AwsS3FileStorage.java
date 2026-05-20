@@ -15,6 +15,13 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 
+/**
+ * AWS S3 파일 스토리지 구현체 (prod 프로파일)
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Component
 @RequiredArgsConstructor
 @Profile("prod")

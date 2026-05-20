@@ -36,6 +36,13 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.List;
 
+/**
+ * Spring Security 설정
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig {

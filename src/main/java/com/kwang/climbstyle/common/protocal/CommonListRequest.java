@@ -3,6 +3,13 @@ package com.kwang.climbstyle.common.protocal;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 공통 목록 조회 요청 (검색 조건 포함)
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Getter
 @Setter
 public class CommonListRequest extends PaginationRequest {

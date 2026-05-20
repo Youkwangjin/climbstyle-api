@@ -11,6 +11,13 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * OAuth2 로그인 사용자 서비스 (공급자 라우터)
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

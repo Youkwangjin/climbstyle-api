@@ -2,6 +2,13 @@ package com.kwang.climbstyle.common.response;
 
 import org.springframework.http.ResponseEntity;
 
+/**
+ * API 응답 빌더
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 public class ApiResponseBuilder {
 
     public static <T> ResponseEntity<ApiSuccessResponse<T>> ok(ApiCode code, T data) {

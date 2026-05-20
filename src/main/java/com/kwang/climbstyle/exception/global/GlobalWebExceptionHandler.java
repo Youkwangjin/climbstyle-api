@@ -8,6 +8,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+/**
+ * 글로벌 Web 예외 핸들러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Slf4j
 @ControllerAdvice(annotations = Controller.class)
 public class GlobalWebExceptionHandler {

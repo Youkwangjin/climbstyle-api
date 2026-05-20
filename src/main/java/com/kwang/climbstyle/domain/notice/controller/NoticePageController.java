@@ -13,12 +13,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+/**
+ * 공지사항 페이지 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Controller
 @RequiredArgsConstructor
 public class NoticePageController {
 
     private final NoticeService noticeService;
 
+    /**
+     * 공지사항 목록 화면
+     * [ClimbStyle] > [공지사항]
+     */
     @GetMapping(value = "/notices")
     public String noticeList(NoticeListRequest request, Model model) {
         List<NoticeListResponse> responses = noticeService.getNoticeList(request);
@@ -29,6 +40,10 @@ public class NoticePageController {
         return "notice/list";
     }
 
+    /**
+     * 공지사항 상세 화면
+     * [ClimbStyle] > [공지사항] > 상세
+     */
     @GetMapping(value = "/notices/{noticeNo}")
     public String noticeDetail(@PathVariable("noticeNo") Integer noticeNo, NoticeDetailRequest request, Model model) {
         NoticeDetailResponse response = noticeService.getNoticeDetail(noticeNo);

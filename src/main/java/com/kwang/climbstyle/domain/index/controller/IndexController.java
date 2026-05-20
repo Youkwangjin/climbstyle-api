@@ -11,6 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
+/**
+ * 홈 페이지 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Controller
 @RequiredArgsConstructor
 public class IndexController {
@@ -19,6 +26,10 @@ public class IndexController {
 
     private final BannerService bannerService;
 
+    /**
+     * 홈 화면
+     * [ClimbStyle] > 홈
+     */
     @GetMapping(value = "/")
     public String index(Model model) {
         List<RankingListResponse> rankingListResponse = rankingService.getIndexRealtimeRankingList();
@@ -29,16 +40,28 @@ public class IndexController {
         return "index";
     }
 
+    /**
+     * 서비스 소개 화면
+     * [ClimbStyle] > 서비스 소개
+     */
     @GetMapping(value = "/about")
     public String about() {
         return "about";
     }
 
+    /**
+     * 이용약관 화면
+     * [ClimbStyle] > 이용약관
+     */
     @GetMapping(value = "/terms")
     public String terms() {
         return "policy/terms";
     }
 
+    /**
+     * 개인정보처리방침 화면
+     * [ClimbStyle] > 개인정보처리방침
+     */
     @GetMapping(value = "/privacy")
     public String privacy() {
         return "policy/privacy";

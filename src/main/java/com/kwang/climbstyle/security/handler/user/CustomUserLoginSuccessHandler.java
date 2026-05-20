@@ -26,6 +26,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 사용자 로그인 성공 핸들러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Component
 @RequiredArgsConstructor
 public class CustomUserLoginSuccessHandler implements AuthenticationSuccessHandler {

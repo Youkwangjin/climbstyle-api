@@ -9,6 +9,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * 관리자 인증 정보
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 public class CustomAdminDetails implements UserDetails {
 
     private final AdminEntity adminEntity;

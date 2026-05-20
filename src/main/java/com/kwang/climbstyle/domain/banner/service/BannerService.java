@@ -22,6 +22,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 배너 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class BannerService {
@@ -30,16 +37,25 @@ public class BannerService {
 
     private final FileService fileService;
 
+    /**
+     * 노출 배너 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<BannerDetailResponse> getVisibleBanners() {
         return bannerRepository.selectVisibleBanners();
     }
 
+    /**
+     * 관리자 배너 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<AdminBannerListResponse> getAdminBannerList() {
         return bannerRepository.selectAdminBannerList();
     }
 
+    /**
+     * 관리자 배너 상세 조회
+     */
     @Transactional(readOnly = true)
     public BannerDetailResponse getAdminBannerDetail(Integer bannerNo) {
         BannerDetailResponse banner = bannerRepository.selectBannerByNo(bannerNo);
@@ -50,6 +66,9 @@ public class BannerService {
         return banner;
     }
 
+    /**
+     * 배너 등록
+     */
     @Transactional
     public void createBanner(BannerCreateRequest request) {
         final Integer adminNo = SecurityUtil.getCurrentAdminNo();
@@ -85,6 +104,9 @@ public class BannerService {
         }
     }
 
+    /**
+     * 배너 수정
+     */
     @Transactional
     public void updateBanner(Integer bannerNo, BannerUpdateRequest request) {
         final Integer newBannerOrder = request.getBannerOrder();
@@ -106,6 +128,9 @@ public class BannerService {
         bannerRepository.update(bannerEntity);
     }
 
+    /**
+     * 배너 삭제
+     */
     @Transactional
     public void deleteBanner(Integer bannerNo) {
         BannerDetailResponse banner = bannerRepository.selectBannerByNo(bannerNo);
