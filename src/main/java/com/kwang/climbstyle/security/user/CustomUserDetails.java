@@ -10,6 +10,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * 사용자 인증 정보
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 public class CustomUserDetails implements UserDetails {
 
     private final UserEntity userEntity;

@@ -31,6 +31,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Google OAuth2 로그인 사용자 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

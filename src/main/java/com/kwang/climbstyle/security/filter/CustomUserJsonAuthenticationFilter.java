@@ -22,6 +22,13 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * 사용자 JSON 로그인 인증 필터
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 public class CustomUserJsonAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final String HTTP_METHOD_POST = "POST";

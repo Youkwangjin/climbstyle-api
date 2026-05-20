@@ -2,6 +2,13 @@ package com.kwang.climbstyle.security.oauth2.response;
 
 import java.util.Map;
 
+/**
+ * Naver OAuth2 사용자 응답 정보
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 public class NaverOAuth2UserResponse implements OAuth2UserResponse {
 
     private final String provider;
