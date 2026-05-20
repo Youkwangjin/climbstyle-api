@@ -9,6 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * 글로벌 에러 컨트롤러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Controller
 @RequiredArgsConstructor
 public class GlobalErrorController implements ErrorController {

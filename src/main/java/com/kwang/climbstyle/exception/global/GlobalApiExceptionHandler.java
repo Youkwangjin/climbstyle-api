@@ -8,6 +8,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/**
+ * 글로벌 API 예외 핸들러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Slf4j
 @RestControllerAdvice(annotations = RestController.class)
 public class GlobalApiExceptionHandler {

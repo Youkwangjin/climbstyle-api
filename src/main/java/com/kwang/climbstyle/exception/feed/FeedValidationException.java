@@ -11,6 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
+/**
+ * 피드 유효성 검사 예외 핸들러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @RestControllerAdvice(assignableTypes = {FeedApiController.class})
 public class FeedValidationException {
 

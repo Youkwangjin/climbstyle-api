@@ -4,6 +4,13 @@ import com.kwang.climbstyle.common.response.ApiCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+/**
+ * 공통 커스텀 런타임 예외
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Getter
 public class ClimbStyleException extends RuntimeException {
 
