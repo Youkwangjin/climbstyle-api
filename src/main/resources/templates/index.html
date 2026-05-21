@@ -40,6 +40,55 @@
         </div>
     </div>
 </section>
+<section class="section" id="latest-feeds" aria-labelledby="latest-title">
+    <div class="container">
+        <div class="head">
+            <div>
+                <h2 id="latest-title">최근 올라온 스타일</h2>
+                <p class="sub">클라이머들의 생생한 착장을 구경해보세요</p>
+            </div>
+            <a class="btn" th:href="@{/feeds}">전체보기</a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(latestFeeds)}" class="empty-state">
+            <p>아직 게시된 피드가 없습니다.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(latestFeeds)}" class="latest-grid">
+            <article th:each="feed : ${latestFeeds}"
+                     class="podium-card"
+                     th:attr="data-feed-no=${feed.feedNo}">
+                <div class="podium-image">
+                    <img th:src="${feed.feedFilePath} ?: '/img/main1.png'"
+                         th:alt="${feed.feedTitle}"
+                         loading="lazy" />
+                </div>
+                <div class="podium-info">
+                    <h3 class="podium-title" th:text="${feed.feedTitle}">제목</h3>
+                    <div class="podium-user">
+                        <div class="podium-avatar">
+                            <img th:if="${feed.userImageUrl != null}" th:src="${feed.userImageUrl}" alt="프로필" />
+                        </div>
+                        <span class="podium-username" th:text="${feed.userNickName}"></span>
+                    </div>
+                    <div class="podium-stats">
+                        <button class="podium-likes" type="button"
+                                th:if="${feed.feedLikeVisibleYn != 'N'}"
+                                th:onclick="|openLikeList(${feed.feedNo})|"
+                                aria-label="좋아요한 사람 보기">
+                            <th:block th:replace="~{fragments/common/icons :: heart}" />
+                            <span th:text="${feed.feedLikeCount ?: 0}">0</span>
+                        </button>
+                        <span class="podium-comments">
+                            <th:block th:replace="~{fragments/common/icons :: comment}" />
+                            <span th:text="${feed.feedCommentCount ?: 0}">0</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
 <section class="section" id="ranking" aria-labelledby="rank-title">
     <div class="container">
         <div class="head">
@@ -61,6 +110,48 @@
 
         <div th:if="${!#lists.isEmpty(realtimeTop3)}">
             <th:block th:replace="~{fragments/ranking/index-podium :: indexPodium(${realtimeTop3})}"/>
+        </div>
+    </div>
+</section>
+<section class="section" id="how-it-works" aria-labelledby="how-title">
+    <div class="container">
+        <div class="head center-head">
+            <div>
+                <h2 id="how-title">어떻게 참여하나요?</h2>
+                <p class="sub">3단계로 나만의 클라이밍 스타일을 공유해보세요</p>
+            </div>
+        </div>
+        <div class="steps">
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-icon">
+                    <th:block th:replace="~{fragments/common/icons :: photo}" />
+                </div>
+                <h3 class="step-title">사진 업로드</h3>
+                <p class="step-desc">오늘의 클라이밍 착장을 촬영해서 올려보세요. 암장 패션도 일상 룩도 모두 환영해요.</p>
+            </div>
+            <div class="step-divider" aria-hidden="true">
+                <th:block th:replace="~{fragments/common/icons :: chevron-right}" />
+            </div>
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-icon">
+                    <th:block th:replace="~{fragments/common/icons :: pencil}" />
+                </div>
+                <h3 class="step-title">스타일 공유</h3>
+                <p class="step-desc">착장 포인트와 함께 피드를 게시하면 다른 클라이머들이 볼 수 있어요.</p>
+            </div>
+            <div class="step-divider" aria-hidden="true">
+                <th:block th:replace="~{fragments/common/icons :: chevron-right}" />
+            </div>
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-icon">
+                    <th:block th:replace="~{fragments/common/icons :: trophy}" />
+                </div>
+                <h3 class="step-title">랭킹 도전</h3>
+                <p class="step-desc">좋아요를 많이 받을수록 실시간·주간·월간 랭킹에 오를 수 있어요.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -214,7 +305,6 @@
         </div>
     </div>
 </div>
-
 <div id="feedLikeListModal" class="modal" aria-hidden="true">
     <div class="modal-backdrop" onclick="closeLikeList()"></div>
     <div class="like-list-container">
@@ -227,7 +317,6 @@
         <div class="like-list-body" id="likeListBody"></div>
     </div>
 </div>
-
 <div th:replace="~{fragments/common/footer :: footer}"></div>
 <script th:src="@{/js/common/logout.js}"></script>
 <script th:src="@{/js/common/validator.js}"></script>
