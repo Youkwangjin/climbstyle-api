@@ -131,6 +131,134 @@
     text-decoration: none;
 }
 
+#latest-feeds {
+    background: #f8f9fb;
+}
+
+#how-it-works {
+    background: #f8f9fb;
+}
+
+/* ── How It Works ── */
+.center-head {
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.step-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 32px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    gap: 16px;
+}
+
+.step-num {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--brand);
+    opacity: 0.7;
+}
+
+.step-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: rgba(255, 107, 0, 0.07);
+    color: var(--brand);
+}
+
+.step-title {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text);
+}
+
+.step-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.step-divider {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    color: var(--line);
+    flex-shrink: 0;
+}
+
+/* ── Latest Feeds ── */
+.latest-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+.podium-stats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.podium-comments {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: inherit;
+}
+
+.podium-comments svg {
+    width: 16px;
+    height: 16px;
+}
+
+@media (max-width: 1024px) {
+    .steps {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .step-card {
+        width: 100%;
+    }
+
+    .step-divider {
+        padding: 4px 0;
+        transform: rotate(90deg);
+    }
+
+    .latest-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .latest-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .catalog-filters {
     display: flex;
     flex-wrap: wrap;
