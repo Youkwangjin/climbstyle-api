@@ -534,13 +534,13 @@
 .f-like-wrap {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
+    gap: 0;
 }
 
 .f-like-count-btn {
     background: none;
     border: none;
-    padding: 0 4px;
+    padding: 0 4px 0 0;
     height: 28px;
     cursor: pointer;
     font-size: 12px;
