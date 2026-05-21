@@ -260,6 +260,21 @@
         LIMIT 5
     </select>
 
+    <select id="selectExpiredSuspendedUserList" resultMap="userResultMap">
+        SELECT
+            user_no,
+            user_email,
+            user_nickname
+        FROM
+            tb_user
+        WHERE
+            user_status = 'SUSPENDED'
+        AND
+            user_suspend_until IS NOT NULL
+        AND
+            user_suspend_until &lt;= NOW()
+    </select>
+
     <select id="selectWithdrawnUserList" resultMap="userResultMap">
         SELECT
             user_no,
@@ -336,6 +351,20 @@
             user_suspend_reason = #{userSuspendReason},
             user_suspended = #{userSuspended},
             user_suspend_until = #{userSuspendUntil}
+        WHERE
+            user_no = #{userNo}
+    </update>
+
+    <update id="unsuspendUser" parameterType="com.kwang.climbstyle.domain.user.entity.UserEntity">
+        UPDATE
+            tb_user
+        SET
+            user_status = #{userStatus},
+            user_suspend_category = NULL,
+            user_suspend_reason = NULL,
+            user_suspended = NULL,
+            user_suspend_until = NULL,
+            user_updated = #{userUpdated}
         WHERE
             user_no = #{userNo}
     </update>

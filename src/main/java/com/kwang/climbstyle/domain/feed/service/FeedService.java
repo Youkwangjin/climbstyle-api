@@ -54,6 +54,14 @@ public class FeedService {
     private final FileService fileService;
 
     /**
+     * 최신 피드 목록 조회 (홈 화면용)
+     */
+    @Transactional(readOnly = true)
+    public List<FeedListResponse> getLatestFeeds(int limit) {
+        return feedRepository.selectLatestFeeds(limit);
+    }
+
+    /**
      * 피드 목록 조회 (커서 기반)
      */
     @Transactional(readOnly = true)

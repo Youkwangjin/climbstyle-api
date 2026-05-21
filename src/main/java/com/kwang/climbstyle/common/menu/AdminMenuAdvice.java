@@ -10,6 +10,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 관리자 메뉴 모델 자동 주입 어드바이스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @ControllerAdvice(basePackages = {
         "com.kwang.climbstyle.domain.admin.controller",
         "com.kwang.climbstyle.exception"

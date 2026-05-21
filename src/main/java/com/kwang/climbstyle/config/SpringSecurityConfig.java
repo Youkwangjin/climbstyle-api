@@ -36,6 +36,13 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.List;
 
+/**
+ * Spring Security 설정
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig {
@@ -186,6 +193,10 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/faqs").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/faqs/*").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/faqs/*").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/banners").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/banners/*").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/banners/*").hasAuthority(RoleCode.ROLE_ADMIN.getCode())
 
                         .anyRequest().permitAll()
                 );

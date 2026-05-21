@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
+    <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
@@ -25,6 +26,9 @@
                 <button type="button" class="btn btn-sm" onclick="userList()">목록</button>
                 <th:block th:if="${user.userStatus == 'ACTIVE'}">
                     <button type="button" class="btn btn-sm btn-danger" onclick="suspendUser()">정지</button>
+                </th:block>
+                <th:block th:if="${user.userStatus == 'SUSPENDED'}">
+                    <button type="button" class="btn btn-sm btn-primary" onclick="unsuspendUser()">정지 취소</button>
                 </th:block>
             </div>
         </div>
@@ -157,6 +161,26 @@
 
     function closeSuspendModal() {
         document.getElementById("suspendModal").classList.remove("is-open");
+    }
+
+    function unsuspendUser() {
+        if (!confirm("해당 사용자의 정지를 취소하시겠습니까?")) return;
+
+        API.callJson(`/api/v1/admin/users/${document.getElementById("userNo").value}/unsuspend`, {
+            method: "PATCH"
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.reload();
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
     }
 
     function submitSuspend() {

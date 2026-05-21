@@ -1,5 +1,7 @@
 package com.kwang.climbstyle.domain.user.service;
 
+import com.kwang.climbstyle.code.user.UserStatus;
+import com.kwang.climbstyle.domain.admin.service.AdminUserMailService;
 import com.kwang.climbstyle.domain.role.repository.UserRoleRepository;
 import com.kwang.climbstyle.domain.user.entity.UserEntity;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
@@ -31,7 +33,56 @@ public class UserBatchService {
 
     private final UserRoleRepository userRoleRepository;
 
+    private final AdminUserMailService adminUserMailService;
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    /**
+     * 정지 기간 만료 사용자 자동 정지 해제
+     */
+    @Retryable(retryFor = {DataAccessException.class, RuntimeException.class}, backoff = @Backoff(delay = 1000, multiplier = 2, maxDelay = 10000))
+    @Transactional
+    public void unsuspendExpiredUsers() {
+        final LocalDateTime batchStarted = LocalDateTime.now();
+
+        log.info("========== 정지 만료 사용자 자동 해제 배치 작업 시작 : {} ==========", batchStarted.format(FORMATTER));
+        log.info("");
+
+        int processedCount = 0;
+
+        try {
+            log.info("정지 만료 대상 사용자 조회");
+            List<UserEntity> expiredUsers = userRepository.selectExpiredSuspendedUserList();
+            log.info("정지 만료 대상 사용자 수: {}", expiredUsers.size());
+
+            final String activeCode = UserStatus.ACTIVE.getCode();
+
+            for (UserEntity user : expiredUsers) {
+                final Integer userNo = user.getUserNo();
+
+                log.info("정지 해제 처리 - userNo: {}", userNo);
+
+                UserEntity unsuspendedUser = UserEntity.builder()
+                        .userNo(userNo)
+                        .userStatus(activeCode)
+                        .userUpdated(LocalDateTime.now())
+                        .build();
+
+                userRepository.unsuspendUser(unsuspendedUser);
+                adminUserMailService.sendUnsuspendMail(user);
+
+                processedCount++;
+            }
+
+            log.info("");
+            log.info("========== 정지 만료 사용자 자동 해제 배치 작업 완료 - 처리 건수: {} ==========", processedCount);
+
+        } catch (Exception e) {
+            log.error("");
+            log.error("========== 정지 만료 사용자 자동 해제 배치 실패 ==========", e);
+            throw e;
+        }
+    }
 
     /**
      * 탈퇴 후 30일 경과 사용자 데이터 삭제

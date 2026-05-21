@@ -11,6 +11,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Arrays;
 
+/**
+ * 웹 에러 응답 처리 컴포넌트
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Component
 public class WebErrorResponse {
 

@@ -4,6 +4,13 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+/**
+ * API 에러 응답 래퍼
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Getter
 public class ApiErrorResponse {
 

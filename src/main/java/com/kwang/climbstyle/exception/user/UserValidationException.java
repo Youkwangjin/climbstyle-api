@@ -13,6 +13,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
+/**
+ * 사용자 유효성 검사 예외 핸들러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @RestControllerAdvice(assignableTypes = {UserRegistrationApiController.class, UserAccountRecoveryApiController.class, UserAccountApiController.class})
 public class UserValidationException {
 
@@ -48,7 +55,7 @@ public class UserValidationException {
                                   "userNewPassword",
                                   "userNm",
                                   "userEmail",
-                                  "userNickName",
+                                  "userNickname",
                                   "userProfileImg",
                                   "userIntro",
                                   "verificationCode",};
@@ -62,7 +69,7 @@ public class UserValidationException {
                         case "userPassword", "userNewPassword": return UserErrorCode.USER_PASSWORD_INVALID_FORMAT;
                         case "userNm": return UserErrorCode.USER_NAME_INVALID_FORMAT;
                         case "userEmail": return UserErrorCode.USER_EMAIL_INVALID_FORMAT;
-                        case "userNickName": return UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
+                        case "userNickname": return UserErrorCode.USER_NICKNAME_INVALID_FORMAT;
                         case "userIntro": return UserErrorCode.USER_INTRO_INVALID_FORMAT;
                         case "verificationCode": return UserErrorCode.USER_EMAIL_VERIFICATION_CODE_MISMATCH;
                     }

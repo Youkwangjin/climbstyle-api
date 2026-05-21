@@ -42,6 +42,66 @@
         )
     </select>
 
+    <select id="selectLatestFeeds"
+            resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse">
+        SELECT
+            feed_list.feed_no,
+            feed_list.feed_title,
+            feed_list.feed_created,
+            feed_list.user_nickname,
+            feed_list.user_image_url,
+            feed_list.feed_file_path,
+            feed_list.feed_like_visible_yn,
+            (
+                SELECT
+                    COUNT(fl.feed_no)
+                FROM
+                    tb_feed_like fl
+                INNER JOIN
+                    tb_user flu
+                    ON fl.user_no = flu.user_no
+                WHERE
+                    fl.feed_no = feed_list.feed_no
+                AND
+                    flu.user_status IN ('ACTIVE', 'DORMANT')
+            ) AS feed_like_count,
+            (
+                SELECT
+                    COUNT(fc.feed_no)
+                FROM
+                    tb_feed_comment fc
+                WHERE
+                    fc.feed_no = feed_list.feed_no
+                AND
+                    fc.feed_comment_visible_yn = 'Y'
+            ) AS feed_comment_count
+        FROM (
+            SELECT
+                f.feed_no,
+                f.feed_title,
+                f.feed_created,
+                f.feed_like_visible_yn,
+                u.user_nickname,
+                u.user_image_url,
+                ff.feed_file_path
+            FROM
+                tb_feed f
+            LEFT JOIN
+                tb_feed_file ff
+                ON f.feed_no = ff.feed_no
+                AND ff.feed_file_sort_order = 1
+            INNER JOIN
+                tb_user u
+                ON f.user_no = u.user_no
+            WHERE
+                f.feed_visible_yn = 'Y'
+            AND
+                u.user_status IN ('ACTIVE', 'DORMANT')
+            ORDER BY f.feed_no DESC
+            LIMIT #{limit}
+        ) feed_list
+    </select>
+
     <select id="selectFeedListByCursor"
             resultType="com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse">
         SELECT
@@ -57,8 +117,13 @@
                     COUNT(fl.feed_no)
                 FROM
                     tb_feed_like fl
+                INNER JOIN
+                    tb_user flu
+                    ON fl.user_no = flu.user_no
                 WHERE
                     fl.feed_no = feed_list.feed_no
+                AND
+                    flu.user_status IN ('ACTIVE', 'DORMANT')
             ) AS feed_like_count,
             (
                 SELECT
@@ -113,8 +178,13 @@
                     COUNT(fl.feed_no)
                 FROM
                     tb_feed_like fl
+                INNER JOIN
+                    tb_user flu
+                    ON fl.user_no = flu.user_no
                 WHERE
                     fl.feed_no = feed_list.feed_no
+                AND
+                    flu.user_status IN ('ACTIVE', 'DORMANT')
             ) AS feed_like_count,
             (
                 SELECT

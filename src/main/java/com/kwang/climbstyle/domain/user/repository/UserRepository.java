@@ -36,6 +36,8 @@ public interface UserRepository {
 
     List<UserEntity> selectWithdrawnUserList();
 
+    List<UserEntity> selectExpiredSuspendedUserList();
+
     void insert(UserEntity userEntity);
 
     void update(UserEntity userEntity);
@@ -49,6 +51,8 @@ public interface UserRepository {
     void withdrawUser(UserEntity userEntity);
 
     void suspendUser(UserEntity userEntity);
+
+    void unsuspendUser(UserEntity userEntity);
 
     void deleteByUserNo(@Param("userNo") Integer userNo);
 }

@@ -3,6 +3,13 @@ package com.kwang.climbstyle.code.role;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 사용자 권한 코드
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Getter
 @RequiredArgsConstructor
 public enum RoleCode {

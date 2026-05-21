@@ -15,6 +15,8 @@ public interface FeedRepository {
 
     Boolean existsFeedByNoAndUserNo(@Param("feedNo") Integer feedNo, @Param("userNo") Integer userNo);
 
+    List<FeedListResponse> selectLatestFeeds(@Param("limit") int limit);
+
     List<FeedListResponse> selectFeedListByCursor(@Param("cursor") Integer cursor, @Param("size") int size);
 
     List<FeedListResponse> selectMyFeedListByCursor(@Param("cursor") Integer cursor, @Param("size") int size, @Param("userNo") Integer userNo);

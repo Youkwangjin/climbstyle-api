@@ -12,6 +12,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * OAuth2 로그인 실패 핸들러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Component
 public class CustomOAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 

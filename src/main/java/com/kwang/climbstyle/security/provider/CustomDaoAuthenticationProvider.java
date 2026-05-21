@@ -11,6 +11,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+/**
+ * 사용자 인증 처리 프로바이더
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Component
 public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
 

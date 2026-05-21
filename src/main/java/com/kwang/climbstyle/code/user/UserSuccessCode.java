@@ -5,6 +5,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+/**
+ * 사용자 성공 코드
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Getter
 @RequiredArgsConstructor
 public enum UserSuccessCode implements ApiCode {
@@ -29,6 +36,7 @@ public enum UserSuccessCode implements ApiCode {
     USER_RESET_PASSWORD_SUCCESS(HttpStatus.OK,              "1000", "비밀번호가 성공적으로 재설정되었습니다. 다시 로그인해주세요."),
 
     USER_SUSPEND_SUCCESS(HttpStatus.OK,                     "1000", "사용자가 정지 처리되었습니다."),
+    USER_UNSUSPEND_SUCCESS(HttpStatus.OK,                   "1000", "사용자 정지가 해제되었습니다."),
     ;
 
     private final HttpStatus httpStatus;

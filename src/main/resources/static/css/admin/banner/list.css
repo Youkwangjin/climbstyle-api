@@ -1,0 +1,84 @@
+.th-preview { width: 140px }
+.th-order   { width: 80px;  text-align: center }
+.th-visible { width: 70px;  text-align: center }
+.th-date    { width: 100px; white-space: nowrap }
+.th-action  { width: 120px; text-align: center }
+
+.td-preview { padding: 8px 16px }
+.td-order   { text-align: center }
+.td-visible { text-align: center }
+.td-action  { text-align: center; display: flex; gap: 6px; justify-content: center; align-items: center }
+
+.banner-thumb {
+    width: 120px;
+    height: 68px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.order-input {
+    width: 60px;
+    height: 34px;
+    padding: 0 8px;
+    border: 1px solid var(--admin-line);
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    color: var(--admin-text);
+    outline: none;
+}
+
+.order-input:focus { border-color: var(--admin-brand) }
+
+.toggle-wrap {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toggle-input { display: none }
+
+.toggle-track {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--admin-line);
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.toggle-input:checked + .toggle-track { background: var(--admin-brand) }
+
+.toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,.15);
+    transition: transform 0.2s;
+}
+
+.toggle-input:checked + .toggle-track .toggle-thumb { transform: translateX(18px) }
+
+.badge-banner-hidden { background: var(--admin-card); color: var(--admin-muted) }
+
+.btn-outline {
+    background: #fff;
+    border: 1px solid var(--admin-line);
+    color: var(--admin-text);
+}
+
+.btn-outline:hover { background: var(--admin-card) }
+
+.btn-danger {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+}
+
+.btn-danger:hover { background: #fecaca }

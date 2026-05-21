@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
+/**
+ * 문의 유효성 검사 예외 핸들러
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @RestControllerAdvice(assignableTypes = {InquiryApiController.class, AdminInquiryApiController.class})
 public class InquiryValidationException {
 

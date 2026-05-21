@@ -17,4 +17,6 @@ public interface FeedCommentRepository {
     Integer selectFeedCommentsCountByFeedNo(@Param("feedNo") Integer feedNo);
 
     void insert(FeedCommentEntity feedCommentEntity);
+
+    void updateFeedCommentVisibleYnByUserNo(@Param("userNo") Integer userNo, @Param("feedCommentVisibleYn") String feedCommentVisibleYn);
 }

@@ -1,0 +1,20 @@
+footer {
+    background: #111;
+    border-top: none;
+}
+
+.foot small {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.links a {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.links a:hover {
+    color: #fff;
+}
+
+footer .logo span {
+    color: #fff;
+}

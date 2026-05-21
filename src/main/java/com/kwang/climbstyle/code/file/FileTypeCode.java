@@ -5,6 +5,13 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 
+/**
+ * 파일 타입 코드
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-20
+ * @version : 1.0
+ */
 @Getter
 @RequiredArgsConstructor
 public enum FileTypeCode {
@@ -41,6 +48,13 @@ public enum FileTypeCode {
             new String[]{"pdf", "doc", "docx", "hwp"},
             10 * 1024 * 1024,
             "문의 첨부파일"
+    ),
+
+    BANNER(
+            "banner/",
+            new String[]{"jpg", "jpeg", "png"},
+            5 * 1024 * 1024,
+            "메인 배너 이미지"
     ),
     ;
 
