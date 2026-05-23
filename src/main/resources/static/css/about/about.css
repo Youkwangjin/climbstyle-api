@@ -84,21 +84,6 @@
     color: var(--text);
 }
 
-.about-developer-contact {
-    margin: 0;
-    font-size: 13px;
-    color: var(--muted);
-}
-
-.about-developer-contact a {
-    color: var(--brand-700);
-    text-decoration: none;
-}
-
-.about-developer-contact a:hover {
-    text-decoration: underline;
-}
-
 /* 서비스 특징 */
 .about-features-title {
     margin: 0 0 24px;
