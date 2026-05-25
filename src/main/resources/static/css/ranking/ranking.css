@@ -373,8 +373,12 @@
     font-family: inherit;
 }
 
-.ranking-likes:hover {
+.ranking-likes:hover svg {
     color: var(--brand);
+}
+
+.ranking-likes:hover span {
+    text-decoration: underline;
 }
 
 .ranking-likes svg {
