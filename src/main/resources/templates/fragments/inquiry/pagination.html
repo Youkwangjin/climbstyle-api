@@ -11,7 +11,7 @@
             <th:block th:replace="~{fragments/common/icons :: chevron-double-left}" />
         </a>
 
-        <a th:if="${request.pageNoAsInt > request.startPageNo}"
+        <a th:if="${request.pageNoAsInt > 1}"
            th:href="@{${currentUrl}(pageNo=${request.prevPageNo})}"
            class="page-btn"
            aria-label="이전 페이지">
@@ -28,7 +28,7 @@
             </th:block>
         </div>
 
-        <a th:if="${request.pageNoAsInt < request.endPageNo}"
+        <a th:if="${request.pageNoAsInt < request.finalPageNo}"
            th:href="@{${currentUrl}(pageNo=${request.nextPageNo})}"
            class="page-btn"
            aria-label="다음 페이지">
