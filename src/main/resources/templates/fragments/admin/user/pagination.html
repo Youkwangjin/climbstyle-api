@@ -12,7 +12,7 @@
             <th:block th:replace="~{fragments/common/icons :: chevron-double-left}" />
         </a>
 
-        <a th:if="${request.pageNoAsInt > request.startPageNo}"
+        <a th:if="${request.pageNoAsInt > 1}"
            th:href="@{${currentUrl}(pageNo=${request.prevPageNo}, userStatus=${request.userStatus},
            searchType=${request.searchType}, searchName=${request.searchName})}"
            class="page-btn"
@@ -31,7 +31,7 @@
             </th:block>
         </div>
 
-        <a th:if="${request.pageNoAsInt < request.endPageNo}"
+        <a th:if="${request.pageNoAsInt < request.finalPageNo}"
            th:href="@{${currentUrl}(pageNo=${request.nextPageNo}, userStatus=${request.userStatus},
            searchType=${request.searchType}, searchName=${request.searchName})}"
            class="page-btn"

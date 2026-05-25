@@ -554,7 +554,6 @@
 
 .f-like-count-btn:hover .like-count {
     text-decoration: underline;
-    color: var(--brand);
 }
 
 .detail-like-wrap {
@@ -579,7 +578,6 @@
 
 .detail-like-count-btn:hover span {
     text-decoration: underline;
-    color: var(--brand);
 }
 
 /* Like List Modal */
