@@ -1,6 +1,7 @@
 package com.kwang.climbstyle.domain.admin.controller;
 
 import com.kwang.climbstyle.code.menu.MenuRegisterCode;
+import com.kwang.climbstyle.code.role.RoleCode;
 import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse;
 import com.kwang.climbstyle.domain.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ public class AdminMenuPageController {
         model.addAttribute("userCodes", MenuRegisterCode.getUserCodes());
         model.addAttribute("adminCodes", MenuRegisterCode.getAdminCodes());
         model.addAttribute("parentMenus", parentMenus);
+        model.addAttribute("roles", new RoleCode[]{RoleCode.ROLE_USER, RoleCode.ROLE_ADMIN});
 
         return "admin/menu/new";
     }
