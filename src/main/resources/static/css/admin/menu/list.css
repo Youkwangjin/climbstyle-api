@@ -1,0 +1,14 @@
+.th-no, .td-no       { width: 60px; text-align: center }
+.th-code, .td-code   { width: 130px; font-family: monospace; font-size: 13px; color: var(--admin-muted) }
+.th-level, .td-level { width: 60px; text-align: center }
+.th-sort, .td-sort   { width: 60px; text-align: center }
+.th-use, .td-use     { width: 80px; text-align: center; white-space: nowrap }
+.th-date, .td-date   { width: 100px; text-align: center; white-space: nowrap }
+.th-url, .td-url     { width: 200px; font-size: 13px; color: var(--admin-muted) }
+.td-empty            { text-align: center; padding: 40px; color: var(--admin-muted) }
+
+.row-parent td        { background: var(--admin-card); font-weight: 600 }
+
+.indent { margin-right: 4px; color: var(--admin-muted) }
+
+.badge-unused { background: var(--admin-card); color: var(--admin-muted) }

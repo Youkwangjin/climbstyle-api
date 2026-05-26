@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>메뉴 관리 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/menu/list.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>시스템</span></div>
+                <h1>메뉴 관리</h1>
+            </div>
+            <a href="/admin/menus/new" class="btn btn-primary">메뉴 등록</a>
+        </div>
+        <div class="stats-row">
+            <div class="stat-chip">
+                <span class="num blue" th:text="${#lists.size(menuList)}">0</span>
+                <span class="stat-label">전체 메뉴</span>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th class="th-no">No</th>
+                    <th class="th-code">코드</th>
+                    <th>메뉴명</th>
+                    <th class="th-url">URL</th>
+                    <th class="th-level">레벨</th>
+                    <th class="th-sort">정렬</th>
+                    <th class="th-use">사용</th>
+                    <th class="th-date">등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(menuList)}">
+                    <td colspan="8" class="td-empty">등록된 메뉴가 없습니다.</td>
+                </tr>
+                <tr th:each="menu : ${menus}"
+                    th:classappend="${menu.menuLevel == 1} ? ' row-parent'">
+                    <td class="td-no" th:text="${menu.menuNo}"></td>
+                    <td class="td-code" th:text="${menu.menuCode}"></td>
+                    <td class="td-name">
+                        <span th:if="${menu.menuLevel == 2}" class="indent">└</span>
+                        <span th:text="${menu.menuName}"></span>
+                    </td>
+                    <td class="td-url" th:text="${menu.menuUrl != null ? menu.menuUrl : '-'}"></td>
+                    <td class="td-level" th:text="${menu.menuLevel}"></td>
+                    <td class="td-sort" th:text="${menu.menuSortOrder}"></td>
+                    <td class="td-use">
+                        <span th:if="${menu.menuUseYn == 'N'}" class="badge badge-unused">미사용</span>
+                    </td>
+                    <td class="td-date" th:text="${#temporals.format(menu.menuCreated, 'yyyy.MM.dd')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+</body>
+</html>

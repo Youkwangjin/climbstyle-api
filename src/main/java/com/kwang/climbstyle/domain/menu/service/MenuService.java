@@ -1,10 +1,12 @@
 package com.kwang.climbstyle.domain.menu.service;
 
 import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuListResponse;
+import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse;
 import com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse;
 import com.kwang.climbstyle.domain.menu.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,10 +19,12 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
 
+    @Transactional(readOnly = true)
     public List<UserMenuListResponse> getUserMenuList(Integer userNo) {
         return menuRepository.selectMenuByUserNo(userNo);
     }
 
+    @Transactional(readOnly = true)
     public List<AdminMenuListResponse> getAdminMenuList(Integer adminNo) {
         List<AdminMenuListResponse> flatList = menuRepository.selectMenuByAdminNo(adminNo);
 
@@ -43,5 +47,15 @@ public class MenuService {
         }
 
         return roots;
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdminMenuManagementResponse> getAllMenus() {
+        return menuRepository.selectAllMenus();
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdminMenuManagementResponse> getParentMenus() {
+        return menuRepository.selectParentMenus();
     }
 }
