@@ -23,4 +23,5 @@
         WHERE
             role_name = #{roleName}
     </select>
+
 </mapper>

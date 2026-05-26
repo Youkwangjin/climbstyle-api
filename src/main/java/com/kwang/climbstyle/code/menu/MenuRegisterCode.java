@@ -32,6 +32,8 @@ public enum MenuRegisterCode {
     A0008("A0008", "상품 관리",         MenuTarget.ADMIN),
     A0009("A0009", "주문 관리",         MenuTarget.ADMIN),
     A0010("A0010", "배너 관리",         MenuTarget.ADMIN),
+    A0011("A0011", "메뉴",             MenuTarget.ADMIN),
+    A0012("A0012", "메뉴 관리",         MenuTarget.ADMIN),
     ;
 
     private final String code;

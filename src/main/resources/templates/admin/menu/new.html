@@ -74,6 +74,16 @@
                 <label class="form-label" for="menuIcon">아이콘</label>
                 <input class="form-input" type="text" id="menuIcon" placeholder="아이콘 클래스명 (선택)" maxlength="100" />
             </div>
+            <div class="form-row">
+                <label class="form-label" for="roleName">권한</label>
+                <select class="form-select" id="roleName">
+                    <option value="">선택하세요</option>
+                    <option th:each="role : ${roles}"
+                            th:value="${role.code}"
+                            th:text="${role.description}">
+                    </option>
+                </select>
+            </div>
             <div class="form-row form-row-inline">
                 <label class="form-label">사용 여부</label>
                 <label class="toggle-wrap">
@@ -105,6 +115,7 @@
         document.getElementById("menuLevel").value = "1";
         document.getElementById("menuSortOrder").value = "0";
         document.getElementById("menuIcon").value = "";
+        document.getElementById("roleName").value = "";
         document.getElementById("menuUseYn").checked = true;
     }
 
@@ -121,7 +132,8 @@
                 menuLevel: parseInt(document.getElementById("menuLevel").value),
                 menuSortOrder: parseInt(document.getElementById("menuSortOrder").value),
                 menuIcon: document.getElementById("menuIcon").value.trim() || null,
-                menuUseYn: document.getElementById("menuUseYn").checked ? "Y" : "N"
+                menuUseYn: document.getElementById("menuUseYn").checked ? "Y" : "N",
+                roleName: document.getElementById("roleName").value
             })
         })
             .then(async response => {

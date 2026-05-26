@@ -90,6 +90,11 @@
             menu_sort_order
     </select>
 
+    <insert id="insertRoleMenu">
+        INSERT INTO tb_role_menu (role_no, menu_no)
+        VALUES (#{roleNo}, #{menuNo})
+    </insert>
+
     <select id="selectParentMenus"
             resultType="com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse">
         SELECT
@@ -110,4 +115,29 @@
         ORDER BY
             menu_sort_order
     </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.menu.entity.MenuEntity"
+            useGeneratedKeys="true" keyProperty="menuNo">
+        INSERT INTO tb_menu (
+            menu_code,
+            menu_name,
+            menu_url,
+            menu_parent_no,
+            menu_level,
+            menu_sort_order,
+            menu_use_yn,
+            menu_icon,
+            menu_created
+        ) VALUES (
+            #{menuCode},
+            #{menuName},
+            #{menuUrl},
+            #{menuParentNo},
+            #{menuLevel},
+            #{menuSortOrder},
+            #{menuUseYn},
+            #{menuIcon},
+            #{menuCreated}
+        )
+    </insert>
 </mapper>

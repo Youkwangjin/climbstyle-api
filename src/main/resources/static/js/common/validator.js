@@ -306,9 +306,16 @@ const Validator = {
             alert("메뉴 코드를 선택해주세요.");
             return false;
         }
+        const roleName = document.getElementById("roleName").value;
+
         if (!this.rules.required(menuName, "메뉴명")) return false;
         if (!this.rules.required(menuLevel, "레벨")) return false;
-        return this.rules.required(menuSortOrder, "정렬 순서");
+        if (!this.rules.required(menuSortOrder, "정렬 순서")) return false;
+        if (!roleName) {
+            alert("권한을 선택해주세요.");
+            return false;
+        }
+        return true;
     },
 
     checkField(fieldId, fieldName) {

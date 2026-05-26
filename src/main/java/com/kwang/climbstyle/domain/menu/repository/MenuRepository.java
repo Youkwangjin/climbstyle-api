@@ -1,6 +1,7 @@
 package com.kwang.climbstyle.domain.menu.repository;
 
 import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuListResponse;
+import com.kwang.climbstyle.domain.menu.entity.MenuEntity;
 import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse;
 import com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,4 +19,8 @@ public interface MenuRepository {
     List<AdminMenuManagementResponse> selectAllMenus();
 
     List<AdminMenuManagementResponse> selectParentMenus();
+
+    void insert(MenuEntity menuEntity);
+
+    void insertRoleMenu(@Param("menuNo") Integer menuNo, @Param("roleNo") Integer roleNo);
 }
