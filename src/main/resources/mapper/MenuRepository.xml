@@ -90,6 +90,16 @@
             menu_sort_order
     </select>
 
+    <select id="selectMenuByCode" parameterType="String" resultMap="menuResultMap">
+        SELECT
+            menu_no,
+            menu_code
+        FROM
+            tb_menu
+        WHERE
+            menu_code = #{menuCode}
+    </select>
+
     <insert id="insertRoleMenu">
         INSERT INTO tb_role_menu (role_no, menu_no)
         VALUES (#{roleNo}, #{menuNo})

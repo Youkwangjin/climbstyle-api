@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.domain.menu.service;
 
+import com.kwang.climbstyle.code.menu.MenuErrorCode;
 import com.kwang.climbstyle.code.role.RoleErrorCode;
 import com.kwang.climbstyle.domain.menu.dto.request.MenuCreateRequest;
 import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuListResponse;
@@ -71,7 +72,19 @@ public class MenuService {
 
     @Transactional
     public void createMenu(MenuCreateRequest request) {
+        final String roleName = request.getRoleName();
         final String menuCode = request.getMenuCode();
+
+        RoleEntity roleEntity = roleRepository.selectRoleByRoleName(roleName);
+        if (roleEntity == null) {
+            throw new ClimbStyleException(RoleErrorCode.ROLE_NOT_FOUND);
+        }
+
+        MenuEntity entity = menuRepository.selectMenuByCode(menuCode);
+        if (entity != null) {
+            throw new ClimbStyleException(MenuErrorCode.MENU_CODE_DUPLICATE);
+        }
+
         final String menuName = request.getMenuName();
         final String menuUrl = request.getMenuUrl();
         final Integer menuParentNo = request.getMenuParentNo();
@@ -79,7 +92,6 @@ public class MenuService {
         final Integer menuSortOrder = request.getMenuSortOrder();
         final String menuIcon = request.getMenuIcon();
         final String menuUseYn = request.getMenuUseYn();
-        final String roleName = request.getRoleName();
         final LocalDateTime menuCreated = LocalDateTime.now();
 
         MenuEntity menuEntity = MenuEntity.builder()
@@ -96,12 +108,8 @@ public class MenuService {
 
         menuRepository.insert(menuEntity);
 
-        final RoleEntity data = roleRepository.selectRoleByRoleName(roleName);
-        if (data == null) {
-            throw new ClimbStyleException(RoleErrorCode.ROLE_NOT_FOUND);
-        }
-
-        final Integer roleNo = data.getRoleNo();
-        menuRepository.insertRoleMenu(menuEntity.getMenuNo(), roleNo);
+        final Integer roleNo = roleEntity.getRoleNo();
+        final Integer menuNo = menuEntity.getMenuNo();
+        menuRepository.insertRoleMenu(menuNo, roleNo);
     }
 }
