@@ -48,7 +48,9 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "${{ secrets.APP_PROD_YML }}" > /home/ubuntu/application-prod.yml
+            cat << 'YAML_EOF' > /home/ubuntu/application-prod.yml
+            ${{ secrets.APP_PROD_YML }}
+            YAML_EOF
 
       - name: 무중단 배포 실행
         uses: appleboy/ssh-action@master
