@@ -121,7 +121,7 @@ public class MenuService {
 
         final Integer roleNo = roleEntity.getRoleNo();
         final Integer menuNo = menuEntity.getMenuNo();
-        menuRepository.insertRoleMenu(menuNo, roleNo);
+        roleRepository.insertRoleMenu(menuNo, roleNo);
     }
 
     @Transactional
@@ -163,5 +163,16 @@ public class MenuService {
                 .build();
 
         menuRepository.update(menuEntity);
+    }
+
+    @Transactional
+    public void deleteMenu(Integer menuNo) {
+        AdminMenuManagementResponse existing = menuRepository.selectMenuByNo(menuNo);
+        if (existing == null) {
+            throw new ClimbStyleException(MenuErrorCode.MENU_NOT_FOUND);
+        }
+
+        roleRepository.deleteRoleMenuByMenuNo(menuNo);
+        menuRepository.delete(menuNo);
     }
 }

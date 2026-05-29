@@ -8,4 +8,8 @@ import org.apache.ibatis.annotations.Param;
 public interface RoleRepository {
 
     RoleEntity selectRoleByRoleName(@Param("roleName") String roleName);
+
+    void insertRoleMenu(@Param("menuNo") Integer menuNo, @Param("roleNo") Integer roleNo);
+
+    void deleteRoleMenuByMenuNo(@Param("menuNo") Integer menuNo);
 }

@@ -98,6 +98,7 @@
                 </label>
             </div>
             <div class="form-footer">
+                <button type="button" class="btn btn-danger" onclick="remove()">삭제</button>
                 <button type="button" class="btn" onclick="location.href='/admin/menus'">취소</button>
                 <button type="button" class="btn btn-primary" onclick="update()">수정하기</button>
             </div>
@@ -108,6 +109,26 @@
 <script th:src="@{/js/common/api.js}"></script>
 <script th:src="@{/js/common/validator.js}"></script>
 <script>
+    function remove() {
+        if (!confirm("메뉴를 삭제하시겠습니까?")) return;
+
+        API.callJson(`/api/v1/menus/${document.getElementById("menuNo").value}`, {
+            method: "DELETE"
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.href = "/admin/menus";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+
     function update() {
         if (!Validator.menuUpdate() || !confirm("메뉴를 수정하시겠습니까?")) return;
 

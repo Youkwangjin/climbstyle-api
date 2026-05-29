@@ -165,16 +165,6 @@
         )
     </insert>
 
-    <insert id="insertRoleMenu">
-        INSERT INTO tb_role_menu (
-            role_no,
-            menu_no
-        ) VALUES (
-            #{roleNo},
-            #{menuNo}
-        )
-    </insert>
-
     <update id="update" parameterType="com.kwang.climbstyle.domain.menu.entity.MenuEntity">
         UPDATE
             tb_menu
@@ -191,4 +181,11 @@
         WHERE
             menu_no = #{menuNo}
     </update>
+
+    <delete id="delete">
+        DELETE FROM
+            tb_menu
+        WHERE
+            menu_no = #{menuNo}
+    </delete>
 </mapper>

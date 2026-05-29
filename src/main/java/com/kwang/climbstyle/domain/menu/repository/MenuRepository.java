@@ -26,7 +26,7 @@ public interface MenuRepository {
 
     void insert(MenuEntity menuEntity);
 
-    void insertRoleMenu(@Param("menuNo") Integer menuNo, @Param("roleNo") Integer roleNo);
-
     void update(MenuEntity menuEntity);
+
+    void delete(@Param("menuNo") Integer menuNo);
 }
