@@ -40,6 +40,7 @@ public class UserService {
     /**
      * 사용자 번호로 프로필 조회
      */
+    @Transactional(readOnly = true)
     public UserProfileResponse selectUserByNo(Integer userNo) {
         UserEntity data = userRepository.selectUserByNo(userNo);
         if (data == null) {

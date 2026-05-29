@@ -55,6 +55,7 @@ public class InquiryService {
     /**
      * 사용자 문의 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<InquiryListResponse> getInquiryList(CommonListRequest request) {
         Integer userNo = SecurityUtil.getCurrentUserNo();
         request.setTotalCount(inquiryRepository.selectInquiryListCountByRequest(request, userNo));
@@ -65,6 +66,7 @@ public class InquiryService {
     /**
      * 관리자 문의 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<AdminInquiryListResponse> getAdminInquiryList(AdminInquiryListRequest request) {
         request.setTotalCount(inquiryRepository.selectAdminInquiryListCountByRequest(request));
 
@@ -74,6 +76,7 @@ public class InquiryService {
     /**
      * 사용자 문의 상세 조회
      */
+    @Transactional(readOnly = true)
     public InquiryDetailResponse getInquiryDetail(Integer inquiryNo) {
         Integer userNo = SecurityUtil.getCurrentUserNo();
         InquiryDetailResponse inquiry = inquiryRepository.selectInquiryByNo(inquiryNo, userNo);
@@ -87,6 +90,7 @@ public class InquiryService {
     /**
      * 관리자 문의 상세 조회
      */
+    @Transactional(readOnly = true)
     public InquiryDetailResponse getAdminInquiryDetail(Integer inquiryNo) {
         InquiryDetailResponse inquiry = inquiryRepository.selectAdminInquiryByNo(inquiryNo);
         if (inquiry == null) {
