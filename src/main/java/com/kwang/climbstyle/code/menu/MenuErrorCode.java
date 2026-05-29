@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum MenuErrorCode implements ApiCode {
 
     MENU_CODE_DUPLICATE(HttpStatus.CONFLICT, "10001", "이미 등록된 메뉴 코드입니다."),
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "10002", "존재하지 않는 메뉴입니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -46,7 +46,9 @@
                     <td colspan="8" class="td-empty">등록된 메뉴가 없습니다.</td>
                 </tr>
                 <tr th:each="menu : ${menus}"
-                    th:classappend="${menu.menuLevel == 1} ? ' row-parent'">
+                    th:classappend="${menu.menuLevel == 1} ? ' row-parent'"
+                    th:onclick="|location.href='/admin/menus/${menu.menuNo}/edit'|"
+                    style="cursor: pointer;">
                     <td class="td-no" th:text="${menu.menuNo}"></td>
                     <td class="td-code" th:text="${menu.menuCode}"></td>
                     <td class="td-name">

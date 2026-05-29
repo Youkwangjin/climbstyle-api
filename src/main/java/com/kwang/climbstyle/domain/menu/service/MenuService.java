@@ -3,6 +3,7 @@ package com.kwang.climbstyle.domain.menu.service;
 import com.kwang.climbstyle.code.menu.MenuErrorCode;
 import com.kwang.climbstyle.code.role.RoleErrorCode;
 import com.kwang.climbstyle.domain.menu.dto.request.MenuCreateRequest;
+import com.kwang.climbstyle.domain.menu.dto.request.MenuUpdateRequest;
 import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuListResponse;
 import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse;
 import com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse;
@@ -70,6 +71,16 @@ public class MenuService {
         return menuRepository.selectParentMenus();
     }
 
+    @Transactional(readOnly = true)
+    public AdminMenuManagementResponse getMenuDetail(Integer menuNo) {
+        AdminMenuManagementResponse menu = menuRepository.selectMenuByNo(menuNo);
+        if (menu == null) {
+            throw new ClimbStyleException(MenuErrorCode.MENU_NOT_FOUND);
+        }
+
+        return menu;
+    }
+
     @Transactional
     public void createMenu(MenuCreateRequest request) {
         final String roleName = request.getRoleName();
@@ -111,5 +122,46 @@ public class MenuService {
         final Integer roleNo = roleEntity.getRoleNo();
         final Integer menuNo = menuEntity.getMenuNo();
         menuRepository.insertRoleMenu(menuNo, roleNo);
+    }
+
+    @Transactional
+    public void updateMenu(Integer menuNo, MenuUpdateRequest request) {
+        AdminMenuManagementResponse existing = menuRepository.selectMenuByNo(menuNo);
+        if (existing == null) {
+            throw new ClimbStyleException(MenuErrorCode.MENU_NOT_FOUND);
+        }
+
+        final String menuCode = request.getMenuCode();
+
+        if (!existing.getMenuCode().equals(menuCode)) {
+            MenuEntity duplicate = menuRepository.selectMenuByCode(menuCode);
+            if (duplicate != null) {
+                throw new ClimbStyleException(MenuErrorCode.MENU_CODE_DUPLICATE);
+            }
+        }
+
+        final String menuName = request.getMenuName();
+        final String menuUrl = request.getMenuUrl();
+        final Integer menuParentNo = request.getMenuParentNo();
+        final Integer menuLevel = request.getMenuLevel();
+        final Integer menuSortOrder = request.getMenuSortOrder();
+        final String menuIcon = request.getMenuIcon();
+        final String menuUseYn = request.getMenuUseYn();
+        final LocalDateTime menuUpdated = LocalDateTime.now();
+
+        MenuEntity menuEntity = MenuEntity.builder()
+                .menuNo(menuNo)
+                .menuCode(menuCode)
+                .menuName(menuName)
+                .menuUrl(menuUrl)
+                .menuParentNo(menuParentNo)
+                .menuLevel(menuLevel)
+                .menuSortOrder(menuSortOrder)
+                .menuIcon(menuIcon)
+                .menuUseYn(menuUseYn)
+                .menuUpdated(menuUpdated)
+                .build();
+
+        menuRepository.update(menuEntity);
     }
 }
