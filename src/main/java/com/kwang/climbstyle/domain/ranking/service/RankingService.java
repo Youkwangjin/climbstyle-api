@@ -6,6 +6,7 @@ import com.kwang.climbstyle.domain.ranking.dto.response.RankingListResponse;
 import com.kwang.climbstyle.domain.ranking.repository.RankingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class RankingService {
     /**
      * 실시간 랭킹 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<RankingListResponse> getRealtimeRankingList(CommonListRequest request) {
         final String rankingType = RankingType.REALTIME.getCode();
         request.setTotalCount(rankingRepository.selectRankingListCountByRequest(request, rankingType));
@@ -35,6 +37,7 @@ public class RankingService {
     /**
      * 홈 화면 실시간 랭킹 Top3 조회
      */
+    @Transactional(readOnly = true)
     public List<RankingListResponse> getIndexRealtimeRankingList() {
         final String rankingType = RankingType.REALTIME.getCode();
 
@@ -44,6 +47,7 @@ public class RankingService {
     /**
      * 주간 랭킹 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<RankingListResponse> getWeeklyRankingList(CommonListRequest request) {
         final String rankingType = RankingType.WEEKLY.getCode();
         request.setTotalCount(rankingRepository.selectRankingListCountByRequest(request, rankingType));
@@ -54,6 +58,7 @@ public class RankingService {
     /**
      * 월간 랭킹 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<RankingListResponse> getMonthlyRankingList(CommonListRequest request) {
         final String rankingType = RankingType.MONTHLY.getCode();
         request.setTotalCount(rankingRepository.selectRankingListCountByRequest(request, rankingType));

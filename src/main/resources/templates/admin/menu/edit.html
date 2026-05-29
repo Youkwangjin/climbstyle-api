@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>메뉴 수정 | ClimbStyle Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/menu/new.css}">
+</head>
+<body>
+<header th:replace="~{fragments/admin/header :: header}"></header>
+<div class="admin-wrap">
+    <aside th:replace="~{fragments/admin/sidebar :: sidebar}"></aside>
+    <main class="admin-main">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb"><span>시스템</span></div>
+                <h1>메뉴 수정</h1>
+            </div>
+            <button type="button" class="btn btn-sm" onclick="location.href='/admin/menus'">목록</button>
+        </div>
+        <form class="menu-form">
+            <input type="hidden" id="menuNo" th:value="${menu.menuNo}" />
+            <div class="form-row">
+                <label class="form-label" for="menuCode">메뉴 코드</label>
+                <select class="form-select" id="menuCode">
+                    <option value="">선택하세요</option>
+                    <optgroup label="사용자 메뉴">
+                        <option th:each="code : ${userCodes}"
+                                th:value="${code.code}"
+                                th:text="${code.code} + ' - ' + ${code.displayName}"
+                                th:selected="${code.code == menu.menuCode}">
+                        </option>
+                    </optgroup>
+                    <optgroup label="관리자 메뉴">
+                        <option th:each="code : ${adminCodes}"
+                                th:value="${code.code}"
+                                th:text="${code.code} + ' - ' + ${code.displayName}"
+                                th:selected="${code.code == menu.menuCode}">
+                        </option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-row">
+                <label class="form-label" for="menuName">메뉴명</label>
+                <input class="form-input" type="text" id="menuName"
+                       placeholder="메뉴명을 입력하세요" maxlength="50"
+                       th:value="${menu.menuName}" />
+            </div>
+            <div class="form-row">
+                <label class="form-label" for="menuUrl">URL</label>
+                <input class="form-input" type="text" id="menuUrl"
+                       placeholder="/admin/example" maxlength="255"
+                       th:value="${menu.menuUrl}" />
+            </div>
+            <div class="form-row">
+                <label class="form-label" for="menuParentNo">상위 메뉴</label>
+                <select class="form-select" id="menuParentNo">
+                    <option value="">없음 (최상위 메뉴)</option>
+                    <option th:each="parent : ${parentMenus}"
+                            th:value="${parent.menuNo}"
+                            th:text="${parent.menuCode} + ' - ' + ${parent.menuName}"
+                            th:selected="${parent.menuNo == menu.menuParentNo}">
+                    </option>
+                </select>
+            </div>
+            <div class="form-row-group">
+                <div class="form-row">
+                    <label class="form-label" for="menuLevel">레벨</label>
+                    <input class="form-input" type="number" id="menuLevel"
+                           min="1" max="2" th:value="${menu.menuLevel}" />
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="menuSortOrder">정렬 순서</label>
+                    <input class="form-input" type="number" id="menuSortOrder"
+                           min="0" th:value="${menu.menuSortOrder}" />
+                </div>
+            </div>
+            <div class="form-row">
+                <label class="form-label" for="menuIcon">아이콘</label>
+                <input class="form-input" type="text" id="menuIcon"
+                       placeholder="아이콘 클래스명 (선택)" maxlength="100"
+                       th:value="${menu.menuIcon}" />
+            </div>
+            <div class="form-row form-row-inline">
+                <label class="form-label">사용 여부</label>
+                <label class="toggle-wrap">
+                    <input type="checkbox" id="menuUseYn" class="toggle-input"
+                           th:checked="${menu.menuUseYn == 'Y'}" />
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                    <span class="toggle-text">사용</span>
+                </label>
+            </div>
+            <div class="form-footer">
+                <button type="button" class="btn btn-danger" onclick="remove()">삭제</button>
+                <button type="button" class="btn" onclick="location.href='/admin/menus'">취소</button>
+                <button type="button" class="btn btn-primary" onclick="update()">수정하기</button>
+            </div>
+        </form>
+    </main>
+</div>
+<div th:replace="~{fragments/admin/footer :: footer}"></div>
+<script th:src="@{/js/common/api.js}"></script>
+<script th:src="@{/js/common/validator.js}"></script>
+<script>
+    function remove() {
+        if (!confirm("메뉴를 삭제하시겠습니까?")) return;
+
+        API.callJson(`/api/v1/menus/${document.getElementById("menuNo").value}`, {
+            method: "DELETE"
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.href = "/admin/menus";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+
+    function update() {
+        if (!Validator.menuUpdate() || !confirm("메뉴를 수정하시겠습니까?")) return;
+
+        API.callJson(`/api/v1/menus/${document.getElementById("menuNo").value}`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                menuCode: document.getElementById("menuCode").value,
+                menuName: document.getElementById("menuName").value.trim(),
+                menuUrl: document.getElementById("menuUrl").value.trim() || null,
+                menuParentNo: document.getElementById("menuParentNo").value ? parseInt(document.getElementById("menuParentNo").value) : null,
+                menuLevel: parseInt(document.getElementById("menuLevel").value),
+                menuSortOrder: parseInt(document.getElementById("menuSortOrder").value),
+                menuIcon: document.getElementById("menuIcon").value.trim() || null,
+                menuUseYn: document.getElementById("menuUseYn").checked ? "Y" : "N"
+            })
+        })
+            .then(async response => {
+                const body = await response.json();
+                if (!response.ok) {
+                    alert(body.message);
+                    return;
+                }
+                alert(body.message);
+                location.href = "/admin/menus";
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+</script>
+</body>
+</html>

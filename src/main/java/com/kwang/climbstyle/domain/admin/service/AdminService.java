@@ -10,6 +10,7 @@ import com.kwang.climbstyle.domain.notice.repository.NoticeRepository;
 import com.kwang.climbstyle.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class AdminService {
     /**
      * 대시보드 통계 조회
      */
+    @Transactional(readOnly = true)
     public AdminDashboardStatResponse getDashboardStat() {
         return adminRepository.selectDashboardStat();
     }
@@ -42,6 +44,7 @@ public class AdminService {
     /**
      * 최근 가입 사용자 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<AdminUserListResponse> getUserList() {
         return userRepository.selectRecentUserList();
     }
@@ -49,6 +52,7 @@ public class AdminService {
     /**
      * 대기 중인 문의 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<AdminInquiryListResponse> getInquiryList(){
         return inquiryRepository.selectPendingInquiryList();
     }
@@ -56,6 +60,7 @@ public class AdminService {
     /**
      * 최근 공지사항 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<AdminNoticeListResponse> getNoticeList() {
         return noticeRepository.selectRecentNoticeList();
     }

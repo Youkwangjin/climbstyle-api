@@ -69,4 +69,123 @@
             m.menu_level,
             m.menu_sort_order
     </select>
+
+    <select id="selectAllMenus"
+            resultType="com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse">
+        SELECT
+            menu_no,
+            menu_code,
+            menu_name,
+            menu_url,
+            menu_parent_no,
+            menu_level,
+            menu_sort_order,
+            menu_use_yn,
+            menu_icon,
+            menu_created
+        FROM
+            tb_menu
+        ORDER BY
+            menu_level,
+            menu_sort_order
+    </select>
+
+    <select id="selectMenuByNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse">
+        SELECT
+            menu_no,
+            menu_code,
+            menu_name,
+            menu_url,
+            menu_parent_no,
+            menu_level,
+            menu_sort_order,
+            menu_use_yn,
+            menu_icon,
+            menu_created
+        FROM
+            tb_menu
+        WHERE
+            menu_no = #{menuNo}
+    </select>
+
+    <select id="selectMenuByCode" parameterType="String" resultMap="menuResultMap">
+        SELECT
+            menu_no,
+            menu_code
+        FROM
+            tb_menu
+        WHERE
+            menu_code = #{menuCode}
+    </select>
+
+    <select id="selectParentMenus"
+            resultType="com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse">
+        SELECT
+            menu_no,
+            menu_code,
+            menu_name,
+            menu_url,
+            menu_parent_no,
+            menu_level,
+            menu_sort_order,
+            menu_use_yn,
+            menu_icon,
+            menu_created
+        FROM
+            tb_menu
+        WHERE
+            menu_level = 1
+        ORDER BY
+            menu_sort_order
+    </select>
+
+    <insert id="insert" parameterType="com.kwang.climbstyle.domain.menu.entity.MenuEntity"
+            useGeneratedKeys="true" keyProperty="menuNo">
+        INSERT INTO tb_menu (
+            menu_code,
+            menu_name,
+            menu_url,
+            menu_parent_no,
+            menu_level,
+            menu_sort_order,
+            menu_use_yn,
+            menu_icon,
+            menu_created
+        ) VALUES (
+            #{menuCode},
+            #{menuName},
+            #{menuUrl},
+            #{menuParentNo},
+            #{menuLevel},
+            #{menuSortOrder},
+            #{menuUseYn},
+            #{menuIcon},
+            #{menuCreated}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.kwang.climbstyle.domain.menu.entity.MenuEntity">
+        UPDATE
+            tb_menu
+        SET
+            menu_code = #{menuCode},
+            menu_name = #{menuName},
+            menu_url = #{menuUrl},
+            menu_parent_no = #{menuParentNo},
+            menu_level = #{menuLevel},
+            menu_sort_order = #{menuSortOrder},
+            menu_use_yn = #{menuUseYn},
+            menu_icon = #{menuIcon},
+            menu_updated = #{menuUpdated}
+        WHERE
+            menu_no = #{menuNo}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM
+            tb_menu
+        WHERE
+            menu_no = #{menuNo}
+    </delete>
 </mapper>

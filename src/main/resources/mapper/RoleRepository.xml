@@ -23,4 +23,21 @@
         WHERE
             role_name = #{roleName}
     </select>
+
+    <insert id="insertRoleMenu">
+        INSERT INTO tb_role_menu (
+            role_no,
+            menu_no
+        ) VALUES (
+            #{roleNo},
+            #{menuNo}
+        )
+    </insert>
+
+    <delete id="deleteRoleMenuByMenuNo">
+        DELETE FROM
+            tb_role_menu
+        WHERE
+            menu_no = #{menuNo}
+    </delete>
 </mapper>
