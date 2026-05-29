@@ -318,6 +318,21 @@ const Validator = {
         return true;
     },
 
+    menuUpdate() {
+        const menuCode = document.getElementById("menuCode").value;
+        const menuName = document.getElementById("menuName").value.trim();
+        const menuLevel = document.getElementById("menuLevel").value;
+        const menuSortOrder = document.getElementById("menuSortOrder").value;
+
+        if (!menuCode) {
+            alert("메뉴 코드를 선택해주세요.");
+            return false;
+        }
+        if (!this.rules.required(menuName, "메뉴명")) return false;
+        if (!this.rules.required(menuLevel, "레벨")) return false;
+        return this.rules.required(menuSortOrder, "정렬 순서");
+    },
+
     checkField(fieldId, fieldName) {
         const value = document.getElementById(fieldId)?.value.trim();
 

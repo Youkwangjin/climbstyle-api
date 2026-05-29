@@ -90,6 +90,25 @@
             menu_sort_order
     </select>
 
+    <select id="selectMenuByNo" parameterType="Integer"
+            resultType="com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse">
+        SELECT
+            menu_no,
+            menu_code,
+            menu_name,
+            menu_url,
+            menu_parent_no,
+            menu_level,
+            menu_sort_order,
+            menu_use_yn,
+            menu_icon,
+            menu_created
+        FROM
+            tb_menu
+        WHERE
+            menu_no = #{menuNo}
+    </select>
+
     <select id="selectMenuByCode" parameterType="String" resultMap="menuResultMap">
         SELECT
             menu_no,
@@ -99,11 +118,6 @@
         WHERE
             menu_code = #{menuCode}
     </select>
-
-    <insert id="insertRoleMenu">
-        INSERT INTO tb_role_menu (role_no, menu_no)
-        VALUES (#{roleNo}, #{menuNo})
-    </insert>
 
     <select id="selectParentMenus"
             resultType="com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse">
@@ -150,4 +164,28 @@
             #{menuCreated}
         )
     </insert>
+
+    <update id="update" parameterType="com.kwang.climbstyle.domain.menu.entity.MenuEntity">
+        UPDATE
+            tb_menu
+        SET
+            menu_code = #{menuCode},
+            menu_name = #{menuName},
+            menu_url = #{menuUrl},
+            menu_parent_no = #{menuParentNo},
+            menu_level = #{menuLevel},
+            menu_sort_order = #{menuSortOrder},
+            menu_use_yn = #{menuUseYn},
+            menu_icon = #{menuIcon},
+            menu_updated = #{menuUpdated}
+        WHERE
+            menu_no = #{menuNo}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM
+            tb_menu
+        WHERE
+            menu_no = #{menuNo}
+    </delete>
 </mapper>

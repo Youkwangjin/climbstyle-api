@@ -17,23 +17,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum MenuRegisterCode {
 
-    U0001("U0001", "내 피드",            MenuTarget.USER),
-    U0002("U0002", "마이페이지",          MenuTarget.USER),
-    U0003("U0003", "주문/결제 내역",       MenuTarget.USER),
-    U0004("U0004", "1:1 문의",          MenuTarget.USER),
+    U0100("U0100", "마이페이지",          MenuTarget.USER),
+    U0200("U0200", "내 피드",            MenuTarget.USER),
+    U0300("U0300", "주문/결제 내역",      MenuTarget.USER),
+    U0400("U0400", "1:1 문의",          MenuTarget.USER),
 
-    A0001("A0001", "회원",              MenuTarget.ADMIN),
-    A0002("A0002", "콘텐츠",            MenuTarget.ADMIN),
-    A0003("A0003", "상품",              MenuTarget.ADMIN),
-    A0004("A0004", "회원 관리",         MenuTarget.ADMIN),
-    A0005("A0005", "공지사항 관리",     MenuTarget.ADMIN),
-    A0006("A0006", "1:1 문의 관리",    MenuTarget.ADMIN),
-    A0007("A0007", "FAQ 관리",         MenuTarget.ADMIN),
-    A0008("A0008", "상품 관리",         MenuTarget.ADMIN),
-    A0009("A0009", "주문 관리",         MenuTarget.ADMIN),
-    A0010("A0010", "배너 관리",         MenuTarget.ADMIN),
-    A0011("A0011", "메뉴",             MenuTarget.ADMIN),
-    A0012("A0012", "메뉴 관리",         MenuTarget.ADMIN),
+    A0100("A0100", "회원",              MenuTarget.ADMIN),
+    A0101("A0101", "회원 관리",         MenuTarget.ADMIN),
+
+    A0200("A0200", "콘텐츠",            MenuTarget.ADMIN),
+    A0201("A0201", "공지사항 관리",     MenuTarget.ADMIN),
+    A0202("A0202", "1:1 문의 관리",    MenuTarget.ADMIN),
+    A0203("A0203", "FAQ 관리",         MenuTarget.ADMIN),
+    A0204("A0204", "배너 관리",         MenuTarget.ADMIN),
+
+    A0300("A0300", "상품",              MenuTarget.ADMIN),
+    A0301("A0301", "상품 관리",         MenuTarget.ADMIN),
+    A0302("A0302", "주문 관리",         MenuTarget.ADMIN),
+
+    A0400("A0400", "메뉴",              MenuTarget.ADMIN),
+    A0401("A0401", "메뉴 관리",         MenuTarget.ADMIN),
     ;
 
     private final String code;

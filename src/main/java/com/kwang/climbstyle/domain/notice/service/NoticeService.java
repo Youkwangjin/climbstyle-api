@@ -51,6 +51,7 @@ public class NoticeService {
     /**
      * 공지사항 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<NoticeListResponse> getNoticeList(NoticeListRequest request) {
         request.setTotalCount(noticeRepository.selectNoticeListCountByRequest(request));
 
@@ -67,6 +68,7 @@ public class NoticeService {
     /**
      * 관리자 공지사항 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<AdminNoticeListResponse> getAdminNoticeList(NoticeListRequest request) {
         request.setTotalCount(noticeRepository.selectAdminNoticeListCountByRequest(request));
 
@@ -83,6 +85,7 @@ public class NoticeService {
     /**
      * 공지사항 상세 조회
      */
+    @Transactional
     public NoticeDetailResponse getNoticeDetail(Integer noticeNo) {
         NoticeDetailResponse notice = noticeRepository.selectNoticeByNo(noticeNo);
         if (notice == null) {
@@ -101,6 +104,7 @@ public class NoticeService {
     /**
      * 관리자 공지사항 상세 조회
      */
+    @Transactional
     public NoticeDetailResponse getAdminNoticeDetail(Integer noticeNo) {
         NoticeDetailResponse notice = noticeRepository.selectAdminNoticeByNo(noticeNo);
         if (notice == null) {

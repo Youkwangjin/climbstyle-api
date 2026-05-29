@@ -3,6 +3,7 @@ package com.kwang.climbstyle.domain.menu.service;
 import com.kwang.climbstyle.code.menu.MenuErrorCode;
 import com.kwang.climbstyle.code.role.RoleErrorCode;
 import com.kwang.climbstyle.domain.menu.dto.request.MenuCreateRequest;
+import com.kwang.climbstyle.domain.menu.dto.request.MenuUpdateRequest;
 import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuListResponse;
 import com.kwang.climbstyle.domain.menu.dto.response.AdminMenuManagementResponse;
 import com.kwang.climbstyle.domain.menu.dto.response.UserMenuListResponse;
@@ -22,6 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * 메뉴 서비스
+ *
+ * @author : Youkwangjin
+ * @since : 2026-05-29
+ * @version : 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class MenuService {
@@ -30,11 +38,17 @@ public class MenuService {
 
     private final RoleRepository roleRepository;
 
+    /**
+     * 사용자 메뉴 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<UserMenuListResponse> getUserMenuList(Integer userNo) {
         return menuRepository.selectMenuByUserNo(userNo);
     }
 
+    /**
+     * 관리자 메뉴 목록 조회 (계층 구조)
+     */
     @Transactional(readOnly = true)
     public List<AdminMenuListResponse> getAdminMenuList(Integer adminNo) {
         List<AdminMenuListResponse> flatList = menuRepository.selectMenuByAdminNo(adminNo);
@@ -60,16 +74,38 @@ public class MenuService {
         return roots;
     }
 
+    /**
+     * 전체 메뉴 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<AdminMenuManagementResponse> getAllMenus() {
         return menuRepository.selectAllMenus();
     }
 
+    /**
+     * 최상위 메뉴 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<AdminMenuManagementResponse> getParentMenus() {
         return menuRepository.selectParentMenus();
     }
 
+    /**
+     * 메뉴 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public AdminMenuManagementResponse getMenuDetail(Integer menuNo) {
+        AdminMenuManagementResponse menu = menuRepository.selectMenuByNo(menuNo);
+        if (menu == null) {
+            throw new ClimbStyleException(MenuErrorCode.MENU_NOT_FOUND);
+        }
+
+        return menu;
+    }
+
+    /**
+     * 메뉴 등록
+     */
     @Transactional
     public void createMenu(MenuCreateRequest request) {
         final String roleName = request.getRoleName();
@@ -110,6 +146,64 @@ public class MenuService {
 
         final Integer roleNo = roleEntity.getRoleNo();
         final Integer menuNo = menuEntity.getMenuNo();
-        menuRepository.insertRoleMenu(menuNo, roleNo);
+        roleRepository.insertRoleMenu(menuNo, roleNo);
+    }
+
+    /**
+     * 메뉴 수정
+     */
+    @Transactional
+    public void updateMenu(Integer menuNo, MenuUpdateRequest request) {
+        AdminMenuManagementResponse existing = menuRepository.selectMenuByNo(menuNo);
+        if (existing == null) {
+            throw new ClimbStyleException(MenuErrorCode.MENU_NOT_FOUND);
+        }
+
+        final String menuCode = request.getMenuCode();
+
+        if (!existing.getMenuCode().equals(menuCode)) {
+            MenuEntity duplicate = menuRepository.selectMenuByCode(menuCode);
+            if (duplicate != null) {
+                throw new ClimbStyleException(MenuErrorCode.MENU_CODE_DUPLICATE);
+            }
+        }
+
+        final String menuName = request.getMenuName();
+        final String menuUrl = request.getMenuUrl();
+        final Integer menuParentNo = request.getMenuParentNo();
+        final Integer menuLevel = request.getMenuLevel();
+        final Integer menuSortOrder = request.getMenuSortOrder();
+        final String menuIcon = request.getMenuIcon();
+        final String menuUseYn = request.getMenuUseYn();
+        final LocalDateTime menuUpdated = LocalDateTime.now();
+
+        MenuEntity menuEntity = MenuEntity.builder()
+                .menuNo(menuNo)
+                .menuCode(menuCode)
+                .menuName(menuName)
+                .menuUrl(menuUrl)
+                .menuParentNo(menuParentNo)
+                .menuLevel(menuLevel)
+                .menuSortOrder(menuSortOrder)
+                .menuIcon(menuIcon)
+                .menuUseYn(menuUseYn)
+                .menuUpdated(menuUpdated)
+                .build();
+
+        menuRepository.update(menuEntity);
+    }
+
+    /**
+     * 메뉴 삭제
+     */
+    @Transactional
+    public void deleteMenu(Integer menuNo) {
+        AdminMenuManagementResponse existing = menuRepository.selectMenuByNo(menuNo);
+        if (existing == null) {
+            throw new ClimbStyleException(MenuErrorCode.MENU_NOT_FOUND);
+        }
+
+        roleRepository.deleteRoleMenuByMenuNo(menuNo);
+        menuRepository.delete(menuNo);
     }
 }

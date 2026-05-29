@@ -20,9 +20,13 @@ public interface MenuRepository {
 
     List<AdminMenuManagementResponse> selectParentMenus();
 
+    AdminMenuManagementResponse selectMenuByNo(@Param("menuNo") Integer menuNo);
+
     MenuEntity selectMenuByCode(@Param("menuCode") String menuCode);
 
     void insert(MenuEntity menuEntity);
 
-    void insertRoleMenu(@Param("menuNo") Integer menuNo, @Param("roleNo") Integer roleNo);
+    void update(MenuEntity menuEntity);
+
+    void delete(@Param("menuNo") Integer menuNo);
 }

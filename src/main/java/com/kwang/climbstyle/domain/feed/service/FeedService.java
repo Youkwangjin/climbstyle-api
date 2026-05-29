@@ -110,6 +110,7 @@ public class FeedService {
     /**
      * 피드 상세 조회
      */
+    @Transactional(readOnly = true)
     public FeedDetailResponse detailFeed(Integer feedNo, Integer userNo) {
         FeedDetailResponse feed = feedRepository.selectFeedByNo(feedNo);
         if (feed == null) {
