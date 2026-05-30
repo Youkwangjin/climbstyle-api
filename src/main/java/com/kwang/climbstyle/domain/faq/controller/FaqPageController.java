@@ -34,6 +34,6 @@ public class FaqPageController {
         model.addAttribute("faqList", responses);
         model.addAttribute("request", request);
 
-        return "/faq/list";
+        return "faq/list";
     }
 }
