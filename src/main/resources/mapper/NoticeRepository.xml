@@ -246,6 +246,7 @@
             notice_content,
             notice_content_text,
             notice_hit,
+            notice_file_cnt,
             notice_pin_yn,
             notice_visible_yn,
             notice_created
@@ -256,6 +257,7 @@
             #{noticeContent},
             #{noticeContentText},
             #{noticeHit},
+            #{noticeFileCnt},
             #{noticePinYn},
             #{noticeVisibleYn},
             #{noticeCreated}
