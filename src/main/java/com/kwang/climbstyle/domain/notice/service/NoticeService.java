@@ -142,6 +142,7 @@ public class NoticeService {
                 .noticeContent(noticeContent)
                 .noticeContentText(noticeContentText)
                 .noticeHit(0)
+                .noticeFileCnt(0)
                 .noticePinYn(noticePinYn)
                 .noticeVisibleYn(noticeVisibleYn)
                 .noticeCreated(noticeCreated)
