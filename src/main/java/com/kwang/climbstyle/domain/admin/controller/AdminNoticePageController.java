@@ -50,7 +50,7 @@ public class AdminNoticePageController {
         model.addAttribute("noticeDetail", response);
         model.addAttribute("request", request);
 
-        return "/admin/notice/detail";
+        return "admin/notice/detail";
     }
 
     /**
