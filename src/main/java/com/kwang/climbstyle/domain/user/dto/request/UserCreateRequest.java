@@ -14,7 +14,7 @@ public class UserCreateRequest {
 
     @NotBlank
     @Size(min = 5, max = 20)
-    @Pattern(regexp = "^[A-Za-z0-9]+$")
+    @Pattern(regexp = "^[a-z][a-z0-9]{4,19}$")
     private String userId;
 
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,20}$")
