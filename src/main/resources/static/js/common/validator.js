@@ -51,9 +51,9 @@ const Validator = {
         },
 
         userId(value, fieldName) {
-            const userIdRegex = /^[a-zA-Z0-9]{4,20}$/;
+            const userIdRegex = /^[a-z][a-z0-9]{4,19}$/;
             if (!userIdRegex.test(value)) {
-                alert(`${fieldName}은(는) 영문, 숫자만 사용 가능하며 4~20자로 입력해주세요.`);
+                alert(`${fieldName}은(는) 소문자 영문으로 시작하는 5~20자로 입력해주세요.`);
                 return false;
             }
             return true;
