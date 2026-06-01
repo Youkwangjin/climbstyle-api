@@ -97,7 +97,7 @@
                         </div>
                         <span class="podium-comments">
                             <th:block th:replace="~{fragments/common/icons :: comment}" />
-                            <span th:text="${feed.feedCommentCount ?: 0}">0</span>
+                            <span class="comment-count" th:text="${feed.feedCommentCount ?: 0}">0</span>
                         </span>
                     </div>
                 </div>
