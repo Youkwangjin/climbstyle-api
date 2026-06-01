@@ -227,6 +227,7 @@
 .u-textarea {
     resize: vertical;
     min-height: 100px;
+    line-height: 1.6;
 }
 
 .u-input:focus, .u-textarea:focus, .u-select:focus {
