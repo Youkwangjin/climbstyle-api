@@ -39,6 +39,9 @@
         <if test="searchType == 'noticeContentText' and searchName != null and searchName.trim() !=''">
             AND n.notice_content_text LIKE CONCAT('%', #{searchName}, '%')
         </if>
+        <if test="searchType == 'noticeTitleContent' and searchName != null and searchName.trim() !=''">
+            AND (n.notice_title LIKE CONCAT('%', #{searchName}, '%') OR n.notice_content_text LIKE CONCAT('%', #{searchName}, '%'))
+        </if>
     </select>
 
     <select id="selectAdminNoticeListCountByRequest" parameterType="com.kwang.climbstyle.common.protocal.PaginationRequest"
@@ -88,6 +91,9 @@
         </if>
         <if test="searchType == 'noticeContentText' and searchName != null and searchName.trim() !=''">
             AND n.notice_content_text LIKE CONCAT('%', #{searchName}, '%')
+        </if>
+        <if test="searchType == 'noticeTitleContent' and searchName != null and searchName.trim() !=''">
+            AND (n.notice_title LIKE CONCAT('%', #{searchName}, '%') OR n.notice_content_text LIKE CONCAT('%', #{searchName}, '%'))
         </if>
         ORDER BY
             n.notice_pin_yn DESC,
