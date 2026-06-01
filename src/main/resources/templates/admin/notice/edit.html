@@ -149,6 +149,11 @@
     });
 
     /*<![CDATA[*/
+    let noticeContent = /*[[${noticeDetail.noticeContent}]]*/ '';
+    if (noticeContent) {
+        quill.root.innerHTML = noticeContent;
+    }
+
     let existingFiles = /*[[${noticeDetail.noticeFiles}]]*/ [];
     /*]]>*/
 
