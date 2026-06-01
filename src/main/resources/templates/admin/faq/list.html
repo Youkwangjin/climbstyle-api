@@ -29,6 +29,13 @@
         </div>
         <div class="toolbar">
             <div class="toolbar-left">
+                <label>
+                    <select class="search-select" id="searchType">
+                        <option value="faqQuestion" th:selected="${request.searchType == null or request.searchType == 'faqQuestion'}">질문</option>
+                        <option value="faqAnswer" th:selected="${request.searchType == 'faqAnswer'}">답변</option>
+                        <option value="faqQuestionAnswer" th:selected="${request.searchType == 'faqQuestionAnswer'}">질문+답변</option>
+                    </select>
+                </label>
                 <div class="search-wrap">
                     <span class="search-icon">
                         <th:block th:replace="~{fragments/common/icons :: search}" />
@@ -36,7 +43,7 @@
                     <label>
                         <input class="search-input" type="text" id="searchName"
                                th:value="${request.searchName}"
-                               placeholder="질문 검색"
+                               placeholder="검색어를 입력하세요"
                                onkeydown="if(event.key === 'Enter') searchFaq()"/>
                     </label>
                 </div>
@@ -87,6 +94,7 @@
     function searchFaq() {
         const params = new URLSearchParams({
             pageNo: String(1),
+            searchType: document.getElementById("searchType").value,
             searchName: document.getElementById("searchName").value.trim()
         });
         location.href = "/admin/faqs?" + params.toString();
@@ -95,13 +103,16 @@
     function faqDetail(faqNo) {
         const params = new URLSearchParams({
             pageNo: "[[${request.pageNo}]]",
+            searchType: "[[${request.searchType}]]",
             searchName: "[[${request.searchName}]]"
         });
         location.href = "/admin/faqs/" + faqNo + "?" + params.toString();
     }
 
     function resetSearch() {
-        location.href = "/admin/faqs";
+        document.getElementById("searchType").value = "faqQuestion";
+        document.getElementById("searchName").value = "";
+        searchFaq();
     }
 </script>
 </body>
