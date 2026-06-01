@@ -117,7 +117,7 @@
     min-height: 320px;
     line-height: 1.8;
     color: var(--admin-text);
-    padding: 20px;
+    padding: 16px;
 }
 
 .editor-wrap .ql-editor.ql-blank::before {

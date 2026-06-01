@@ -11,8 +11,14 @@
             tb_faq
         WHERE
             faq_visible_yn = 'Y'
-        <if test="searchName != null and searchName.trim() != ''">
+        <if test="searchType == 'faqQuestion' and searchName != null and searchName.trim() != ''">
             AND faq_question LIKE CONCAT('%', #{searchName}, '%')
+        </if>
+        <if test="searchType == 'faqAnswer' and searchName != null and searchName.trim() != ''">
+            AND faq_answer LIKE CONCAT('%', #{searchName}, '%')
+        </if>
+        <if test="searchType == 'faqQuestionAnswer' and searchName != null and searchName.trim() != ''">
+            AND (faq_question LIKE CONCAT('%', #{searchName}, '%') OR faq_answer LIKE CONCAT('%', #{searchName}, '%'))
         </if>
     </select>
 
@@ -23,8 +29,14 @@
         FROM
             tb_faq
         <where>
-            <if test="searchName != null and searchName.trim() != ''">
+            <if test="searchType == 'faqQuestion' and searchName != null and searchName.trim() != ''">
                 AND faq_question LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'faqAnswer' and searchName != null and searchName.trim() != ''">
+                AND faq_answer LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'faqQuestionAnswer' and searchName != null and searchName.trim() != ''">
+                AND (faq_question LIKE CONCAT('%', #{searchName}, '%') OR faq_answer LIKE CONCAT('%', #{searchName}, '%'))
             </if>
         </where>
     </select>
@@ -40,8 +52,14 @@
             tb_faq
         WHERE
             faq_visible_yn = 'Y'
-        <if test="searchName != null and searchName.trim() != ''">
+        <if test="searchType == 'faqQuestion' and searchName != null and searchName.trim() != ''">
             AND faq_question LIKE CONCAT('%', #{searchName}, '%')
+        </if>
+        <if test="searchType == 'faqAnswer' and searchName != null and searchName.trim() != ''">
+            AND faq_answer LIKE CONCAT('%', #{searchName}, '%')
+        </if>
+        <if test="searchType == 'faqQuestionAnswer' and searchName != null and searchName.trim() != ''">
+            AND (faq_question LIKE CONCAT('%', #{searchName}, '%') OR faq_answer LIKE CONCAT('%', #{searchName}, '%'))
         </if>
         ORDER BY
             faq_created DESC
@@ -58,8 +76,14 @@
         FROM
             tb_faq
         <where>
-            <if test="searchName != null and searchName.trim() != ''">
+            <if test="searchType == 'faqQuestion' and searchName != null and searchName.trim() != ''">
                 AND faq_question LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'faqAnswer' and searchName != null and searchName.trim() != ''">
+                AND faq_answer LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+            <if test="searchType == 'faqQuestionAnswer' and searchName != null and searchName.trim() != ''">
+                AND (faq_question LIKE CONCAT('%', #{searchName}, '%') OR faq_answer LIKE CONCAT('%', #{searchName}, '%'))
             </if>
         </where>
         ORDER BY
