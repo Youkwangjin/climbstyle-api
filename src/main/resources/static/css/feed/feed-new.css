@@ -2,6 +2,10 @@
     color: var(--muted);
 }
 
+.insert-actions .btn {
+    color: var(--text);
+}
+
 .insert-card {
     display: grid;
     grid-template-columns: 1.05fr 0.95fr;
@@ -227,6 +231,7 @@
 .u-textarea {
     resize: vertical;
     min-height: 100px;
+    line-height: 1.6;
 }
 
 .u-input:focus, .u-textarea:focus, .u-select:focus {

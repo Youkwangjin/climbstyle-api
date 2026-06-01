@@ -1,3 +1,21 @@
+.search-select {
+    height: 36px;
+    border: 1px solid var(--admin-line);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--admin-text);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    appearance: none;
+    padding: 0 28px 0 10px;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center;
+}
+
+.search-select:focus {
+    border-color: var(--admin-brand);
+}
+
 .th-visible, .td-visible { width: 60px; text-align: center; white-space: nowrap }
 
 .badge-faq-hidden { background: var(--admin-card); color: var(--admin-muted) }
