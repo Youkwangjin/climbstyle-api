@@ -57,19 +57,19 @@ public class FeedService {
      * 최신 피드 목록 조회 (홈 화면용)
      */
     @Transactional(readOnly = true)
-    public List<FeedListResponse> getLatestFeeds(int limit) {
-        return feedRepository.selectLatestFeeds(limit);
+    public List<FeedListResponse> getLatestFeeds(int limit, Integer userNo) {
+        return feedRepository.selectLatestFeeds(limit, userNo);
     }
 
     /**
      * 피드 목록 조회 (커서 기반)
      */
     @Transactional(readOnly = true)
-    public FeedCursorResponse getFeedListByCursor(FeedCursorRequest request) {
+    public FeedCursorResponse getFeedListByCursor(FeedCursorRequest request, Integer userNo) {
         final Integer cursor = request.getCursor();
         final int size = request.getSize();
 
-        List<FeedListResponse> feeds = feedRepository.selectFeedListByCursor(cursor, size);
+        List<FeedListResponse> feeds = feedRepository.selectFeedListByCursor(cursor, size, userNo);
         final boolean hasNext = feeds.size() == size;
 
         Integer nextCursor = null;
@@ -118,6 +118,13 @@ public class FeedService {
         }
 
         feed.setIsAuthor(Objects.equals(feed.getUserNo(), userNo));
+
+        if (userNo != null) {
+            Boolean isLiked = feedLikeRepository.existFeedLikeByFeedNoAndUserNo(feedNo, userNo);
+            feed.setIsLiked(isLiked != null && isLiked);
+        } else {
+            feed.setIsLiked(false);
+        }
 
         List<String> feedFilePaths = feedFileRepository.selectFeedFilePathsByFeedNo(feedNo);
         if (feedFilePaths == null) {

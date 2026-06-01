@@ -12,15 +12,16 @@
     </resultMap>
 
     <select id="existFeedLikeByFeedNoAndUserNo" parameterType="Integer" resultType="Boolean">
-        SELECT EXISTS(
-            SELECT 1
-            FROM
-                tb_feed_like
-            WHERE
-                feed_no = #{feedNo}
-              AND
-                user_no = #{userNo}
-        )
+        SELECT EXISTS
+            (
+                SELECT 1
+                FROM
+                    tb_feed_like
+                WHERE
+                    feed_no = #{feedNo}
+                AND
+                    user_no = #{userNo}
+            )
     </select>
 
     <select id="selectFeedLikeCountByFeedNo" parameterType="Integer" resultType="Integer">

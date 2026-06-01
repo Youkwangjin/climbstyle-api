@@ -41,7 +41,8 @@ public class FeedApiController {
      */
     @GetMapping(value = "/api/v1/feeds", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiSuccessResponse<FeedCursorResponse>> getFeedList(FeedCursorRequest request) {
-        FeedCursorResponse data = feedService.getFeedListByCursor(request);
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        FeedCursorResponse data = feedService.getFeedListByCursor(request, userNo);
 
         return ApiResponseBuilder.ok(FeedSuccessCode.FEED_LIST_SUCCESS, data);
     }
