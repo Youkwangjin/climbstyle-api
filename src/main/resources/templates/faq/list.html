@@ -21,6 +21,13 @@
         <div class="list-toolbar">
             <p class="total-count">총 <strong th:text="${#numbers.formatInteger(request.totalCount, 0, 'COMMA')}">0</strong>개의 질문</p>
             <div class="search-form">
+                <label>
+                    <select class="search-select" id="searchType">
+                        <option value="faqQuestion" th:selected="${request.searchType == null or request.searchType == 'faqQuestion'}">질문</option>
+                        <option value="faqAnswer" th:selected="${request.searchType == 'faqAnswer'}">답변</option>
+                        <option value="faqQuestionAnswer" th:selected="${request.searchType == 'faqQuestionAnswer'}">질문+답변</option>
+                    </select>
+                </label>
                 <div class="search-wrap">
                     <span class="search-icon">
                         <th:block th:replace="~{fragments/common/icons :: search}" />
@@ -32,6 +39,7 @@
                     </label>
                 </div>
                 <button class="search-btn" type="button" onclick="searchFaq()">검색</button>
+                <button class="reset-btn" type="button" onclick="resetSearch()">초기화</button>
             </div>
         </div>
         <div class="faq-list">
@@ -76,9 +84,16 @@
     function searchFaq() {
         const params = new URLSearchParams({
             pageNo: "1",
+            searchType: document.getElementById("searchType").value,
             searchName: document.getElementById("searchName").value.trim()
         });
         location.href = "/faqs?" + params.toString();
+    }
+
+    function resetSearch() {
+        document.getElementById("searchType").value = "faqQuestion";
+        document.getElementById("searchName").value = "";
+        searchFaq();
     }
 </script>
 </body>
