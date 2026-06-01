@@ -15,11 +15,13 @@ public interface FeedRepository {
 
     Boolean existsFeedByNoAndUserNo(@Param("feedNo") Integer feedNo, @Param("userNo") Integer userNo);
 
-    List<FeedListResponse> selectLatestFeeds(@Param("limit") int limit);
+    List<FeedListResponse> selectLatestFeeds(@Param("limit") int limit, @Param("userNo") Integer userNo);
 
-    List<FeedListResponse> selectFeedListByCursor(@Param("cursor") Integer cursor, @Param("size") int size);
+    List<FeedListResponse> selectFeedListByCursor(@Param("cursor") Integer cursor, @Param("size") int size,
+                                                  @Param("userNo") Integer userNo);
 
-    List<FeedListResponse> selectMyFeedListByCursor(@Param("cursor") Integer cursor, @Param("size") int size, @Param("userNo") Integer userNo);
+    List<FeedListResponse> selectMyFeedListByCursor(@Param("cursor") Integer cursor, @Param("size") int size,
+                                                    @Param("userNo") Integer userNo);
 
     FeedDetailResponse selectFeedByNo(@Param("feedNo") Integer feedNo);
 

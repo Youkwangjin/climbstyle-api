@@ -4,6 +4,7 @@ import com.kwang.climbstyle.domain.banner.dto.response.BannerDetailResponse;
 import com.kwang.climbstyle.domain.banner.service.BannerService;
 import com.kwang.climbstyle.domain.feed.dto.response.FeedListResponse;
 import com.kwang.climbstyle.domain.feed.service.FeedService;
+import com.kwang.climbstyle.common.util.SecurityUtil;
 import com.kwang.climbstyle.domain.ranking.dto.response.RankingListResponse;
 import com.kwang.climbstyle.domain.ranking.service.RankingService;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,8 @@ public class IndexController {
     public String index(Model model) {
         List<RankingListResponse> rankingListResponse = rankingService.getIndexRealtimeRankingList();
         List<BannerDetailResponse> bannerList = bannerService.getVisibleBanners();
-        List<FeedListResponse> latestFeeds = feedService.getLatestFeeds(6);
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        List<FeedListResponse> latestFeeds = feedService.getLatestFeeds(6, userNo);
 
         model.addAttribute("realtimeTop3", rankingListResponse);
         model.addAttribute("bannerList", bannerList);

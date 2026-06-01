@@ -65,6 +65,7 @@ function openFeedDetail(feedNo) {
             likeCountEl.style.display = isLikeHidden ? "none" : "";
             if (likeCountBtn) likeCountBtn.style.display = isLikeHidden ? "none" : "";
             updateLikeStatus(feed.feedLikeCount, feed.isLiked);
+            syncListCardComment(feedNo, feed.feedCommentCount);
 
             updateMoreButton(feed.isAuthor);
         })
@@ -264,12 +265,24 @@ function likeFromDetail() {
 }
 
 function syncListCard(feedNo, isLiked, feedLikeCount) {
-    const card = document.querySelector(`.f-card[data-feed-no="${feedNo}"]`);
+    const card = document.querySelector(`.f-card[data-feed-no="${feedNo}"]`)
+        || document.querySelector(`.podium-card[data-feed-no="${feedNo}"]`);
     if (!card) return;
 
     const likeBtn = card.querySelector(".f-like-icon-btn[data-feed-no]");
-    if (likeBtn) {
-        updateLikeButton(likeBtn, isLiked, feedLikeCount);
+    if (likeBtn && typeof window.updateLikeButton === "function") {
+        window.updateLikeButton(likeBtn, isLiked, feedLikeCount);
+    }
+}
+
+function syncListCardComment(feedNo, feedCommentCount) {
+    const card = document.querySelector(`.f-card[data-feed-no="${feedNo}"]`)
+        || document.querySelector(`.podium-card[data-feed-no="${feedNo}"]`);
+    if (!card) return;
+
+    const countSpan = card.querySelector(".comment-count");
+    if (countSpan) {
+        countSpan.textContent = feedCommentCount;
     }
 }
 
@@ -327,6 +340,21 @@ function toggleMoreMenu(event) {
     dropdown.classList.toggle("is-active");
 }
 
+function refreshComments(feedNo) {
+    fetch(`/api/v1/feeds/${feedNo}`)
+        .then(response => response.json())
+        .then(data => {
+            const feed = data.data;
+
+            document.getElementById("detailCommentCount").textContent = feed.feedCommentCount;
+            renderComments(feed.feedCommentList);
+            syncListCardComment(feedNo, feed.feedCommentCount);
+        })
+        .catch(() => {
+            alert("댓글을 불러오는데 실패했습니다. 지속될 경우 관리자에게 문의하세요.");
+        });
+}
+
 function submitComment() {
     if (!Validator.comment() || !confirm("댓글을 저장하시겠습니까?")) {
         return;
@@ -351,7 +379,7 @@ function submitComment() {
                 document.getElementById("feedCommentParentNo").value = "";
 
                 cancelReply();
-                openFeedDetail(feedNo);
+                refreshComments(feedNo);
             } else {
                 alert(body.message);
             }
