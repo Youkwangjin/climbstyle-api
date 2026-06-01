@@ -58,13 +58,13 @@
                     <div class="f-actions">
                         <div class="f-like-wrap">
                             <button class="f-btn f-like-icon-btn"
-                                    th:classappend="${feed.feedLikeCount != null && feed.feedLikeCount > 0} ? 'is-liked' : ''"
+                                    th:classappend="${feed.isLiked} ? 'is-liked' : ''"
                                     type="button" th:attr="data-feed-no=${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
                                 <span class="icon-container">
-                                    <th:block th:if="${feed.feedLikeCount != null && feed.feedLikeCount > 0}">
+                                    <th:block th:if="${feed.isLiked}">
                                         <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
                                     </th:block>
-                                    <th:block th:if="${feed.feedLikeCount == null || feed.feedLikeCount == 0}">
+                                    <th:block th:if="${!feed.isLiked}">
                                         <th:block th:replace="~{fragments/common/icons :: heart}" />
                                     </th:block>
                                 </span>
@@ -291,7 +291,7 @@
 
             feeds.forEach(feed => {
                 const likeCount = feed.feedLikeCount || 0;
-                const isLiked = likeCount > 0;
+                const isLiked = feed.isLiked === true;
                 const commentCount = feed.feedCommentCount || 0;
                 const imageSrc = feed.feedFilePath || "/img/main1.png";
 

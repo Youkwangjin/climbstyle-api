@@ -74,7 +74,16 @@
                     fc.feed_no = feed_list.feed_no
                 AND
                     fc.feed_comment_visible_yn = 'Y'
-            ) AS feed_comment_count
+            ) AS feed_comment_count,
+            EXISTS (
+                SELECT 1
+                FROM
+                    tb_feed_like fl
+                WHERE
+                    fl.feed_no = feed_list.feed_no
+                AND
+                    fl.user_no = #{userNo}
+            ) AS is_liked
         FROM (
             SELECT
                 f.feed_no,
@@ -133,7 +142,16 @@
                     fc.feed_no = feed_list.feed_no
                 AND
                     fc.feed_comment_visible_yn = 'Y'
-            ) AS feed_comment_count
+            ) AS feed_comment_count,
+            EXISTS (
+                SELECT 1
+                FROM
+                    tb_feed_like fl
+                WHERE
+                    fl.feed_no = feed_list.feed_no
+                AND
+                    fl.user_no = #{userNo}
+            ) AS is_liked
         FROM (
             SELECT
                 f.feed_no,
@@ -195,7 +213,16 @@
                     fc.feed_no = feed_list.feed_no
                 AND
                     fc.feed_comment_visible_yn = 'Y'
-            ) AS feed_comment_count
+            ) AS feed_comment_count,
+            EXISTS (
+                SELECT 1
+                FROM
+                    tb_feed_like fl
+                WHERE
+                    fl.feed_no = feed_list.feed_no
+                AND
+                    fl.user_no = #{userNo}
+            ) AS is_liked
         FROM (
             SELECT
                 f.feed_no,

@@ -264,12 +264,13 @@ function likeFromDetail() {
 }
 
 function syncListCard(feedNo, isLiked, feedLikeCount) {
-    const card = document.querySelector(`.f-card[data-feed-no="${feedNo}"]`);
+    const card = document.querySelector(`.f-card[data-feed-no="${feedNo}"]`)
+        || document.querySelector(`.podium-card[data-feed-no="${feedNo}"]`);
     if (!card) return;
 
     const likeBtn = card.querySelector(".f-like-icon-btn[data-feed-no]");
-    if (likeBtn) {
-        updateLikeButton(likeBtn, isLiked, feedLikeCount);
+    if (likeBtn && typeof window.updateLikeButton === "function") {
+        window.updateLikeButton(likeBtn, isLiked, feedLikeCount);
     }
 }
 

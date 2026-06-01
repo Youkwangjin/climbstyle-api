@@ -10,6 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/common/common.css}">
     <link rel="stylesheet" th:href="@{/css/ranking/ranking.css}">
     <link rel="stylesheet" th:href="@{/css/index/main.css}">
+    <link rel="stylesheet" th:href="@{/css/feed/feed.css}">
     <link rel="stylesheet" th:href="@{/css/feed/feed-detail.css}">
     <link rel="stylesheet" th:href="@{/css/feed/feed-new.css}">
 </head>
@@ -73,13 +74,27 @@
                         <span class="podium-username" th:text="${feed.userNickName}"></span>
                     </div>
                     <div class="podium-stats">
-                        <button class="podium-likes" type="button"
-                                th:if="${feed.feedLikeVisibleYn != 'N'}"
-                                th:onclick="|openLikeList(${feed.feedNo})|"
-                                aria-label="좋아요한 사람 보기">
-                            <th:block th:replace="~{fragments/common/icons :: heart}" />
-                            <span th:text="${feed.feedLikeCount ?: 0}">0</span>
-                        </button>
+                        <div class="f-like-wrap">
+                            <button class="f-btn f-like-icon-btn"
+                                    th:classappend="${feed.isLiked} ? 'is-liked' : ''"
+                                    type="button" th:attr="data-feed-no=${feed.feedNo}" onclick="like(this)" aria-label="좋아요">
+                                <span class="icon-container">
+                                    <th:block th:if="${feed.isLiked}">
+                                        <th:block th:replace="~{fragments/common/icons :: heart-filled}" />
+                                    </th:block>
+                                    <th:block th:if="${!feed.isLiked}">
+                                        <th:block th:replace="~{fragments/common/icons :: heart}" />
+                                    </th:block>
+                                </span>
+                            </button>
+                            <button class="f-like-count-btn" type="button"
+                                    th:if="${feed.feedLikeVisibleYn != 'N'}"
+                                    th:attr="data-feed-no=${feed.feedNo}"
+                                    th:onclick="|openLikeList(${feed.feedNo})|"
+                                    aria-label="좋아요한 사람 보기">
+                                <span class="like-count" th:text="${feed.feedLikeCount ?: 0}">0</span>
+                            </button>
+                        </div>
                         <span class="podium-comments">
                             <th:block th:replace="~{fragments/common/icons :: comment}" />
                             <span th:text="${feed.feedCommentCount ?: 0}">0</span>
@@ -334,6 +349,45 @@
             });
         });
     });
+
+    function like(button) {
+        API.callJson(`/api/v1/feeds/${button.getAttribute("data-feed-no")}/like`, {
+            method: "POST"
+        })
+            .then(async response => {
+                const result = await response.json();
+                if (response.ok) {
+                    updateLikeButton(button, result.data.isLiked, result.data.feedLikeCount);
+                } else {
+                    alert(result.message);
+                }
+            })
+            .catch(() => {
+                alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+            });
+    }
+
+    function updateLikeButton(button, isLiked, feedLikeCount) {
+        const iconContainer = button.querySelector(".icon-container");
+        const wrap = button.closest(".f-like-wrap");
+        const countSpan = wrap ? wrap.querySelector(".like-count") : null;
+
+        if (isLiked) {
+            button.classList.add("is-liked");
+        } else {
+            button.classList.remove("is-liked");
+        }
+
+        if (iconContainer && Icons) {
+            iconContainer.innerHTML = isLiked ? Icons.heartFilled : Icons.heart;
+        }
+
+        if (countSpan) {
+            countSpan.textContent = feedLikeCount;
+        }
+    }
+
+    window.updateLikeButton = updateLikeButton;
 </script>
 <script>
     (function () {

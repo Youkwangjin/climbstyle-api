@@ -29,12 +29,15 @@ public class FeedPageController {
      * [ClimbStyle] > [피드]
      */
     @GetMapping(value = "/feeds")
-    public String feed(Model model) {
-        FeedCursorResponse initial = feedService.getFeedListByCursor(new FeedCursorRequest());
+    public String feed(FeedCursorRequest request, Model model) {
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        FeedCursorResponse initial = feedService.getFeedListByCursor(request, userNo);
+
         model.addAttribute("feedList", initial.getFeeds());
         model.addAttribute("nextCursor", initial.getNextCursor());
         model.addAttribute("hasNext", initial.isHasNext());
         model.addAttribute("feedApiUrl", "/api/v1/feeds");
+
         return "feed/feed";
     }
 
@@ -43,12 +46,12 @@ public class FeedPageController {
      * [ClimbStyle] > [마이페이지] > 내 피드
      */
     @GetMapping(value = "/my/feed")
-    public String myFeed(Model model) {
+    public String myFeed(FeedCursorRequest request, Model model) {
         final Integer userNo = SecurityUtil.getCurrentUserNo();
         if (userNo == null) {
             throw new ClimbStyleException(HttpErrorCode.FORBIDDEN_ERROR);
         }
-        FeedCursorResponse initial = feedService.getMyFeedListByCursor(new FeedCursorRequest(), userNo);
+        FeedCursorResponse initial = feedService.getMyFeedListByCursor(request, userNo);
         model.addAttribute("feedList", initial.getFeeds());
         model.addAttribute("nextCursor", initial.getNextCursor());
         model.addAttribute("hasNext", initial.isHasNext());

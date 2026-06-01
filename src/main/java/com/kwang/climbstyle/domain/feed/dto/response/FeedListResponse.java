@@ -26,4 +26,6 @@ public class FeedListResponse {
     private Integer feedCommentCount;
 
     private LocalDateTime feedCreated;
+
+    private Boolean isLiked;
 }

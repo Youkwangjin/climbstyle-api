@@ -39,4 +39,6 @@ public class FeedDetailResponse {
     private LocalDateTime feedCreated;
 
     private Boolean isAuthor;
+
+    private Boolean isLiked;
 }
