@@ -21,7 +21,7 @@ public class RankingScheduler {
     /**
      * 실시간 랭킹 갱신 스케줄 (매 정시)
      */
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void updateRealtimeRanking() {
         rankingBatchService.updateRealtimeRanking();
     }
