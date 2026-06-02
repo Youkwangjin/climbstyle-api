@@ -75,6 +75,13 @@ function submitFeedEdit() {
             if (response.ok) {
                 alert(result.message);
 
+                const newTitle = document.getElementById("editFeedTitle").value.trim();
+                const card = document.querySelector(`.f-card[data-feed-no="${feedNo}"]`);
+                if (card) {
+                    const caption = card.querySelector(".f-caption");
+                    if (caption) caption.textContent = newTitle;
+                }
+
                 closeFeedEdit();
                 openFeedDetail(feedNo);
             } else {
