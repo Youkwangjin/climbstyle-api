@@ -156,4 +156,21 @@ public class FeedApiController {
 
         return ApiResponseBuilder.ok(FeedSuccessCode.FEED_DELETE_SUCCESS);
     }
+
+    /**
+     * 피드 댓글 삭제
+     * [ClimbStyle] > [피드] > 피드 상세 > 댓글 삭제
+     */
+    @DeleteMapping(value = "/api/v1/feeds/{feedNo}/comments/{feedCommentNo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiSuccessResponse<Object>> deleteComment(@PathVariable("feedNo") Integer feedNo,
+                                                                    @PathVariable("feedCommentNo") Integer feedCommentNo) {
+        final Integer userNo = SecurityUtil.getCurrentUserNo();
+        if (userNo == null) {
+            throw new ClimbStyleException(HttpErrorCode.UNAUTHORIZED_ERROR);
+        }
+
+        feedService.deleteComment(userNo, feedNo, feedCommentNo);
+
+        return ApiResponseBuilder.ok(FeedSuccessCode.FEED_COMMENT_DELETE_SUCCESS);
+    }
 }

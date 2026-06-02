@@ -19,4 +19,8 @@ public interface FeedCommentRepository {
     void insert(FeedCommentEntity feedCommentEntity);
 
     void updateFeedCommentVisibleYnByUserNo(@Param("userNo") Integer userNo, @Param("feedCommentVisibleYn") String feedCommentVisibleYn);
+
+    void deleteByFeedCommentNoAndUserNo(@Param("feedCommentNo") Integer feedCommentNo, @Param("userNo") Integer userNo);
+
+    void deleteRepliesByParentCommentNo(@Param("feedCommentParentNo") Integer feedCommentParentNo);
 }

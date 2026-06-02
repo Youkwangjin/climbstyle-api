@@ -25,6 +25,7 @@ public enum FeedSuccessCode implements ApiCode {
     FEED_LIKE_CREATE_SUCCESS(HttpStatus.OK,         "1000", "좋아요를 등록했습니다."),
     FEED_LIKE_DELETE_SUCCESS(HttpStatus.OK,         "1000", "좋아요를 취소했습니다."),
     FEED_COMMENT_CREATE_SUCCESS(HttpStatus.OK,      "1000", "댓글을 등록했습니다."),
+    FEED_COMMENT_DELETE_SUCCESS(HttpStatus.OK,      "1000", "댓글이 삭제되었습니다."),
     ;
 
     private final HttpStatus httpStatus;

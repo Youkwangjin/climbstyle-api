@@ -1,6 +1,7 @@
 package com.kwang.climbstyle.domain.feed.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ public class FeedCommentCreateRequest {
 
     @NotBlank
     @Size(max = 500)
+    @Pattern(regexp = "^[^<>]*$")
     private String feedCommentContent;
 
     private Integer feedCommentParentNo;

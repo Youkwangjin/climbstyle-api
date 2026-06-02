@@ -388,6 +388,18 @@
     color: #111;
 }
 
+.comment-delete {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+.comment-delete:hover {
+    color: #b91c1c;
+}
+
 .comment-replies {
     margin-top: 16px;
     padding-left: 14px;
