@@ -14,9 +14,11 @@ public class FeedUpdateRequest {
 
     @NotBlank
     @Size(min = 1, max = 50)
+    @Pattern(regexp = "^[^<>]*$")
     private String feedTitle;
 
     @Size(max = 500)
+    @Pattern(regexp = "^[^<>]*$")
     private String feedContent;
 
     @NotBlank
