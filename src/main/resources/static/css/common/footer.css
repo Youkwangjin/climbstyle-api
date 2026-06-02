@@ -1,20 +1,20 @@
 footer {
-    background: #111;
-    border-top: none;
+    background: #e9ecef;
+    border-top: 1px solid var(--line);
 }
 
 .foot small {
-    color: rgba(255, 255, 255, 0.45);
+    color: var(--muted);
 }
 
 .links a {
-    color: rgba(255, 255, 255, 0.65);
+    color: var(--muted);
 }
 
 .links a:hover {
-    color: #fff;
+    color: var(--text);
 }
 
-footer .logo span {
-    color: #fff;
+footer .logo img {
+    height: 28px;
 }
