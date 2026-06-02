@@ -1,5 +1,6 @@
 let currentImageIndex = 0;
 let totalImages = 0;
+const currentUserNo = parseInt(document.getElementById("current-user-meta")?.dataset.userNo || "0");
 
 /**
  * @typedef {Object} FeedDetailData
@@ -199,6 +200,7 @@ function renderComments(comments) {
                 <div class="comment-meta">
                     <span class="comment-date">${formatDate(comment.feedCommentCreated)}</span>
                     <span class="comment-reply" onclick="replyToComment(${comment.feedCommentNo}, '${comment.userNickname}')">답글 달기</span>
+                    ${comment.userNo === currentUserNo ? `<span class="comment-delete" onclick="deleteComment(${comment.feedCommentNo})">삭제</span>` : ''}
                 </div>
 
                 ${replyMap[comment.feedCommentNo] ? `
@@ -215,6 +217,7 @@ function renderComments(comments) {
                                     </div>
                                     <div class="comment-meta">
                                         <span class="comment-date">${formatDate(reply.feedCommentCreated)}</span>
+                                        ${reply.userNo === currentUserNo ? `<span class="comment-delete" onclick="deleteComment(${reply.feedCommentNo})">삭제</span>` : ''}
                                     </div>
                                 </div>
                             </div>
@@ -338,6 +341,24 @@ function toggleMoreMenu(event) {
     event.stopPropagation();
     const dropdown = document.getElementById("moreDropdown");
     dropdown.classList.toggle("is-active");
+}
+
+function deleteComment(feedCommentNo) {
+    const feedNo = parseInt(document.getElementById("feedDetailModal")?.dataset.feedNo);
+    if (!confirm("댓글을 삭제하시겠습니까?")) return;
+
+    API.callJson(`/api/v1/feeds/${feedNo}/comments/${feedCommentNo}`, { method: "DELETE" })
+        .then(async response => {
+            const result = await response.json();
+            if (response.ok) {
+                refreshComments(feedNo);
+            } else {
+                alert(result.message);
+            }
+        })
+        .catch(() => {
+            alert("일시적인 문제가 발생했습니다. 지속될 경우 관리자에게 문의하세요.");
+        });
 }
 
 function refreshComments(feedNo) {

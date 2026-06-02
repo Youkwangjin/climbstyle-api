@@ -336,4 +336,22 @@ public class FeedService {
             fileService.fileDelete(filePath);
         }
     }
+
+    /**
+     * 피드 댓글 삭제
+     */
+    @Transactional
+    public void deleteComment(Integer userNo, Integer feedNo, Integer feedCommentNo) {
+        FeedDetailResponse feed = feedRepository.selectFeedByNo(feedNo);
+        if (feed == null) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_NOT_FOUND);
+        }
+
+        if (!feedCommentRepository.existsByFeedCommentNo(feedCommentNo)) {
+            throw new ClimbStyleException(FeedErrorCode.FEED_COMMENT_NOT_FOUND);
+        }
+
+        feedCommentRepository.deleteByFeedCommentNoAndUserNo(feedCommentNo, userNo);
+        feedCommentRepository.deleteRepliesByParentCommentNo(feedCommentNo);
+    }
 }
