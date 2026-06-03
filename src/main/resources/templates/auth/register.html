@@ -36,7 +36,7 @@
                     <label for="userPassword">비밀번호</label>
                     <input id="userPassword"
                            type="password"
-                           placeholder="비밀번호를 입력하세요"
+                           placeholder="영문, 숫자, 특수문자 포함 8~20자"
                            required />
                 </div>
                 <div class="field">
@@ -214,6 +214,8 @@
                     document.getElementById("userEmail").readOnly = true;
                     checkStatus.email = true;
                     updateRegisterBtn();
+                } else {
+                    verifyBtn.disabled = false;
                 }
             })
             .catch(() => {
