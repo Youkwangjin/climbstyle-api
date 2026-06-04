@@ -1,11 +1,13 @@
 package com.kwang.climbstyle.exception;
 
 import com.kwang.climbstyle.code.http.HttpErrorCode;
+import com.kwang.climbstyle.common.util.SecurityUtil;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Arrays;
@@ -43,7 +45,7 @@ public class WebErrorResponse {
 
     private String resolveErrorView(HttpServletRequest request) {
         String originalUri = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
-        if (originalUri != null && originalUri.startsWith("/admin")) {
+        if (StringUtils.hasText(originalUri) && originalUri.startsWith("/admin") && SecurityUtil.getCurrentAdminNo() != null) {
             return "admin/error";
         }
         return "error";
