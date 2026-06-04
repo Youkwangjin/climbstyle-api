@@ -1,5 +1,6 @@
 package com.kwang.climbstyle.security.handler.user;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -25,5 +26,10 @@ public class CustomUserLogoutHandler implements LogoutHandler {
         if (session != null) {
             session.invalidate();
         }
+
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }

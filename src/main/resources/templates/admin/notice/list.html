@@ -82,9 +82,7 @@
                     th:classappend="${notice.noticePinYn == 'Y'} ? 'row-pinned'"
                     th:onclick="|noticeDetail(${notice.noticeNo})|" style="cursor:pointer;">
                     <td class="td-num">
-                        <span th:if="${notice.noticePinYn == 'Y'}">—</span>
-                        <span th:unless="${notice.noticePinYn == 'Y'}"
-                              th:text="${request.totalCount - request.startRowNum - iterStat.index}"></span>
+                        <span th:text="${request.totalCount - request.startRowNum - iterStat.index}"></span>
                     </td>
                     <td class="td-category">
                         <th:block th:switch="${notice.noticeCategory}">

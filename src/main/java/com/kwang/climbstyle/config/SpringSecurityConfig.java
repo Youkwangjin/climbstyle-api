@@ -5,6 +5,7 @@ import com.kwang.climbstyle.code.role.RoleCode;
 import com.kwang.climbstyle.security.admin.CustomAdminDetailsService;
 import com.kwang.climbstyle.security.filter.CustomAdminJsonAuthenticationFilter;
 import com.kwang.climbstyle.security.filter.CustomUserJsonAuthenticationFilter;
+import com.kwang.climbstyle.security.handler.common.CustomAccessDeniedHandler;
 import com.kwang.climbstyle.security.handler.common.CustomAuthenticationEntryPoint;
 import com.kwang.climbstyle.security.handler.admin.CustomAdminLoginFailureHandler;
 import com.kwang.climbstyle.security.handler.admin.CustomAdminLoginSuccessHandler;
@@ -59,6 +60,8 @@ public class SpringSecurityConfig {
 
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
     private final CustomUserLogoutHandler customUserLogoutHandler;
 
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -74,6 +77,7 @@ public class SpringSecurityConfig {
                                 CustomAdminLoginSuccessHandler customAdminLoginSuccessHandler,
                                 CustomAdminLoginFailureHandler customAdminLoginFailureHandler,
                                 CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+                                CustomAccessDeniedHandler customAccessDeniedHandler,
                                 CustomUserLogoutHandler customUserLogoutHandler,
                                 CustomOAuth2UserService customOAuth2UserService,
                                 CustomOAuth2LoginSuccessHandler customOAuth2LoginSuccessHandler,
@@ -84,6 +88,7 @@ public class SpringSecurityConfig {
         this.customAdminLoginSuccessHandler = customAdminLoginSuccessHandler;
         this.customAdminLoginFailureHandler = customAdminLoginFailureHandler;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.customUserLogoutHandler = customUserLogoutHandler;
         this.customOAuth2UserService = customOAuth2UserService;
         this.customOAuth2LoginSuccessHandler = customOAuth2LoginSuccessHandler;
@@ -208,6 +213,7 @@ public class SpringSecurityConfig {
         http
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 );
 
         http
