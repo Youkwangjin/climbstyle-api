@@ -3,6 +3,8 @@ package com.kwang.climbstyle.security.handler.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kwang.climbstyle.code.http.HttpErrorCode;
 import com.kwang.climbstyle.common.response.ApiErrorResponse;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +31,13 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
-                       AccessDeniedException accessDeniedException) throws IOException {
+                       AccessDeniedException accessDeniedException) throws IOException, ServletException {
         String uri = request.getRequestURI();
 
         if (!uri.startsWith("/api/")) {
-            response.sendRedirect("/auth/login");
+            request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpServletResponse.SC_FORBIDDEN);
+            request.setAttribute(RequestDispatcher.ERROR_REQUEST_URI, uri);
+            request.getRequestDispatcher("/error").forward(request, response);
             return;
         }
 
