@@ -35,5 +35,69 @@
                 <button type="button" class="user-dropdown-item logout-btn" onclick="logout()">로그아웃</button>
             </div>
         </div>
+
+        <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobileNav">
+            <svg id="hamburgerIcon" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect y="3" width="22" height="2" rx="1" fill="currentColor"/>
+                <rect y="10" width="22" height="2" rx="1" fill="currentColor"/>
+                <rect y="17" width="22" height="2" rx="1" fill="currentColor"/>
+            </svg>
+            <svg id="closeIcon" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+                <line x1="3" y1="3" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="19" y1="3" x2="3" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
     </div>
+
+    <div class="mobile-nav" id="mobileNav" aria-hidden="true">
+        <ul class="mobile-nav-links">
+            <li th:each="menu : ${navMenus}">
+                <a th:text="${menu.menuName}" th:href="@{${menu.menuUrl}}"></a>
+            </li>
+        </ul>
+        <div class="mobile-nav-divider" sec:authorize="isAnonymous() or hasRole('USER')"></div>
+        <div class="mobile-nav-actions" sec:authorize="isAnonymous() or hasRole('ADMIN')">
+            <a th:each="menu : ${ctaMenus}" th:text="${menu.menuName}" th:href="@{${menu.menuUrl}}" class="btn"
+               th:classappend="${menu.name() == 'REGISTER'} ? ' btn-primary' : ''">
+            </a>
+        </div>
+        <div sec:authorize="hasRole('USER')">
+            <div class="mobile-user-profile-row">
+                <div class="user-profile">
+                    <img th:if="${!#strings.isEmpty(currentUser?.userImgUrl)}" th:src="${currentUser?.userImgUrl}" alt="프로필 이미지">
+                </div>
+                <span class="mobile-user-nickname" th:text="${currentUser?.userNickname}">사용자</span>
+            </div>
+            <a class="mobile-user-item" th:each="menu : ${userMenus}" th:href="${menu.menuUrl}" th:text="${menu.menuName}"></a>
+            <div class="mobile-nav-divider"></div>
+            <button type="button" class="mobile-user-item logout" onclick="logout()">로그아웃</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const btn = document.getElementById('hamburgerBtn');
+            const nav = document.getElementById('mobileNav');
+            const hamburgerIcon = document.getElementById('hamburgerIcon');
+            const closeIcon = document.getElementById('closeIcon');
+
+            btn.addEventListener('click', function () {
+                const isOpen = nav.classList.toggle('is-open');
+                btn.setAttribute('aria-expanded', isOpen);
+                nav.setAttribute('aria-hidden', !isOpen);
+                hamburgerIcon.style.display = isOpen ? 'none' : '';
+                closeIcon.style.display = isOpen ? '' : 'none';
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!btn.contains(e.target) && !nav.contains(e.target)) {
+                    nav.classList.remove('is-open');
+                    btn.setAttribute('aria-expanded', 'false');
+                    nav.setAttribute('aria-hidden', 'true');
+                    hamburgerIcon.style.display = '';
+                    closeIcon.style.display = 'none';
+                }
+            });
+        })();
+    </script>
 </div>
