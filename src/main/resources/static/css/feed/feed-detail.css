@@ -714,6 +714,16 @@
     }
 }
 
+@media (max-width: 480px) {
+    .modal-left {
+        flex: 0 0 42%;
+    }
+
+    .like-list-container {
+        width: 92vw;
+    }
+}
+
 .edit-image-container {
     width: 100%;
     height: 100%;
