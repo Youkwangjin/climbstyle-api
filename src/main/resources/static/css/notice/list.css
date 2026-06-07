@@ -417,6 +417,10 @@
         display: none;
     }
 
+    .td-title {
+        min-width: 0;
+    }
+
     .pagination-inner {
         gap: 8px;
         padding: 10px;

@@ -143,8 +143,12 @@
     }
 }
 
-@media (max-width: 600px) {
-    .about-features {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 480px) {
+    .about-wrap {
+        padding: 28px 0 48px;
+    }
+
+    .about-developer {
+        padding: 18px;
     }
 }

@@ -238,4 +238,24 @@
     .detail-title {
         font-size: 20px;
     }
+
+    .detail-meta {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .meta-divider {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .detail-title {
+        font-size: 18px;
+    }
+
+    .detail-header-top {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
 }

@@ -76,3 +76,13 @@
         font-size: 14px;
     }
 }
+
+@media (max-width: 480px) {
+    .policy-header h1 {
+        font-size: 20px;
+    }
+
+    .policy-content {
+        gap: 24px;
+    }
+}
