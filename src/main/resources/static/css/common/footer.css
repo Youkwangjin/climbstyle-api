@@ -18,3 +18,15 @@ footer {
 footer .logo img {
     height: 28px;
 }
+
+@media (max-width: 768px) {
+    .foot {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 24px 0;
+    }
+
+    .links {
+        justify-content: center;
+    }
+}
