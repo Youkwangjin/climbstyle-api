@@ -150,6 +150,12 @@ public class RankingBatchService {
             List<RankingFeedResponse> feedResponses = rankingRepository.selectPeriodRankingFeedByLikeCount(rankingTypeLimit, startDate);
             log.info("새 주간 랭킹 개수: {}", feedResponses.size());
 
+            if (feedResponses.isEmpty()) {
+                log.info("주간 좋아요 데이터 없음 — 전체 기간 기준 폴백 적용");
+                feedResponses = rankingRepository.selectRealTimeRankingFeedByLikeCount(rankingTypeLimit);
+                log.info("폴백 랭킹 개수: {}", feedResponses.size());
+            }
+
             List<RankingEntity> newRankingEntityList = new ArrayList<>();
             final LocalDateTime rankingUpdated = LocalDateTime.now();
 
@@ -229,6 +235,12 @@ public class RankingBatchService {
             log.info("좋아요 수 기준 새 월간 랭킹 계산");
             List<RankingFeedResponse> feedResponses = rankingRepository.selectPeriodRankingFeedByLikeCount(rankingTypeLimit, startDate);
             log.info("새 월간 랭킹 개수: {}", feedResponses.size());
+
+            if (feedResponses.isEmpty()) {
+                log.info("월간 좋아요 데이터 없음 — 전체 기간 기준 폴백 적용");
+                feedResponses = rankingRepository.selectRealTimeRankingFeedByLikeCount(rankingTypeLimit);
+                log.info("폴백 랭킹 개수: {}", feedResponses.size());
+            }
 
             List<RankingEntity> newRankingEntityList = new ArrayList<>();
             final LocalDateTime rankingUpdated = LocalDateTime.now();
